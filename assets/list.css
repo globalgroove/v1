@@ -12,7 +12,7 @@
   --panel-rule:#3b3c3b;
 }
 
-.cols{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:0 22px;align-items:start}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 22px;align-items:start}   /* the same on every list page; the menu lines up with the right column */
 
 /* list: one faint line under each row; the row under the pointer turns ink */
 table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
