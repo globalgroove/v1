@@ -62,7 +62,7 @@ const SITE = {
     },
     {
       title: "C-Pentane", year: "2022", type: "Archive, ongoing", role: "",
-      link: "",                          // later: "work/c-pentane/index.html"
+      link: "work/c-pentane/index.html",
       image: "work/permafrost/imgs/permafrost2.JPG",
       text: "",
       keywords: "archive cpentane"

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- =====================================================================
+     C-PENTANE  (work/c-pentane/index.html)
+     An inventory of found fridges; each unit holds up to five tracks.
+     Nothing to edit here: units and tracks are in archive.js (this folder),
+     photos in imgs/, audio in audio/<unit code>/.
+     ===================================================================== -->
+<script>
+const PAGE = { root: "../../" };   // path back to the site root (two folders down)
+</script>
+
+<title>C-Pentane — Global Overgroove</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../../assets/list.css">
+<script src="../../assets/site.js"></script>
+<script src="archive.js"></script>
+<style>
+/* C-Pentane only. Type and colours come from base.css / list.css */
+:root{--player-h:58px;--frame-ratio:1/1}
+[hidden]{display:none!important}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--ink);padding-bottom:6px;margin:6px 0 14px}
+.head h1{margin:0;font:500 13px var(--list-sans);letter-spacing:.14em;text-transform:uppercase}
+.head p{margin:0;font:400 var(--list-size) var(--list-mono);opacity:.75}
+
+/* ---- inventory: a row of slots ---- */
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.slot{display:block;text-decoration:none;color:inherit}
+.slot .ph{position:relative;aspect-ratio:1/1;background:var(--panel) radial-gradient(circle at 50% 50%,var(--panel-rule) 0 1px,transparent 1.4px) 0 0/5px 5px}
+.slot .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.slot .tag{position:absolute;left:6px;top:6px;font:500 9px var(--list-mono);letter-spacing:.12em;color:var(--panel-text);background:var(--panel);padding:2px 5px}
+.slot .meta{display:flex;justify-content:space-between;gap:8px;padding:6px 0 0;font:400 var(--list-size)/1.35 var(--list-mono)}
+.slot .meta b{font-weight:500}
+.slot .meta + .meta{padding-top:1px;opacity:.7;text-transform:uppercase;letter-spacing:.06em}
+a.slot:hover .ph,a.slot:focus-visible .ph{outline:2px solid var(--ink);outline-offset:2px}
+a.slot:focus-visible{outline:none}
+.slot.empty .ph{background:none;border:1px dashed var(--rule)}
+.slot.empty .meta{opacity:.4}
+
+/* ---- one unit: photo and details | tracks ---- */
+.close{position:fixed;top:calc(28px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));width:28px;height:28px;background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1px var(--rule);z-index:7}
+.close::before,.close::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:1px;background:currentColor;transform:translate(-50%,-50%) rotate(45deg)}
+.close::after{transform:translate(-50%,-50%) rotate(-45deg)}
+.close:hover,.close:focus-visible{background:var(--ink);color:var(--paper);box-shadow:none;outline:none}
+#unit{padding-bottom:calc(var(--player-h) + 20px)}
+.unit-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 22px;align-items:start}
+.unit-cols .preview{position:static}
+.p-specs dd.n{font-family:var(--list-sans);font-weight:500}
+.tag-ex{display:inline-block;margin-left:6px;font:500 9px var(--list-mono);letter-spacing:.12em;border:1px solid currentColor;padding:0 4px;vertical-align:1px}
+td.no{width:3em;font-family:var(--list-mono)}
+td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right}
+#rows tr.none{cursor:default}
+#rows tr.none td{opacity:.45}
+#rows tr.none:hover{background:none;color:inherit}
+#rows tr.none:hover td{border-bottom-color:var(--row-line)}
+#rows tr.playing td.no::before{content:"\25B6";font-size:.7em;margin-right:4px}
+
+/* ---- player: fixed to the bottom while a unit is open ---- */
+.player{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--paper);border-top:1px solid var(--ink);padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.player .in{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 14px;align-items:center}
+.player .btns{display:flex;gap:6px}
+.player button{font:500 var(--list-size) var(--list-mono);background:transparent;color:var(--ink);border:1px solid var(--ink);padding:3px 9px;cursor:pointer;min-width:2.6em}
+.player button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.player button:disabled{opacity:.35;cursor:default}
+.player .now{font:500 var(--list-size)/1.3 var(--list-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player .now span{font-family:var(--list-mono);font-weight:400;opacity:.7}
+.player .time{font:400 var(--list-size) var(--list-mono);white-space:nowrap}
+.player .track{grid-column:1/-1;position:relative;height:12px;cursor:pointer;touch-action:none}
+.player .track::before{content:"";position:absolute;left:0;right:0;top:5px;height:1px;background:var(--rule)}
+.player .fill{position:absolute;left:0;top:4px;height:3px;background:var(--ink);width:0}
+.player .track:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+@media (max-width:760px){
+  .unit-cols{grid-template-columns:minmax(0,1fr);gap:14px}
+  .unit-cols .preview{display:block}
+  .slots{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .close{top:calc(20px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px))}
+}
+@media (pointer:coarse){.close{width:36px;height:36px}}
+</style>
+</head>
+<body>
+<div class="page" id="top">
+
+  <nav class="site" id="site"></nav>
+  <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
+
+  <!-- INVENTORY -->
+  <section id="inv">
+    <div class="head"><h1 id="inv-title"></h1><p id="inv-count"></p></div>
+    <div class="slots" id="slots"></div>
+  </section>
+
+  <!-- ONE UNIT -->
+  <section id="unit" hidden>
+    <a class="close" href="#" id="close" aria-label="Close, back to the inventory" title="Back to the inventory"></a>
+    <div class="head"><h1 id="u-title"></h1><p id="u-count"></p></div>
+    <div class="unit-cols">
+      <aside class="preview">
+        <div class="frame"><img id="u-img" alt=""></div>
+        <div class="body"><dl class="p-specs" id="u-specs"></dl></div>
+      </aside>
+      <main>
+        <table>
+          <thead><tr><th>No.</th><th>Track</th><th style="text-align:right">Time</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </main>
+    </div>
+  </section>
+</div>
+
+<!-- player, shown with every unit ("Unit is offline" when it has no audio) -->
+<div class="player" id="player" hidden>
+  <div class="in">
+    <div class="btns">
+      <button type="button" id="p-prev" aria-label="Previous track">&#9664;&#9664;</button>
+      <button type="button" id="p-play" aria-pressed="false" aria-label="Play">Play</button>
+      <button type="button" id="p-next" aria-label="Next track">&#9654;&#9654;</button>
+    </div>
+    <div class="now" id="p-now" aria-live="polite">Select a track</div>
+    <div class="time" id="p-time">0:00 / 0:00</div>
+    <div class="track" id="p-track" role="slider" tabindex="0" aria-label="Position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="p-fill"></div></div>
+  </div>
+  <audio id="audio" preload="metadata"></audio>
+</div>
+
+<script src="../../assets/base.js"></script>
+<!-- C-PENTANE BUILDER. Reads archive.js. No need to edit. -->
+<script>
+(function(){
+  try {
+    var A = ARCHIVE, MAX = 5, UNKNOWN = A.unknown || 'Unknown';
+    // units in the order they were found (oldest first); same date: by code
+    var units = (A.units || []).slice().sort(function(a, b){ var x = (a.found || '') + a.code, y = (b.found || '') + b.code; return x < y ? -1 : x > y ? 1 : 0; });
+    function $(id){ return document.getElementById(id); }
+    function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+    function fmt(s){ if (!isFinite(s)) return '—'; var m = Math.floor(s / 60), r = Math.floor(s % 60); return m + ':' + (r < 10 ? '0' : '') + r; }
+    function slug(u){ return u.code.toLowerCase(); }
+    function pad2(n){ return (n < 10 ? '0' : '') + n; }
+    // a unit's five track slots: given tracks first (up to five), then empty slots
+    function slots(u){ var t = (u.tracks || []).slice(0, MAX), out = []; for (var i = 0; i < MAX; i++) out.push(t[i] || {}); return out; }
+    function playable(u){ return slots(u).filter(function(t){ return t.src; }).length; }
+    function stateOf(u){ return playable(u) ? 'Online' : 'Offline'; }        // a unit with any audio is online
+    function trackName(u, t, i){ return t.title || (u.code + '-' + pad2(i + 1)); }   // untitled: CP-003-01, CP-003-02 ...
+    var unit = null, order = [], cur = -1, audio = $('audio');
+
+    /* ---------- inventory ---------- */
+    $('inv-title').textContent = A.title;
+    $('inv-count').textContent = units.length + (units.length === 1 ? ' unit' : ' units');
+    units.forEach(function(u){
+      var a = el('a', 'slot'); a.href = '#' + slug(u);
+      a.setAttribute('aria-label', u.code + ', found ' + u.found + ', ' + stateOf(u));
+      var ph = el('div', 'ph');
+      if (u.photo){ var im = new Image(); im.alt = ''; im.loading = 'lazy'; im.onerror = function(){ im.remove(); }; im.src = u.photo; ph.appendChild(im); }
+      if (u.example) ph.appendChild(el('span', 'tag', 'EXAMPLE'));
+      a.appendChild(ph);
+      var m1 = el('div', 'meta'); m1.appendChild(el('b', null, u.code)); m1.appendChild(el('span', null, u.found)); a.appendChild(m1);
+      a.appendChild(el('div', 'meta', stateOf(u)));
+      $('slots').appendChild(a);
+    });
+    var nextNo = units.reduce(function(n, u){ var k = parseInt(String(u.code).replace(/\D/g, ''), 10); return isNaN(k) ? n : Math.max(n, k); }, 0);
+    for (var e = units.length; e < (A.slots || 0); e++){
+      var s = el('div', 'slot empty'); s.setAttribute('aria-hidden', 'true'); s.appendChild(el('div', 'ph'));
+      var m = el('div', 'meta'); m.appendChild(el('b', null, 'CP-' + String(++nextNo).padStart(3, '0'))); m.appendChild(el('span', null, '—')); s.appendChild(m);
+      $('slots').appendChild(s);
+    }
+
+    /* ---------- one unit ---------- */
+    function showUnit(u){
+      unit = u;
+      var n = playable(u), state = stateOf(u);
+      $('u-title').textContent = A.title + ' — ' + u.code;
+      $('u-count').textContent = 'found ' + u.found + ' · ' + state.toLowerCase();
+      $('tab-side').textContent = u.code;
+      document.title = u.code + ' — C-Pentane';
+
+      // photo + details: Unit, Found, Model, Tracks
+      var img = $('u-img'); img.hidden = true; img.removeAttribute('src');
+      if (u.photo){ var pr = new Image(); pr.onload = function(){ if (unit === u){ img.src = u.photo; img.alt = 'Unit ' + u.code + ' as found'; img.hidden = false; } }; pr.src = u.photo; }
+      var dl = $('u-specs'); dl.textContent = '';
+      [['Unit', u.code, 'n'], ['Found', u.found], ['Model', u.model || UNKNOWN], ['Tracks', n + ' / ' + MAX]].forEach(function(r){
+        dl.appendChild(el('dt', null, r[0]));
+        var dd = el('dd', r[2] || null, r[1]);
+        if (r[0] === 'Unit' && u.example) dd.appendChild(el('span', 'tag-ex', 'EXAMPLE'));
+        dl.appendChild(dd);
+      });
+
+      // five track slots; a slot without a name is named by the unit code (CP-003-01 ...); only slots with a file can be played
+      var tb = $('rows'); tb.textContent = ''; order = [];
+      slots(u).forEach(function(t, i){
+        var tr = el('tr', t.src ? null : 'none'); tr.dataset.i = i;
+        tr.appendChild(el('td', 'no', pad2(i + 1)));
+        tr.appendChild(el('td', null, trackName(u, t, i)));
+        var tm = el('td', 'tm', '—'); tr.appendChild(tm);
+        if (t.src){
+          order.push(i); tr.tabIndex = 0;
+          var probe = new Audio(); probe.preload = 'metadata'; probe.src = t.src;
+          probe.addEventListener('loadedmetadata', function(){ tm.textContent = fmt(probe.duration); });
+          tr.addEventListener('click', function(){ play(i); });
+          tr.addEventListener('keydown', function(ev){ if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); play(i); } });
+        }
+        tb.appendChild(tr);
+      });
+      stop(); updateButtons();
+      $('inv').hidden = true; $('unit').hidden = false; $('player').hidden = false;   // the player stays, even with nothing to play
+      window.scrollTo(0, 0);
+    }
+    function showInventory(){
+      stop(); unit = null;
+      $('unit').hidden = true; $('player').hidden = true; $('inv').hidden = false;
+      $('tab-side').textContent = A.sideTab; document.title = 'C-Pentane — Global Overgroove';
+    }
+
+    /* ---------- player ---------- */
+    function markRow(i){ [].forEach.call($('rows').children, function(r){ var on = +r.dataset.i === i; r.classList.toggle('playing', on); r.classList.toggle('on', on); }); }
+    function play(i){
+      var k = order.indexOf(i); if (k < 0) return;
+      if (k === cur && audio.getAttribute('src')){ toggle(); return; }
+      cur = k; var t = slots(unit)[i];
+      audio.src = t.src; audio.play().catch(function(){});
+      $('p-now').textContent = ''; $('p-now').appendChild(document.createTextNode(trackName(unit, t, i) + ' '));
+      $('p-now').appendChild(el('span', null, unit.code));
+      markRow(i); updateButtons();
+    }
+    function toggle(){ if (!audio.getAttribute('src')){ if (order.length) play(order[0]); return; } if (audio.paused) audio.play().catch(function(){}); else audio.pause(); }
+    function stop(){ audio.pause(); audio.removeAttribute('src'); audio.load(); cur = -1; $('p-fill').style.width = '0'; $('p-time').textContent = '0:00 / 0:00'; markRow(-1); $('p-play').textContent = 'Play'; $('p-play').setAttribute('aria-pressed', 'false'); $('p-now').textContent = order.length ? 'Select a track, or press Play' : (A.offlineLabel || 'Unit is offline'); }
+    function updateButtons(){ $('p-prev').disabled = cur <= 0; $('p-next').disabled = cur < 0 || cur >= order.length - 1; $('p-play').disabled = !order.length; }
+    $('p-play').addEventListener('click', toggle);
+    $('p-prev').addEventListener('click', function(){ if (cur > 0) play(order[cur - 1]); });
+    $('p-next').addEventListener('click', function(){ if (cur < order.length - 1) play(order[cur + 1]); });
+    audio.addEventListener('play', function(){ $('p-play').textContent = 'Pause'; $('p-play').setAttribute('aria-pressed', 'true'); });
+    audio.addEventListener('pause', function(){ $('p-play').textContent = 'Play'; $('p-play').setAttribute('aria-pressed', 'false'); });
+    audio.addEventListener('timeupdate', function(){
+      var d = audio.duration, p = d ? audio.currentTime / d : 0;
+      $('p-fill').style.width = (p * 100) + '%'; $('p-time').textContent = fmt(audio.currentTime) + ' / ' + fmt(d);
+      $('p-track').setAttribute('aria-valuenow', Math.round(p * 100));
+    });
+    audio.addEventListener('ended', function(){ if (cur < order.length - 1) play(order[cur + 1]); });   // the unit plays through
+    audio.addEventListener('error', function(){ if (audio.getAttribute('src')) $('p-now').textContent = 'File not found: ' + audio.getAttribute('src'); });
+    var seeking = false;
+    function seekAt(x){ var r = $('p-track').getBoundingClientRect(); if (audio.duration) audio.currentTime = Math.max(0, Math.min(1, (x - r.left) / r.width)) * audio.duration; }
+    $('p-track').addEventListener('pointerdown', function(e){ seeking = true; this.setPointerCapture(e.pointerId); seekAt(e.clientX); });
+    $('p-track').addEventListener('pointermove', function(e){ if (seeking) seekAt(e.clientX); });
+    $('p-track').addEventListener('pointerup', function(){ seeking = false; });
+    $('p-track').addEventListener('keydown', function(e){ if (!audio.duration) return; if (e.key === 'ArrowRight') audio.currentTime += 5; if (e.key === 'ArrowLeft') audio.currentTime -= 5; });
+
+    /* ---------- keys and routing ---------- */
+    document.addEventListener('keydown', function(e){
+      if (!unit) return;
+      var t = document.activeElement && document.activeElement.tagName;
+      if (e.key === ' ' && order.length && !/INPUT|BUTTON|TEXTAREA|TR/.test(t)){ e.preventDefault(); toggle(); }
+      if (e.key === 'Escape'){ var menu = $('site-menu'); if (menu && !menu.hidden) return; location.hash = ''; }
+    });
+    function route(){
+      var h = location.hash.replace('#', '').toLowerCase();
+      var u = units.filter(function(x){ return slug(x) === h; })[0];
+      if (u) showUnit(u); else showInventory();
+    }
+    window.addEventListener('hashchange', route);
+    $('tab-side').textContent = A.sideTab;
+    route();
+  } catch (e) {
+    console.error(e);
+    document.body.insertAdjacentHTML('afterbegin', '<p style="padding:12px;font:14px monospace">Content error: check the quotation marks and commas in archive.js.</p>');
+  }
+})();
+</script>
+</body>
+</html>
