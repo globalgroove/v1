@@ -73,4 +73,12 @@ tbody tr:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
   tbody tr.on:not(:hover) td{border-bottom-color:var(--row-line)}
   .sub{display:block;margin-top:2px;font:400 calc(var(--list-size) - 1px) var(--list-mono);font-weight:400;letter-spacing:0;opacity:.75}
 }
+/* phones: a tapped row opens the panel underneath it (assets/list-mobile.js) */
+tr.drawer,tr.drawer:hover{background:none!important;color:inherit!important;cursor:default}
+tr.drawer > td{padding:0 0 14px;border-bottom:1px solid var(--row-line)}
+tr.drawer .preview{display:block!important;position:static;max-width:420px}
+@media (max-width:760px){
+  tbody tr.open{background:var(--ink);color:var(--paper)}
+  tbody tr.open td{border-bottom-color:var(--ink)}
+}
 @media (prefers-reduced-motion:reduce){tbody tr{transition:none}}
