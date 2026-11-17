@@ -67,13 +67,53 @@
       li.appendChild(row); li.appendChild(sub); menu.appendChild(li);
     });
 
+    /* ---- search: first item of the menu. Looks through the projects, releases and catalog in site.js ---- */
+    function fold(x){ return String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+    var items = (S.projects || []).map(function(p){
+      return { title:p.title, meta:[p.year, p.type].filter(Boolean).join(' · '), link:p.link, text:fold([p.title, p.year, p.type, p.keywords].join(' ')) };
+    }).concat((S.releases || []).map(function(r, i){
+      return { title:r.artist + (r.title ? ' — ' + r.title : ''), meta:[r.year, r.role].filter(Boolean).join(' · '), link:'discography/index.html#r' + (i + 1), text:fold([r.artist, r.title, r.role, r.format, r.label, r.year, 'discography'].join(' ')) };
+    })).concat((S.catalog || []).map(function(r, i){
+      return { title:r.artist + ': ' + r.title, meta:[r.year, r.cat].filter(Boolean).join(' · '), link:'catalog/index.html#c' + (i + 1), text:fold([r.artist, r.title, r.cat, r.type, r.format, r.status, r.year, 'catalog'].join(' ')) };
+    }));
+    if (items.length && S.navSearch !== false){
+      var sli = el('li', 'nav-search'), q = el('input'), hits = el('ul', 'nav-hits'), act = -1;
+      q.type = 'search'; q.id = 'nav-q'; q.placeholder = S.navSearchLabel || 'Search'; q.autocomplete = 'off'; q.spellcheck = false;
+      q.setAttribute('aria-label', 'Search the site'); q.setAttribute('aria-controls', 'nav-hits');
+      hits.id = 'nav-hits'; hits.hidden = true; hits.setAttribute('role', 'listbox');
+      sli.appendChild(q); sli.appendChild(hits);
+      menu.insertBefore(sli, menu.firstChild);
+      var links = function(){ return [].slice.call(hits.querySelectorAll('a')); };
+      var mark = function(i){ var ls = links(); if (!ls.length) return; act = (i + ls.length) % ls.length; ls.forEach(function(a, k){ a.classList.toggle('active', k === act); }); ls[act].scrollIntoView({ block:'nearest' }); };
+      var run = function(){
+        var words = fold(q.value).split(/\s+/).filter(Boolean); hits.textContent = ''; act = -1;
+        if (!words.length){ hits.hidden = true; return; }
+        var found = items.filter(function(it){ return words.every(function(w){ return it.text.indexOf(w) > -1; }); }).slice(0, 8);
+        if (!found.length) hits.appendChild(el('li', 'none', 'No match'));
+        found.forEach(function(it){
+          var li = el('li'), x = el(it.link ? 'a' : 'span', it.link ? null : 'soon');
+          if (it.link) x.href = root + it.link;
+          x.appendChild(el('b', null, it.title)); if (it.meta) x.appendChild(el('span', null, it.meta));
+          li.appendChild(x); hits.appendChild(li);
+        });
+        hits.hidden = false;
+      };
+      q.addEventListener('input', run);
+      q.addEventListener('keydown', function(e){
+        if (e.key === 'ArrowDown'){ e.preventDefault(); mark(act + 1); }
+        else if (e.key === 'ArrowUp'){ e.preventDefault(); mark(act < 0 ? -1 : act - 1); }
+        else if (e.key === 'Enter'){ var a = links()[act < 0 ? 0 : act]; if (a) location.href = a.href; }
+        else if (e.key === 'Escape' && q.value){ e.stopPropagation(); q.value = ''; run(); }
+      });
+    }
+
     if (!menu.children.length) { btn.classList.add('static'); return; }
     btn.setAttribute('aria-controls', 'site-menu'); btn.setAttribute('aria-expanded', 'false');
-    function setOpen(o){ menu.hidden = !o; btn.setAttribute('aria-expanded', o); }
+    function setOpen(o){ menu.hidden = !o; btn.setAttribute('aria-expanded', o); if (!o){ var nq = document.getElementById('nav-q'); if (nq && nq.value){ nq.value = ''; nq.dispatchEvent(new Event('input')); } } }
     btn.addEventListener('click', function(){ setOpen(menu.hidden); });
     menu.addEventListener('click', function(e){ if (e.target.closest('a')) setOpen(false); });
     document.addEventListener('click', function(e){ if (!nav.contains(e.target)) setOpen(false); });
-    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !menu.hidden) { setOpen(false); btn.focus(); } });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !menu.hidden && !(document.activeElement && document.activeElement.id === 'nav-q' && document.activeElement.value)) { setOpen(false); btn.focus(); } });
   } catch (e) {
     console.error(e);
     document.body.insertAdjacentHTML('afterbegin', '<p style="padding:12px;font:14px monospace">Menu error: check the quotation marks and commas in assets/site.js.</p>');

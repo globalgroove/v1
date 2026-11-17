@@ -12,7 +12,8 @@
   color-scheme:light;
   --label:"IBM Plex Sans Condensed","Zen Kaku Gothic New","Arial Narrow",Arial,sans-serif;
   --value:"IBM Plex Mono","Zen Kaku Gothic New",ui-monospace,Menlo,Consolas,monospace;
-  --nav:"Geist","Helvetica Neue",Arial,sans-serif;     /* site title and menu: the face of the page headings */
+  --nav:"Geist","Helvetica Neue",Arial,sans-serif;     /* site title: the face of the page headings */
+  --nav-mono:"Geist Mono",ui-monospace,Menlo,Consolas,monospace;   /* menu sections and search: the small label face */
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
@@ -46,7 +47,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--ink);outline-offset
 /* menu list */
 .site-menu{position:absolute;top:100%;left:0;margin:2px 0 0;padding:0;list-style:none;min-width:220px;background:var(--paper);border:1px solid var(--rule)}
 .site-menu li+li{border-top:1px solid var(--rule)}
-.site-menu a{display:block;padding:6px 12px 6px 8px;font:400 13px/1.3 var(--nav);letter-spacing:.08em;text-decoration:none}
+.site-menu a{display:block;padding:6px 12px 6px 8px;font:400 11px/1.3 var(--nav-mono);letter-spacing:.08em;text-transform:uppercase;text-decoration:none}
 .site-menu a::before{content:"";display:inline-block;width:1.2em}
 .site-menu a[aria-current]::before{content:"\25CF"}
 .site-menu a:hover,.site-menu a:focus-visible{background:var(--ink);color:var(--paper);outline:none}
@@ -79,6 +80,22 @@ a.tab-side:hover,a.tab-side:focus-visible{background:var(--ink);color:var(--tab-
   .tab-top{font-size:48px;height:56px;width:100px;top:20px}
   .tab-side{font-size:18px;padding:12px 6px}
 }
+/* search in the menu: one thin underlined line; results drop below it */
+.nav-search{position:relative;padding:6px 8px}
+.nav-search input{width:100%;border:0;border-bottom:1px solid var(--rule);background:transparent;color:var(--ink);font:400 11px/1.3 var(--nav-mono);letter-spacing:.08em;padding:3px 0;outline:none;border-radius:0;-webkit-appearance:none;appearance:none}
+.nav-search input::placeholder{color:var(--ink);opacity:.45;text-transform:uppercase}
+.nav-search input:focus{border-bottom-color:var(--ink)}
+.nav-search input::-webkit-search-cancel-button{display:none}
+.nav-hits{position:absolute;left:0;top:100%;margin:4px 0 0;padding:0;list-style:none;width:420px;max-width:80vw;background:var(--paper);border:1px solid var(--rule);z-index:10}
+.nav-hits li+li{border-top:1px solid var(--rule)}
+.site-menu .nav-hits a,.nav-hits .soon,.nav-hits .none{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:5px 8px;text-transform:none;letter-spacing:0}
+.site-menu .nav-hits a::before{display:none}
+.nav-hits b{font:500 12px/1.3 var(--nav);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-hits span{font:400 10px var(--nav-mono);opacity:.7;white-space:nowrap}
+.nav-hits .soon{opacity:.6}
+.nav-hits .none{font:400 11px var(--nav-mono);opacity:.6}
+.site-menu .nav-hits a.active{background:var(--ink);color:var(--paper)}
+
 /* desktop: the menu opens to the right of the title as one line of sections;
    the chevron turns to point back left while it is open. Phones keep the vertical list above. */
 @media (min-width:761px){
@@ -86,8 +103,11 @@ a.tab-side:hover,a.tab-side:focus-visible{background:var(--ink);color:var(--tab-
   .site-menu{top:50%;left:auto;right:0;transform:translateY(-50%);   /* ... and the open menu ends at its right edge */margin:0;display:flex;align-items:center;min-width:0;border:0;background:var(--paper);white-space:nowrap}
   .site-menu[hidden]{display:none}
   .site-menu li+li{border-top:0}
-  .site-menu a{padding:3px 9px;font-size:13px;letter-spacing:.1em}
-  .site-menu li:last-child a{padding-right:0}
+  .site-menu{right:-9px}                          /* the last section's text lines up with the page edge, its hover box stays whole */
+  .site-menu a{padding:3px 9px}
+  .nav-search{padding:0 14px 0 0}
+  .nav-search input{width:170px}
+  .nav-hits{left:auto;right:14px}
   .site-menu a::before{width:0}
   .site-menu a[aria-current]::before{content:"\25CF";width:auto;margin-right:.45em;font-size:.65em;vertical-align:.15em}
   .site-btn[aria-expanded=true]::after{transform:rotate(135deg) translate(-1px,-1px)}
