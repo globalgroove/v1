@@ -53,9 +53,6 @@ a.slot:focus-visible{outline:none}
 .unit-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 22px;align-items:start}
 .unit-cols .preview{position:static}
 .p-specs dd.n{font-family:var(--list-sans);font-weight:500}
-.p-specs dd.state{text-transform:uppercase;letter-spacing:.08em}
-.p-specs dd.state::before{content:"";display:inline-block;width:6px;height:6px;border:1px solid currentColor;border-radius:50%;margin-right:6px;vertical-align:1px}
-.p-specs dd.state.on::before{background:currentColor}
 .tag-ex{display:inline-block;margin-left:6px;font:500 9px var(--list-mono);letter-spacing:.12em;border:1px solid currentColor;padding:0 4px;vertical-align:1px}
 td.no{width:3em;font-family:var(--list-mono)}
 td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right}
@@ -141,7 +138,8 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
 (function(){
   try {
     var A = ARCHIVE, MAX = 5, UNKNOWN = A.unknown || 'Unknown';
-    var units = (A.units || []).slice().sort(function(a, b){ return a.code < b.code ? -1 : a.code > b.code ? 1 : 0; });   // CP-001 first
+    // units in the order they were found (oldest first); same date: by code
+    var units = (A.units || []).slice().sort(function(a, b){ var x = (a.found || '') + a.code, y = (b.found || '') + b.code; return x < y ? -1 : x > y ? 1 : 0; });
     function $(id){ return document.getElementById(id); }
     function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
     function fmt(s){ if (!isFinite(s)) return '—'; var m = Math.floor(s / 60), r = Math.floor(s % 60); return m + ':' + (r < 10 ? '0' : '') + r; }
@@ -150,6 +148,8 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
     // a unit's five track slots: given tracks first (up to five), then empty slots
     function slots(u){ var t = (u.tracks || []).slice(0, MAX), out = []; for (var i = 0; i < MAX; i++) out.push(t[i] || {}); return out; }
     function playable(u){ return slots(u).filter(function(t){ return t.src; }).length; }
+    function stateOf(u){ return playable(u) ? 'Online' : 'Offline'; }        // a unit with any audio is online
+    function trackName(u, t, i){ return t.title || (u.code + '-' + pad2(i + 1)); }   // untitled: CP-003-01, CP-003-02 ...
     var unit = null, order = [], cur = -1, audio = $('audio');
 
     /* ---------- inventory ---------- */
@@ -157,47 +157,48 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
     $('inv-count').textContent = units.length + (units.length === 1 ? ' unit' : ' units');
     units.forEach(function(u){
       var a = el('a', 'slot'); a.href = '#' + slug(u);
-      a.setAttribute('aria-label', u.code + ', found ' + u.found + ', ' + (u.state || UNKNOWN));
+      a.setAttribute('aria-label', u.code + ', found ' + u.found + ', ' + stateOf(u));
       var ph = el('div', 'ph');
       if (u.photo){ var im = new Image(); im.alt = ''; im.loading = 'lazy'; im.onerror = function(){ im.remove(); }; im.src = u.photo; ph.appendChild(im); }
       if (u.example) ph.appendChild(el('span', 'tag', 'EXAMPLE'));
       a.appendChild(ph);
       var m1 = el('div', 'meta'); m1.appendChild(el('b', null, u.code)); m1.appendChild(el('span', null, u.found)); a.appendChild(m1);
-      a.appendChild(el('div', 'meta', u.state || UNKNOWN));
+      a.appendChild(el('div', 'meta', stateOf(u)));
       $('slots').appendChild(a);
     });
+    var nextNo = units.reduce(function(n, u){ var k = parseInt(String(u.code).replace(/\D/g, ''), 10); return isNaN(k) ? n : Math.max(n, k); }, 0);
     for (var e = units.length; e < (A.slots || 0); e++){
       var s = el('div', 'slot empty'); s.setAttribute('aria-hidden', 'true'); s.appendChild(el('div', 'ph'));
-      var m = el('div', 'meta'); m.appendChild(el('b', null, 'CP-' + String(e + 1).padStart(3, '0'))); m.appendChild(el('span', null, '—')); s.appendChild(m);
+      var m = el('div', 'meta'); m.appendChild(el('b', null, 'CP-' + String(++nextNo).padStart(3, '0'))); m.appendChild(el('span', null, '—')); s.appendChild(m);
       $('slots').appendChild(s);
     }
 
     /* ---------- one unit ---------- */
     function showUnit(u){
       unit = u;
-      var n = playable(u), state = u.state || UNKNOWN;
+      var n = playable(u), state = stateOf(u);
       $('u-title').textContent = A.title + ' — ' + u.code;
       $('u-count').textContent = 'found ' + u.found + ' · ' + state.toLowerCase();
       $('tab-side').textContent = u.code;
       document.title = u.code + ' — C-Pentane';
 
-      // photo + details: Unit, Found, Model, State, Tracks
+      // photo + details: Unit, Found, Model, Tracks
       var img = $('u-img'); img.hidden = true; img.removeAttribute('src');
       if (u.photo){ var pr = new Image(); pr.onload = function(){ if (unit === u){ img.src = u.photo; img.alt = 'Unit ' + u.code + ' as found'; img.hidden = false; } }; pr.src = u.photo; }
       var dl = $('u-specs'); dl.textContent = '';
-      [['Unit', u.code, 'n'], ['Found', u.found], ['Model', u.model || UNKNOWN], ['State', state, 'state' + (/online/i.test(state) ? ' on' : '')], ['Tracks', n + ' / ' + MAX]].forEach(function(r){
+      [['Unit', u.code, 'n'], ['Found', u.found], ['Model', u.model || UNKNOWN], ['Tracks', n + ' / ' + MAX]].forEach(function(r){
         dl.appendChild(el('dt', null, r[0]));
         var dd = el('dd', r[2] || null, r[1]);
         if (r[0] === 'Unit' && u.example) dd.appendChild(el('span', 'tag-ex', 'EXAMPLE'));
         dl.appendChild(dd);
       });
 
-      // five track slots; a slot without a name reads "Unknown"; only slots with a file can be played
+      // five track slots; a slot without a name is named by the unit code (CP-003-01 ...); only slots with a file can be played
       var tb = $('rows'); tb.textContent = ''; order = [];
       slots(u).forEach(function(t, i){
         var tr = el('tr', t.src ? null : 'none'); tr.dataset.i = i;
         tr.appendChild(el('td', 'no', pad2(i + 1)));
-        tr.appendChild(el('td', null, t.title || UNKNOWN));
+        tr.appendChild(el('td', null, trackName(u, t, i)));
         var tm = el('td', 'tm', '—'); tr.appendChild(tm);
         if (t.src){
           order.push(i); tr.tabIndex = 0;
@@ -225,8 +226,8 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
       if (k === cur && audio.getAttribute('src')){ toggle(); return; }
       cur = k; var t = slots(unit)[i];
       audio.src = t.src; audio.play().catch(function(){});
-      $('p-now').textContent = ''; $('p-now').appendChild(document.createTextNode((t.title || UNKNOWN) + ' '));
-      $('p-now').appendChild(el('span', null, unit.code + ' · ' + pad2(i + 1)));
+      $('p-now').textContent = ''; $('p-now').appendChild(document.createTextNode(trackName(unit, t, i) + ' '));
+      $('p-now').appendChild(el('span', null, unit.code));
       markRow(i); updateButtons();
     }
     function toggle(){ if (!audio.getAttribute('src')){ if (order.length) play(order[0]); return; } if (audio.paused) audio.play().catch(function(){}); else audio.pause(); }

@@ -5,18 +5,19 @@
    photo with its details, and a table of up to five tracks.
 
    To add a unit: copy one { ... } block in "units", paste it at the end
-   of the list, and change the values. The inventory sorts units by code
-   (CP-001, CP-002 ...), so the order of the blocks does not matter.
+   of the list, and change the values. The inventory shows units in the
+   order they were found (by "found" date), so the order of the blocks
+   does not matter. A unit with any audio shows as Online, without as Offline.
      code   : the unit's reference, e.g. "CP-004"
      found  : date found, "YYYY-MM-DD"
      photo  : the photo, relative to this folder, e.g. "imgs/cp-004.jpg"
               (square crops work best; 1000 px is plenty). "" = dotted placeholder
      model  : from the unit's label. "" shows Unknown
-     state  : "Offline" (or "Online" when the unit plays)
      tracks : up to five, in order. Each one:
               { title: "Track title", src: "audio/cp-004/01.mp3" }
-              A track without a title shows Unknown. Without src it is listed
-              but cannot be played. Empty slots up to five show Unknown.
+              A track without a title is named by the unit code: CP-004-01,
+              CP-004-02 ... Without src it is listed but cannot be played.
+              Empty slots up to five are listed the same way.
               Track lengths are read from the files, no need to type them.
      example: true marks a placeholder unit (shown as EXAMPLE); CP-001 and
               CP-002 play short test tones. Delete those blocks when real units
@@ -29,13 +30,13 @@ const ARCHIVE = {
   sideTab: "C-PENTANE",          // text in the black box on the right edge
   title: "C-Pentane",            // shown above the inventory
   slots: 5,                      // inventory size: empty slots fill the grid up to this number
-  unknown: "Unknown",            // shown for any missing name, model or track
+  unknown: "Unknown",            // shown for a missing model
   offlineLabel: "Unit is offline",   // shown in the player when a unit has no audio
 
   units: [
     {
       code: "CP-001", found: "2026-11-12", photo: "", example: true,
-      model: "", state: "Offline",
+      model: "",
       tracks: [
         { title: "", src: "audio/cp-001/r-01.mp3" },
         { title: "", src: "audio/cp-001/r-02.mp3" },
@@ -44,7 +45,7 @@ const ARCHIVE = {
     },
     {
       code: "CP-002", found: "2026-11-15", photo: "", example: true,
-      model: "", state: "Offline",
+      model: "",
       tracks: [
         { title: "", src: "audio/cp-002/r-05.mp3" },
         { title: "", src: "audio/cp-002/r-06.mp3" },
@@ -53,7 +54,12 @@ const ARCHIVE = {
     },
     {
       code: "CP-003", found: "2021-02-15", photo: "imgs/cp-003.jpg",
-      model: "", state: "Offline",
+      model: "",
+      tracks: []
+    },
+    {
+      code: "CP-004", found: "2023-12-11", photo: "imgs/cp-004.jpg",
+      model: "Euro-Line",
       tracks: []
     }
   ]
