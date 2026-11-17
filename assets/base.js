@@ -62,8 +62,9 @@
     }).concat((S.releases || []).map(function(r, i){
       return { title:r.artist + (r.title ? ' — ' + r.title : ''), meta:[r.year, r.role].filter(Boolean).join(' · '), link:'discography/index.html#r' + (i + 1), text:fold([r.artist, r.title, r.role, r.format, r.label, r.year, 'discography'].join(' ')) };
     })).concat((S.catalog || []).map(function(r, i){
+      if (r.hide) return null;                     // hidden releases stay out of the search too
       return { title:r.artist + ': ' + r.title, meta:[r.year, r.cat].filter(Boolean).join(' · '), link:'catalog/index.html#c' + (i + 1), text:fold([r.artist, r.title, r.cat, r.type, r.format, r.status, r.year, 'catalog'].join(' ')) };
-    }));
+    }).filter(Boolean));
     if (items.length && S.navSearch !== false){
       // label + field + a blinking block cursor (as on the landing page); results drop below
       var sli = el('li', 'nav-search'), lab = el('label', 'nav-label', S.navSearchLabel || 'Search'), wrap = el('span', 'nq-wrap');

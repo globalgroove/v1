@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- =====================================================================
+     PROJECT PAGE  (work/permafrost/index.html)
+     CONTENT BLOCK  -  THIS IS THE ONLY PART YOU NEED TO EDIT
+     =====================================================================
+     To make a new project: copy this whole folder (work/gmr/ -> work/new-name/),
+     change the values below, then add one line to "projects" in assets/site.js.
+     The menu and logo come from assets/site.js; the look from assets/*.css.
+
+     Rules:
+       - Keep the quotation marks "like this" and the commas at line ends.
+       - Paragraphs may contain simple HTML, e.g. <em>italic</em>.
+       - Leave a list empty ( [] ) to hide that part of the page.
+       - Image and audio paths are relative to this folder, e.g. "imgs/photo.jpg".
+         File names must match exactly, capitals included (.JPG is not .jpg online).
+         If an image is missing, a dotted placeholder is shown instead.
+     ===================================================================== -->
+<script>
+const PAGE = {
+
+  root: "../../",               // path back to the site root (project pages are two folders down)
+
+  back: "work/index.html",      // where the × (top right) and the Esc key lead, relative to the site root
+
+  /* ---- PAGE IDENTITY ------------------------------------------------ */
+  number: 2,                    // this page's number. Shows as 002 in the side tab and footer
+  nextPage: "../c-pentane/index.html",   // the next project. A second box (number+1) appears under the side index
+                                // and links to it. Leave "" on the last page
+  browserTitle: "Permafrost",   // text on the browser tab
+  title: "permafrost",          // large title box (left)
+  variant: "live av / installation",   // small title box (right)
+
+  /* ---- SECTION HEADINGS --------------------------------------------- */
+  headings: {
+    main:  "technical specs",         // above the first table
+    audio: "recordings",              // above the track list
+    materials: "Title: Permafrost",   // small label above the materials text
+    sheet: "Process and details"      // above the small images
+  },
+
+  /* ---- INFO LINES (top right):  [ "label", "value" ] ---------------- */
+  info: [
+    ["Year",   "2023"],
+    ["Format", "Live AV / Installation"]
+  ],
+
+  /* ---- MAIN TABLE:  [ "label", "unit", "value" ] --------------------- */
+  /* leave the unit as "" when there is none; delete the rows a page does not need */
+  mainData: [
+    ["Title",  "",   "Permafrost"],
+    ["Year",   "",   "2023"],
+    ["Format", "",   "Live AV / Installation"]
+  ],
+  mainValuesLeft: true,         // false = values centred (good for numbers); true = left aligned
+
+  /* ---- MATERIALS: small technical text under the table ---------------- */
+  /* one line per item; an empty list [] hides it */
+  materials: [
+    "Materials: Freezing unit (refrigerator), sound probes,",
+    "amplification and modulation"
+  ],
+
+  /* ---- TEXT BOXES: each is a list of paragraphs. [] hides a box ------ */
+  texts: {
+    one: [        // left column, between the materials and Fig. 2
+      "Permafrost works from a material practice that also operates with fiction. A freezing unit is approached from a forensic angle and its findings are translated into sound protocols."
+    ],
+    two: [        // right column, between the table and the audio list
+      "The unit is presented and examined with sound probes, as in an autopsy. The focus is on its electrical system and refrigerant gas rather than its assembly parts: each is amplified and modulated, and the readings become the material of the performance."
+    ],
+    three: []     // full width, before the small images
+  },
+
+  /* ---- MAIN IMAGES (3:2 landscape works best) ----------------------- */
+  /* "caption" is the text after "Fig. N –"; "alt" is a short description for screen readers */
+  figure1: { src: "imgs/permafrost1.jpg", alt: "Permafrost", caption: "permafrost" },   // right column. Empty src = halftone placeholder
+  figure2: { src: "", alt: "", caption: "" },                                         // left column
+
+  /* ---- AUDIO TRACKS ------------------------------------------------- */
+  /* e.g. { src: "audio/track-01.mp3", title: "Track 01" }. No tracks = audio list and player bar are hidden */
+  tracks: [],
+
+  /* ---- SMALL IMAGES (square crops work best, click to enlarge) ------ */
+  /* Fig. numbers continue after the two main images (3, 4, 5 ...) */
+  sheetGray: false,              // true = grayscale, colour on hover. false = always colour
+  sheet: []
+};
+</script>
+<!-- ===================== END OF CONTENT BLOCK ===================== -->
+
+<title>Permafrost</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- shared files: the "../../" matches root above -->
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../../assets/work.css">
+<script src="../../assets/site.js"></script>
+</head>
+<body>
+<!-- PAGE SKELETON. Empty containers, filled by assets/base.js (menu) and assets/work.js (everything else). -->
+<div class="page" id="top">
+
+  <nav class="site" id="site"></nav>
+
+  <!-- close: back to the Work page (top right). Side tabs: this page (+ the next page when nextPage is set) -->
+  <a class="close" id="close"></a>
+  <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
+
+  <!-- two-column grid. Rows: [title | info] / [heading | info] / [left column | right column] -->
+  <div class="grid">
+    <div class="title"><h1 id="title-main"></h1><p id="title-variant"></p></div>
+    <dl class="meta meta-head" id="info"></dl>
+    <h2 id="h-main"></h2>
+
+    <!-- left column -->
+    <main>
+      <div class="tech" id="materials"></div>
+      <div class="text" id="text-1"></div>
+      <figure class="fig-wrap" id="fig-2"></figure>
+    </main>
+
+    <!-- right column -->
+    <aside>
+      <figure class="fig-wrap" id="fig-1"></figure>
+      <div class="scroll"><table><tbody id="main-data"></tbody></table></div>
+      <div class="text" id="text-2"></div>
+      <div id="audio-block">
+        <h2 id="h-audio"></h2>
+        <div class="player" data-player>
+          <audio preload="metadata"></audio>
+          <div class="scroll"><table><tbody id="tracks"></tbody></table></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- full-width text box -->
+  <div class="text" id="text-3"></div>
+
+  <!-- small images (contact sheet) -->
+  <div id="sheet-block">
+    <h2 id="h-sheet"></h2>
+    <div class="sheet" id="sheet"></div>
+  </div>
+
+  <!-- enlarged image viewer -->
+  <dialog class="lightbox" aria-label="Image viewer">
+    <figure><img alt=""><figcaption></figcaption></figure>
+    <div class="lb-bar">
+      <span class="lb-count"></span>
+      <button type="button" class="play" data-lb="prev">Prev</button>
+      <button type="button" class="play" data-lb="next">Next</button>
+      <button type="button" class="play" data-lb="close">Close</button>
+    </div>
+  </dialog>
+
+  <!-- audio player bar -->
+  <div class="strip" data-strip role="region" aria-label="Audio player">
+    <button type="button" class="play" aria-pressed="false">Play</button>
+    <div class="s-title" aria-live="polite">Select a track</div>
+    <canvas class="wave" tabindex="0" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></canvas>
+    <span class="time">0:00 / 0:00</span>
+  </div>
+
+  <div class="foot"><span id="foot-index"></span><a href="#top">Back to top</a></div>
+</div>
+
+<script src="../../assets/base.js"></script>
+<script src="../../assets/work.js"></script>
+</body>
+</html>
