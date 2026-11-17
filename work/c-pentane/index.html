@@ -6,7 +6,7 @@
 
 <!-- =====================================================================
      C-PENTANE  (work/c-pentane/index.html)
-     An inventory of found fridges; each unit holds a few tracks.
+     An inventory of found fridges; each unit holds a few tracks, filed under its components.
      Nothing to edit here: units and tracks are in archive.js (this folder),
      photos in imgs/, audio in audio/<unit code>/.
      ===================================================================== -->
@@ -51,26 +51,27 @@ a.slot:focus-visible{outline:none}
 .close::before,.close::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:1px;background:currentColor;transform:translate(-50%,-50%) rotate(45deg)}
 .close::after{transform:translate(-50%,-50%) rotate(-45deg)}
 .close:hover,.close:focus-visible{background:var(--ink);color:var(--paper);box-shadow:none;outline:none}
-#unit{display:flex;flex-direction:column;height:calc(100dvh - 96px - var(--player-h));min-height:520px}
-.hud{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 22px}
-.hud .left{min-height:0;display:flex;flex-direction:column}
-.hud .preview{position:static;display:flex;flex-direction:column;min-height:0}
-.hud .preview .frame{flex:0 1 auto;aspect-ratio:1/1;max-height:calc(100% - 130px);width:auto;max-width:100%}
-.hud .right{min-height:0;display:flex;flex-direction:column}
-.board{position:relative;flex:1;min-height:200px;border:1px solid var(--rule)}
+/* three aligned columns: photo and details | the unit's volume | its components and tracks */
+#unit{padding-bottom:calc(var(--player-h) + 20px)}
+.hud{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.35fr);gap:0 22px;align-items:start}
+.hud .preview{position:static}
+.board{position:relative;aspect-ratio:1/1;border:1px solid var(--rule)}
 #cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
 #cv.drag{cursor:grabbing}
-.hint{position:absolute;left:10px;bottom:8px;margin:0;font:400 10px var(--list-mono);opacity:.6;pointer-events:none}
-.ctl{position:absolute;right:8px;top:8px;display:flex;gap:6px}
-.ctl button{font:400 var(--list-size) var(--list-mono);background:var(--paper);color:var(--ink);border:1px solid var(--rule);padding:3px 8px;cursor:pointer}
+.hint{margin:6px 0 0;font:400 10px var(--list-mono);opacity:.6}
+.ctl{position:absolute;right:6px;top:6px;display:flex;gap:6px}
+.ctl button{font:400 calc(var(--list-size) - 1px) var(--list-mono);background:var(--paper);color:var(--ink);border:1px solid var(--rule);padding:2px 7px;cursor:pointer}
 .ctl button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .ctl button:hover{border-color:var(--ink)}
-.tracks-box{flex:0 0 auto;max-height:34%;overflow:auto;margin-top:12px}
+#rows tr.none{cursor:default}
+#rows tr.none td{opacity:.4}
+#rows tr.none:hover{background:none;color:inherit}
+#rows tr.none:hover td{border-bottom-color:var(--row-line)}
 .p-specs dd.n{font-family:var(--list-sans);font-weight:500}
 .tag-ex{display:inline-block;margin-left:6px;font:500 9px var(--list-mono);letter-spacing:.12em;border:1px solid currentColor;padding:0 4px;vertical-align:1px}
 #rows tr.playing td.c::before{content:"\25B6";font-size:.7em;margin-right:4px}
-td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
-.none-yet{margin:10px 0 0;font:400 var(--list-size) var(--list-mono);opacity:.6}
+td.tm{width:3.5em;font-family:var(--list-mono);white-space:nowrap;text-align:right}
+td.c{width:3.8em;white-space:nowrap}
 
 /* ---- player: fixed to the bottom while a unit is open ---- */
 .player{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--paper);border-top:1px solid var(--ink);padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
@@ -87,14 +88,15 @@ td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
 .player .fill{position:absolute;left:0;top:4px;height:3px;background:var(--ink);width:0}
 .player .track:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
-/* small or short screens: the view stacks and scrolls as a normal page */
-@media (max-width:760px), (max-height:560px){
-  #unit{height:auto;min-height:0;padding-bottom:calc(var(--player-h) + 24px)}
-  .hud{grid-template-columns:minmax(0,1fr);gap:14px}
-  .hud .preview{display:flex}
-  .hud .preview .frame{max-height:none;width:100%}
-  .board{flex:none;height:52vh}
-  .tracks-box{max-height:none;overflow:visible}
+/* tablets: the volume moves under the photo; phones: everything stacks */
+@media (max-width:980px){
+  .hud{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:18px 22px}
+  .hud .vol{grid-column:1;grid-row:2}
+  .hud .list{grid-column:2;grid-row:1/3}
+}
+@media (max-width:760px){
+  .hud{grid-template-columns:minmax(0,1fr)}
+  .hud .vol,.hud .list{grid-column:auto;grid-row:auto}
 }
 @media (max-width:760px){
   td.tm{display:none}
@@ -121,28 +123,25 @@ td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
     <a class="close" href="#" id="close" aria-label="Close, back to the inventory" title="Back to the inventory"></a>
     <div class="head"><h1 id="u-title"></h1><p id="u-count"></p></div>
     <div class="hud">
-      <div class="left">
-        <aside class="preview" aria-live="polite">
-          <div class="frame"><img id="u-img" alt=""></div>
-          <div class="body"><dl class="p-specs" id="u-specs"></dl></div>
-        </aside>
-      </div>
-      <div class="right">
+      <aside class="preview" aria-live="polite">
+        <div class="frame"><img id="u-img" alt=""></div>
+        <div class="body"><dl class="p-specs" id="u-specs"></dl></div>
+      </aside>
+      <div class="vol">
         <div class="board">
-          <canvas id="cv" role="img" aria-label="The unit's photo as a wire grid relief. Drag to turn, scroll or pinch to zoom, double-click to reset."></canvas>
+          <canvas id="cv" role="img" aria-label="The unit's volume as a wire grid, in the position it was found. Drag to turn, scroll or pinch to zoom, double-click to reset."></canvas>
           <div class="ctl">
             <button type="button" id="t-spin" aria-pressed="true">Sway</button>
             <button type="button" id="t-reset">Reset</button>
           </div>
-          <p class="hint">drag: turn · scroll / pinch: zoom · double-click: reset</p>
         </div>
-        <div class="tracks-box">
-          <table>
-            <thead><tr><th>Ref.</th><th>Component</th><th>Track</th><th class="wide">Time</th></tr></thead>
-            <tbody id="rows"></tbody>
-          </table>
-          <p class="none-yet" id="none-yet" hidden>No tracks in this unit yet.</p>
-        </div>
+        <p class="hint">drag · scroll · double-click to reset</p>
+      </div>
+      <div class="list">
+        <table>
+          <thead><tr><th>Ref.</th><th>Component</th><th>Track</th><th class="wide" style="text-align:right">Time</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
       </div>
     </div>
   </section>
@@ -206,11 +205,12 @@ td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
       unit = u;
       $('inv').hidden = true; $('unit').hidden = false; $('player').hidden = false;
       if (!mesh){
-        mesh = PhotoMesh($('cv'), { onSpin: function(on){ $('t-spin').setAttribute('aria-pressed', on); } });
+        mesh = FridgeMesh($('cv'), { onSpin: function(on){ $('t-spin').setAttribute('aria-pressed', on); } });
         $('t-spin').addEventListener('click', function(){ var v = !mesh.get('spin'); mesh.set('spin', v); this.setAttribute('aria-pressed', v); });
         $('t-reset').addEventListener('click', function(){ mesh.reset(); });
       }
-      mesh.resize(); mesh.load(u.photo || ''); mesh.reset();
+      mesh.resize(); mesh.configure({ pose: u.pose, doors: u.doors, open: u.open });   // the volume as in the photo
+      $('t-spin').setAttribute('aria-pressed', mesh.get('spin'));
       var refs = trackRefs(u);
       $('u-title').textContent = A.title + ' — ' + u.code;
       $('u-count').textContent = 'found ' + u.found + ' · ' + count(refs.length);
@@ -228,20 +228,21 @@ td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
         dl.appendChild(dd);
       });
 
-      // only the tracks this unit holds, in component order
+      // every component of the unit; the ones holding a track can be played, the others stay empty
       var tb = $('rows'); tb.textContent = ''; order = refs.slice();
-      refs.forEach(function(ref){
-        var t = u.tracks[ref], tr = el('tr'); tr.dataset.id = ref; tr.tabIndex = 0;
-        tr.appendChild(el('td', 'c', ref)); tr.appendChild(el('td', null, NAMES[ref])); tr.appendChild(el('td', null, t.title));
+      REFS.forEach(function(ref){
+        var t = (u.tracks || {})[ref], tr = el('tr', t ? null : 'none'); tr.dataset.id = ref;
+        tr.appendChild(el('td', 'c', ref)); tr.appendChild(el('td', null, NAMES[ref])); tr.appendChild(el('td', null, t ? t.title : '—'));
         var tm = el('td', 'tm wide', '—'); tr.appendChild(tm);
-        var probe = new Audio(); probe.preload = 'metadata'; probe.src = t.src;
-        probe.addEventListener('loadedmetadata', function(){ tm.textContent = fmt(probe.duration); });
-        tr.addEventListener('click', function(){ playRef(ref); });
-        tr.addEventListener('keydown', function(ev){ if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); playRef(ref); } });
+        if (t){
+          tr.tabIndex = 0;
+          var probe = new Audio(); probe.preload = 'metadata'; probe.src = t.src;
+          probe.addEventListener('loadedmetadata', function(){ tm.textContent = fmt(probe.duration); });
+          tr.addEventListener('click', function(){ playRef(ref); });
+          tr.addEventListener('keydown', function(ev){ if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); playRef(ref); } });
+        }
         tb.appendChild(tr);
       });
-      $('none-yet').hidden = refs.length > 0;
-      document.querySelector('.tracks-box table').hidden = !refs.length;
       stop(); $('p-now').textContent = refs.length ? 'Select a track, or press Play' : 'No tracks yet';
       updateButtons();
       window.scrollTo(0, 0);
