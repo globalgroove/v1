@@ -81,6 +81,8 @@ main > .find:first-child{margin-top:28px}   /* no info lines above: a little spa
 .q-cursor[hidden]{display:none}
 @keyframes q-blink{0%{opacity:1}50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.q-cursor{animation:none}}
+/* phones zoom in on text fields under 16 px: keep the search at 16 px on touch screens */
+@media (pointer:coarse){.find input,.q-measure{font-size:16px}.q-cursor{height:17px;margin-top:-8px;width:8px}}
 .find .count{font:400 11px var(--value);opacity:.7;flex:none}
 .hits{list-style:none;margin:0;padding:0}
 .hits a span,.hits .soon span{white-space:nowrap;opacity:.8}

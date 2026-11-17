@@ -5,10 +5,10 @@
    photo with its details, and a table of up to five tracks.
 
    To add a unit: copy one { ... } block in "units", paste it at the end
-   of the list, and change the values. The inventory shows units in the
-   order they were found (by "found" date), so the order of the blocks
-   does not matter. A unit with any audio shows as Online, without as Offline.
-     code   : the unit's reference, e.g. "CP-004"
+   of the list, and change the values. Codes follow the date found: the
+   oldest unit is CP-001, the next CP-002 ... The inventory shows the newest
+   first. A unit with any audio shows as Online, without as Offline.
+     code   : the unit's reference, e.g. "CP-005"
      found  : date found, "YYYY-MM-DD"
      photo  : the photo, relative to this folder, e.g. "imgs/cp-004.jpg"
               (square crops work best; 1000 px is plenty). "" = dotted placeholder
@@ -19,9 +19,7 @@
               CP-004-02 ... Without src it is listed but cannot be played.
               Empty slots up to five are listed the same way.
               Track lengths are read from the files, no need to type them.
-     example: true marks a placeholder unit (shown as EXAMPLE); CP-001 and
-              CP-002 play short test tones. Delete those blocks when real units
-              take their place.
+     (CP-003 and CP-004 hold short test tones for now; replace or delete them.)
 
    Rules: keep the quotation marks "like this" and the commas at line ends.
    ===================================================================== */
@@ -35,32 +33,32 @@ const ARCHIVE = {
 
   units: [
     {
-      code: "CP-001", found: "2026-11-12", photo: "", example: true,
-      model: "",
-      tracks: [
-        { title: "", src: "audio/cp-001/r-01.mp3" },
-        { title: "", src: "audio/cp-001/r-02.mp3" },
-        { title: "", src: "audio/cp-001/e-03.mp3" }
-      ]
-    },
-    {
-      code: "CP-002", found: "2026-11-15", photo: "", example: true,
-      model: "",
-      tracks: [
-        { title: "", src: "audio/cp-002/r-05.mp3" },
-        { title: "", src: "audio/cp-002/r-06.mp3" },
-        { title: "", src: "audio/cp-002/e-02.mp3" }
-      ]
-    },
-    {
-      code: "CP-003", found: "2021-02-15", photo: "imgs/cp-003.jpg",
+      code: "CP-001", found: "2021-02-15", photo: "imgs/cp-001.jpg",
       model: "",
       tracks: []
     },
     {
-      code: "CP-004", found: "2023-12-11", photo: "imgs/cp-004.jpg",
+      code: "CP-002", found: "2023-12-11", photo: "imgs/cp-002.jpg",
       model: "Euro-Line",
       tracks: []
+    },
+    {
+      code: "CP-003", found: "2026-11-12", photo: "",
+      model: "",
+      tracks: [
+        { title: "", src: "audio/cp-003/r-01.mp3" },
+        { title: "", src: "audio/cp-003/r-02.mp3" },
+        { title: "", src: "audio/cp-003/e-03.mp3" }
+      ]
+    },
+    {
+      code: "CP-004", found: "2026-11-15", photo: "",
+      model: "",
+      tracks: [
+        { title: "", src: "audio/cp-004/r-05.mp3" },
+        { title: "", src: "audio/cp-004/r-06.mp3" },
+        { title: "", src: "audio/cp-004/e-02.mp3" }
+      ]
     }
   ]
 };

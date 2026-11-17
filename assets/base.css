@@ -12,6 +12,8 @@
   color-scheme:light;
   --label:"IBM Plex Sans Condensed","Zen Kaku Gothic New","Arial Narrow",Arial,sans-serif;
   --value:"IBM Plex Mono","Zen Kaku Gothic New",ui-monospace,Menlo,Consolas,monospace;
+  --nav:"Geist","Helvetica Neue",Arial,sans-serif;     /* site title: the face of the page headings */
+  --nav-mono:"Geist Mono",ui-monospace,Menlo,Consolas,monospace;   /* menu sections and search: the small label face */
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
@@ -27,7 +29,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--ink);outline-offset
 
 /* site bar: logo (links home) + menu title; stays visible while scrolling */
 .site{position:sticky;top:env(safe-area-inset-top,0px);z-index:8;width:max-content;max-width:100%;margin:0 0 12px;display:flex;align-items:center;gap:12px;background:var(--paper);padding-right:8px}
-.logo{display:block;flex:none;width:28px;height:28px;color:var(--ink)}
+.logo{display:block;flex:none;width:20px;height:20px;color:var(--ink)}
 .logo svg,.logo img{display:block;width:100%;height:100%}
 .logo img{object-fit:contain;object-position:left center}
 .logo:hover{opacity:.7}
@@ -36,7 +38,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--ink);outline-offset
 .logo .cutl{fill:none;stroke:var(--paper);stroke-linecap:round}
 
 /* menu title + small thin chevron (right when closed, down when open) */
-.site-btn{display:flex;align-items:center;gap:.8em;background:var(--paper);color:var(--ink);border:0;padding:3px 8px 3px 0;font:500 14px/1.3 var(--label);letter-spacing:.14em;cursor:pointer;text-align:left}
+.site-btn{display:flex;align-items:center;gap:.8em;background:var(--paper);color:var(--ink);border:0;padding:3px 8px 3px 0;font:500 13px/1.3 var(--nav);letter-spacing:.14em;cursor:pointer;text-align:left}
 .site-btn.static{cursor:default}
 .site-btn.static::after{display:none}
 .site-btn::after,.sub-btn::after{content:"";flex:none;width:4px;height:4px;border-right:1px solid currentColor;border-bottom:1px solid currentColor;opacity:.6;transform:rotate(-45deg);transition:transform .15s}
@@ -45,7 +47,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--ink);outline-offset
 /* menu list */
 .site-menu{position:absolute;top:100%;left:0;margin:2px 0 0;padding:0;list-style:none;min-width:220px;background:var(--paper);border:1px solid var(--rule)}
 .site-menu li+li{border-top:1px solid var(--rule)}
-.site-menu a{display:block;padding:6px 12px 6px 8px;font-size:14px;letter-spacing:.08em;text-decoration:none}
+.site-menu a{display:block;padding:6px 12px 6px 8px;font:400 11px/1.3 var(--nav-mono);letter-spacing:.08em;text-transform:uppercase;text-decoration:none}
 .site-menu a::before{content:"";display:inline-block;width:1.2em}
 .site-menu a[aria-current]::before{content:"\25CF"}
 .site-menu a:hover,.site-menu a:focus-visible{background:var(--ink);color:var(--paper);outline:none}
@@ -78,16 +80,47 @@ a.tab-side:hover,a.tab-side:focus-visible{background:var(--ink);color:var(--tab-
   .tab-top{font-size:48px;height:56px;width:100px;top:20px}
   .tab-side{font-size:18px;padding:12px 6px}
 }
+/* search in the menu: label, one thin underlined line with a blinking block cursor; results drop below */
+.nav-search{position:relative;display:flex;align-items:baseline;gap:10px;padding:8px 8px 6px}
+.nav-label{flex:none;font:400 11px/1.3 var(--nav-mono);letter-spacing:.08em;text-transform:uppercase;transition:opacity .25s;cursor:text}
+.nav-search.filled .nav-label{opacity:.4}
+.nq-wrap{position:relative;flex:1;min-width:0;display:flex;border-bottom:1px solid var(--rule)}
+.nav-search:focus-within .nq-wrap{border-bottom-color:var(--ink)}
+.nq-wrap input{flex:1;min-width:0;width:100%;border:0;background:transparent;color:var(--ink);font:400 11px/1.3 var(--nav-mono);letter-spacing:.04em;padding:2px 0;outline:none;border-radius:0;-webkit-appearance:none;appearance:none;caret-color:transparent}
+.nq-wrap.native input{caret-color:var(--ink)}
+.nq-wrap input::-webkit-search-cancel-button{display:none}
+.nq-measure{position:absolute;visibility:hidden;white-space:pre;font:400 11px var(--nav-mono);letter-spacing:.04em;pointer-events:none}
+.nq-cursor{position:absolute;top:50%;left:0;width:6px;height:12px;margin-top:-6px;background:#6f706e;pointer-events:none;animation:nq-blink 1.06s steps(1,end) infinite}
+.nq-cursor.typing{animation:none}
+.nq-cursor[hidden]{display:none}
+@keyframes nq-blink{0%{opacity:1}50%{opacity:0}}
+.nav-hits{position:absolute;left:0;top:100%;margin:4px 0 0;padding:0;list-style:none;width:420px;max-width:calc(100vw - 32px);background:var(--paper);border:1px solid var(--rule);z-index:10}
+.nav-hits li+li{border-top:1px solid var(--rule)}
+.site-menu .nav-hits a,.nav-hits .soon,.nav-hits .none{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:5px 8px;text-transform:none;letter-spacing:0}
+.site-menu .nav-hits a::before{display:none}
+.nav-hits b{font:500 12px/1.3 var(--nav);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-hits span{font:400 10px var(--nav-mono);opacity:.7;white-space:nowrap}
+.nav-hits .soon{opacity:.6}
+.nav-hits .none{font:400 11px var(--nav-mono);opacity:.6}
+.site-menu .nav-hits a.active{background:var(--ink);color:var(--paper)}
+@media (prefers-reduced-motion:reduce){.nq-cursor{animation:none}.nav-label{transition:none}}
+
 /* desktop: the menu opens to the right of the title as one line of sections;
    the chevron turns to point back left while it is open. Phones keep the vertical list above. */
 @media (min-width:761px){
-  .site-menu{top:50%;left:100%;transform:translateY(-50%);margin:0;display:flex;align-items:center;min-width:0;border:0;background:var(--paper);white-space:nowrap}
+  .site{width:auto;padding-right:0}                                   /* the bar spans the page width */
+  .site-menu{position:static;flex:1;min-width:0;margin:0 0 0 10px;display:flex;align-items:center;border:0;background:var(--paper);white-space:nowrap}
   .site-menu[hidden]{display:none}
   .site-menu li+li{border-top:0}
-  .site-menu a{padding:3px 9px;font-size:13px;letter-spacing:.12em}
+  .site-menu a{padding:3px 9px}
   .site-menu a::before{width:0}
   .site-menu a[aria-current]::before{content:"\25CF";width:auto;margin-right:.45em;font-size:.65em;vertical-align:.15em}
+  .nav-search{flex:1;min-width:120px;padding:0 0 0 16px}                 /* the search fills the rest of the row, up to the right edge */
+  .nav-hits{left:auto;right:0}
   .site-btn[aria-expanded=true]::after{transform:rotate(135deg) translate(-1px,-1px)}
 }
+
 @media (pointer:coarse){.site-menu a,.sub-btn{padding-top:10px;padding-bottom:10px}}
+/* phones zoom in on text fields under 16 px: keep search fields at 16 px on touch screens */
+@media (pointer:coarse){.nq-wrap input,.nq-measure{font-size:16px}.nq-cursor{height:16px;margin-top:-8px;width:8px}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.site-btn::after,.sub-btn::after{transition:none}}
