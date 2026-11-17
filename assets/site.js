@@ -56,7 +56,7 @@ const SITE = {
     {
       title: "Permafrost", year: "2023", type: "Live AV / Installation", role: "",
       link: "",                          // later: "work/permafrost/index.html"
-      image: "work/permafrost/imgs/permafrost1.png",
+      image: "work/permafrost/imgs/permafrost1.jpg",
       text: "",
       keywords: "live audiovisual av"
     },

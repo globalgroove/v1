@@ -146,6 +146,19 @@ td.role{white-space:nowrap}
     // arriving from the search (discography/index.html#r5): show that release and scroll to it
     var m = /^#r(\d+)$/.exec(location.hash), n = m ? +m[1] - 1 : 0;
     if (!list[n]) n = 0;
+
+    // once the page has loaded, fetch every cover quietly in the background, so hovering shows it at once
+    window.addEventListener('load', function(){
+      list.forEach(function(x){
+        if (!x.cover) return;
+        var src = root + x.cover;
+        if (src in cache) return;
+        var pre = new Image();
+        pre.onload = function(){ cache[src] = true; };
+        pre.onerror = function(){ cache[src] = false; };
+        pre.src = src;
+      });
+    });
     var start = $('rows').children[n];
     show(list[n], start);
     if (m) start.scrollIntoView({ block: 'center' });
