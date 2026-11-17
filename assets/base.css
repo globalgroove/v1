@@ -82,6 +82,11 @@ a.tab-side:hover,a.tab-side:focus-visible{background:var(--ink);color:var(--tab-
   .page.no-tabs{padding-right:12px}
   .tab-top{font-size:48px;height:56px;width:100px;top:20px}
   .tab-side{font-size:18px;padding:12px 6px}
+  /* phones: only the title line stays at the top while scrolling; the menu scrolls away under it */
+  .site{display:contents}
+  .site-head{position:sticky;top:0;z-index:9;background:var(--paper);margin:-12px 0 0;padding:12px 0 10px}
+  .site-menu{margin:0 0 12px}
+  .site-menu[hidden] + *{margin-top:0}
 }
 /* search in the menu: label, one thin underlined line with a blinking block cursor; results drop below */
 .nav-search{position:relative;display:flex;align-items:baseline;gap:10px;padding:8px 8px 6px}

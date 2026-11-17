@@ -22,8 +22,9 @@
     td.appendChild(panel); drawer.appendChild(td);
     tr.parentNode.insertBefore(drawer, tr.nextSibling);
     tr.classList.add('open'); openRow = tr;
-    var r = drawer.getBoundingClientRect();
-    if (r.bottom > window.innerHeight) window.scrollBy({ top: Math.min(r.bottom - window.innerHeight + 12, r.top - 70), behavior: 'smooth' });
+    // bring the tapped row to the top of the screen, with its panel underneath
+    var head = document.querySelector('.site-head'), off = head ? head.getBoundingClientRect().height : 0;   // just under the sticky title
+    window.scrollTo({ top: tr.getBoundingClientRect().top + window.pageYOffset - off, behavior: 'smooth' });
   }
 
   rows.addEventListener('click', function(e){

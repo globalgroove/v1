@@ -1,7 +1,7 @@
 /* BASE SCRIPT - shared by every page. Builds the site title and the menu from assets/site.js.
    Each page only needs an empty <nav class="site" id="site"></nav> and PAGE.root. No need to edit.
-   The menu is open by default and closes only with the arrow next to the title; the choice is
-   remembered from page to page. On the landing page (PAGE.menuFixed) it is always open, without arrow. */
+   The menu is open by default (closed on phones) and changes only with the arrow next to the
+   title; the choice is remembered from page to page. On the landing page (PAGE.menuFixed) it is always open, without arrow. */
 (function(){
   try {
     var S = (typeof SITE !== 'undefined') ? SITE : {}, P = (typeof PAGE !== 'undefined') ? PAGE : {}, root = P.root || '';
@@ -115,9 +115,11 @@
 
     if (!menu.children.length) { btn.remove(); menu.remove(); return; }
 
-    // open by default; closes only with the arrow; remembered across pages
-    var fixed = !!P.menuFixed, KEY = 'gog-menu';
-    function remembered(){ try { return localStorage.getItem(KEY) !== 'closed'; } catch (e) { return true; } }
+    // wide screens: open by default. Phones: closed by default. Either way it changes only with
+    // the arrow, and the choice is remembered across pages (phones and wide screens separately)
+    var fixed = !!P.menuFixed, phone = !!(window.matchMedia && window.matchMedia('(max-width: 760px)').matches);
+    var KEY = phone ? 'gog-menu-phone' : 'gog-menu';
+    function remembered(){ try { var v = localStorage.getItem(KEY); return v ? v === 'open' : !phone; } catch (e) { return !phone; } }
     function setOpen(o, byUser){
       menu.hidden = !o; btn.setAttribute('aria-expanded', o); nav.classList.toggle('menu-open', o);
       btn.setAttribute('aria-label', o ? 'Close the menu' : 'Open the menu');

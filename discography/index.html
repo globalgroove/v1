@@ -131,11 +131,11 @@ td.role{white-space:nowrap}
     var list = S.releases || [];
     if (!list.length) { $('preview').hidden = true; return; }
     list.forEach(function(r, i){
-      var tr = el('tr'), ta = el('td', 't a'), tt = el('td', 'tt'), sub = el('span', 'sub', [r.role, r.format, r.label].filter(Boolean).join(' · '));
+      var tr = el('tr'), ta = el('td', 't a'), tt = el('td', 'tt'), sub = el('span', 'sub', r.role || '');
       tr.tabIndex = 0; tr.id = 'r' + (i + 1);    // r1, r2 ... lets the landing search point at one release
       ta.appendChild(document.createTextNode(r.artist));
       tt.appendChild(document.createTextNode(r.title || '—'));
-      tt.appendChild(sub);                       // role · format · label, shown under the title on phones only
+      if (r.role) tt.appendChild(sub);           // the role, shown under the title on phones only (format and label are in the panel)
       tr.appendChild(ta); tr.appendChild(tt);
       tr.appendChild(el('td', 'role wide', r.role || '—'));   // hidden on phones, where it moves into the line under the title
       tr.appendChild(el('td', 'yr', r.year || '—'));
