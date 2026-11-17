@@ -35,7 +35,6 @@ const PAGE = { root: "../../" };   // path back to the site root (two folders do
 .slot{display:block;text-decoration:none;color:inherit}
 .slot .ph{position:relative;aspect-ratio:1/1;background:var(--panel) radial-gradient(circle at 50% 50%,var(--panel-rule) 0 1px,transparent 1.4px) 0 0/5px 5px}
 .slot .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.slot .tag{position:absolute;left:6px;top:6px;font:500 9px var(--list-mono);letter-spacing:.12em;color:var(--panel-text);background:var(--panel);padding:2px 5px}
 .slot .meta{display:flex;justify-content:space-between;gap:8px;padding:6px 0 0;font:400 var(--list-size)/1.35 var(--list-mono)}
 .slot .meta b{font-weight:500}
 .slot .meta + .meta{padding-top:1px;opacity:.7;text-transform:uppercase;letter-spacing:.06em}
@@ -53,7 +52,6 @@ a.slot:focus-visible{outline:none}
 .unit-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 22px;align-items:start}
 .unit-cols .preview{position:static}
 .p-specs dd.n{font-family:var(--list-sans);font-weight:500}
-.tag-ex{display:inline-block;margin-left:6px;font:500 9px var(--list-mono);letter-spacing:.12em;border:1px solid currentColor;padding:0 4px;vertical-align:1px}
 td.no{width:3em;font-family:var(--list-mono)}
 td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right}
 #rows tr.none{cursor:default}
@@ -138,8 +136,8 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
 (function(){
   try {
     var A = ARCHIVE, MAX = 5, UNKNOWN = A.unknown || 'Unknown';
-    // units in the order they were found (oldest first); same date: by code
-    var units = (A.units || []).slice().sort(function(a, b){ var x = (a.found || '') + a.code, y = (b.found || '') + b.code; return x < y ? -1 : x > y ? 1 : 0; });
+    // newest first (by date found; same date: by code)
+    var units = (A.units || []).slice().sort(function(a, b){ var x = (a.found || '') + a.code, y = (b.found || '') + b.code; return x < y ? 1 : x > y ? -1 : 0; });
     function $(id){ return document.getElementById(id); }
     function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
     function fmt(s){ if (!isFinite(s)) return '—'; var m = Math.floor(s / 60), r = Math.floor(s % 60); return m + ':' + (r < 10 ? '0' : '') + r; }
@@ -160,18 +158,20 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
       a.setAttribute('aria-label', u.code + ', found ' + u.found + ', ' + stateOf(u));
       var ph = el('div', 'ph');
       if (u.photo){ var im = new Image(); im.alt = ''; im.loading = 'lazy'; im.onerror = function(){ im.remove(); }; im.src = u.photo; ph.appendChild(im); }
-      if (u.example) ph.appendChild(el('span', 'tag', 'EXAMPLE'));
       a.appendChild(ph);
       var m1 = el('div', 'meta'); m1.appendChild(el('b', null, u.code)); m1.appendChild(el('span', null, u.found)); a.appendChild(m1);
       a.appendChild(el('div', 'meta', stateOf(u)));
       $('slots').appendChild(a);
     });
-    var nextNo = units.reduce(function(n, u){ var k = parseInt(String(u.code).replace(/\D/g, ''), 10); return isNaN(k) ? n : Math.max(n, k); }, 0);
-    for (var e = units.length; e < (A.slots || 0); e++){
+    // empty slots: the next codes to come, highest first, ahead of the newest unit
+    var lastNo = units.reduce(function(n, u){ var k = parseInt(String(u.code).replace(/\D/g, ''), 10); return isNaN(k) ? n : Math.max(n, k); }, 0);
+    var empties = document.createDocumentFragment();
+    for (var e = (A.slots || 0) - units.length; e > 0; e--){
       var s = el('div', 'slot empty'); s.setAttribute('aria-hidden', 'true'); s.appendChild(el('div', 'ph'));
-      var m = el('div', 'meta'); m.appendChild(el('b', null, 'CP-' + String(++nextNo).padStart(3, '0'))); m.appendChild(el('span', null, '—')); s.appendChild(m);
-      $('slots').appendChild(s);
+      var m = el('div', 'meta'); m.appendChild(el('b', null, 'CP-' + String(lastNo + e).padStart(3, '0'))); m.appendChild(el('span', null, '—')); s.appendChild(m);
+      empties.appendChild(s);
     }
+    $('slots').insertBefore(empties, $('slots').firstChild);
 
     /* ---------- one unit ---------- */
     function showUnit(u){
@@ -189,7 +189,6 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
       [['Unit', u.code, 'n'], ['Found', u.found], ['Model', u.model || UNKNOWN], ['Tracks', n + ' / ' + MAX]].forEach(function(r){
         dl.appendChild(el('dt', null, r[0]));
         var dd = el('dd', r[2] || null, r[1]);
-        if (r[0] === 'Unit' && u.example) dd.appendChild(el('span', 'tag-ex', 'EXAMPLE'));
         dl.appendChild(dd);
       });
 
