@@ -9,6 +9,8 @@
          view.setRunning(true)          refrigerant moves while music plays
          view.setHover(id), view.setExplode(0..1), view.view('iso'|'front'|'side'|'rear'|'top'),
          view.set('labels'|'cab'|'spin', true/false), view.COMPONENTS (list of {id, name, sys})
+         view.configure({ pose:'upright'|'side', doors:1|2 })   how the unit stands and how many doors it has;
+                                        'side' = lying on its side, top to the right, doors open flat on the ground
 
    Units: cm. x right, y up, z towards the front. Cabinet 60 x 180 x 60, back wall at z = 0.
    ===================================================================== */
@@ -114,7 +116,14 @@
     L.push(rect([[-28,2,2],[28,2,2],[28,178,2],[-28,178,2]]));
     return L;
   }
-  function door(){ var L = box([0,90,62.5], 60, 180, 5); L.push(rect([[-27,4,60],[27,4,60],[27,176,60],[-27,176,60]])); return L; }
+  function door(y0, y1){ var L = box([0,(y0+y1)/2,62.5], 60, y1 - y0, 5); L.push(rect([[-27,y0+4,60],[27,y0+4,60],[27,y1-4,60],[-27,y1-4,60]])); return L; }
+  function doorParts(n){
+    if (n === 2) return [
+      { id:'C-02', name:'Fridge door', sys:'Housing', lines:door(0,131), ex:[0,0,40], anchor:[30,110,65], ghost:true, door:true },
+      { id:'C-03', name:'Freezer door', sys:'Housing', lines:door(133,180), ex:[0,0,40], anchor:[30,176,65], ghost:true, door:true }
+    ];
+    return [{ id:'C-02', name:'Door', sys:'Housing', lines:door(0,180), ex:[0,0,48], anchor:[30,180,65], ghost:true, door:true }];
+  }
 
   var PARTS = [
     { id:'R-01', name:'Compressor', sys:'Refrigerant', lines:compressor(), ex:[28,-8,-38], anchor:[14,22,-12], ports:{ in:[22,12,-8], out:[9,23,-12] }, terms:{ e:[23.6,12,-12] } },
@@ -129,8 +138,7 @@
     { id:'E-04', name:'Overload protector', sys:'Electrical', lines:overload(), ex:[58,-16,-4], anchor:[27,7.6,-12], terms:{ t:[26,5,-12] } },
     { id:'E-05', name:'Door switch', sys:'Electrical', lines:doorSwitch(), ex:[50,0,40], anchor:[27,120.5,57], terms:{ t:[27,118,55.5] } },
     { id:'E-06', name:'Lamp', sys:'Electrical', lines:lamp(), ex:[16,-26,36], anchor:[8,124.4,38], terms:{ t:[8,131.8,38] } },
-    { id:'C-01', name:'Cabinet', sys:'Housing', lines:cabinet(), ex:[0,0,0], anchor:[-30,180,0], ghost:true },
-    { id:'C-02', name:'Door', sys:'Housing', lines:door(), ex:[0,0,48], anchor:[30,180,65], ghost:true }
+    { id:'C-01', name:'Cabinet', sys:'Housing', lines:cabinet(), ex:[0,0,0], anchor:[-30,180,0], ghost:true }
   ];
   var BY = {}; PARTS.forEach(function(p){ BY[p.id] = p; });
   var LOOP = [
@@ -143,11 +151,20 @@
   ];
   var WIRES = [['E-01','t','E-02','t'], ['E-02','t','E-03','t'], ['E-03','t','R-01','e'], ['E-01','t','E-04','t'], ['E-04','t','R-01','e'], ['E-01','t','E-05','t'], ['E-05','t','E-06','t']];
 
+  // lying on its side: the fridge's top points right, its right side rests on the ground
+  function sideways(p){ return [p[1] - 90, 30 - p[0], p[2]]; }
+  // a door of the lying unit, swung open on its ground-side hinge so it lies flat in front
+  function doorOpen(p){ return [p[1] - 90, p[2] - 60, 60 + (30 - p[0])]; }
+
   window.FridgeView = function(cv, opts){
     opts = opts || {};
+    var pose = 'upright', parts = PARTS.concat(doorParts(1));
     var g = cv.getContext('2d'), W = 0, H = 0, dpr = 1;
     var VIEWS = { iso:[-0.75, 0.32], front:[0, 0.02], side:[-Math.PI/2, 0.02], rear:[Math.PI, 0.08], top:[0, Math.PI/2 - 0.02] };
     var HOME = 375, cam = { yaw:-0.75, pitch:0.32, dist:HOME, panX:0, panY:0 }, camGoal = null, target = [0, 108, 0];
+    function pw(p){ return pose === 'side' ? sideways(p) : p; }
+    // where a point of part p ends up: explode in the unit's own frame, then the pose
+    function place(q, p){ return (p.door && pose === 'side') ? add(doorOpen(q), off(p)) : pw(add(q, off(p))); }
     var explode = 0.7, exGoal = 0.7;
     var show = { labels:true, cab:true, spin:true };
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -179,19 +196,19 @@
       var focus = hover || active;
 
       g.globalAlpha = 0.18; g.lineWidth = 1; g.setLineDash([]);
-      for (var k = -100; k <= 100; k += 20){
-        var a1 = proj([k,0,-100]), b1 = proj([k,0,100]), a2 = proj([-100,0,k]), b2 = proj([100,0,k]);
+      for (var k = -120; k <= 120; k += 20){
+        var a1 = proj([k,0,-120]), b1 = proj([k,0,120]), a2 = proj([-120,0,k]), b2 = proj([120,0,k]);
         g.beginPath(); g.moveTo(a1[0], a1[1]); g.lineTo(b1[0], b1[1]); g.moveTo(a2[0], a2[1]); g.lineTo(b2[0], b2[1]); g.stroke();
       }
 
-      PARTS.forEach(function(p){
+      parts.forEach(function(p){
         if (p.ghost && !show.cab) return;
-        var o = off(p), segs = [], on = focus === p.id, has = p.ghost || isLit(p.id);
+        var segs = [], on = focus === p.id, has = p.ghost || isLit(p.id);
         p.lines.forEach(function(line){
-          var sp = line.map(function(q){ return proj(add(q, o)); }), d = 0;
+          var sp = line.map(function(q){ return proj(place(q, p)); }), d = 0;
           sp.forEach(function(s){ d += s[2]; }); d /= sp.length;
           var alpha = p.ghost ? 0.22 : depthA(d);
-          if (!has) alpha *= 0.28;                    // no track on this component: faint
+          if (!has) alpha *= 0.5;                     // no track on this component: lighter, and dashed
           if (focus && !on) alpha *= 0.45;
           if (on) alpha = 1;
           poly(sp, on ? 1.7 : (p.ghost ? 0.8 : 1), alpha, p.ghost ? [3,4] : (has ? null : [2,3]));
@@ -203,10 +220,10 @@
       var fade = focus ? 0.3 : 0.6;
       for (var i = 0; i < LOOP.length; i++){
         var pa = stagePath(LOOP[i]), pb = stagePath(LOOP[(i + 1) % LOOP.length]);
-        poly([proj(pa[pa.length - 1]), proj(pb[0])], 0.9, fade, [5,3,1,3]);
+        poly([proj(pw(pa[pa.length - 1])), proj(pw(pb[0]))], 0.9, fade, [5,3,1,3]);
       }
       WIRES.forEach(function(w){
-        var A = BY[w[0]], B = BY[w[2]], pa = proj(add(A.terms[w[1]], off(A))), pb = proj(add(B.terms[w[3]], off(B)));
+        var A = BY[w[0]], B = BY[w[2]], pa = proj(place(A.terms[w[1]], A)), pb = proj(place(B.terms[w[3]], B));
         var on = focus === w[0] || focus === w[2];
         poly([pa, pb], on ? 1.2 : 0.8, on ? 0.95 : fade, [2,3]);
         g.setLineDash([]); g.globalAlpha = on ? 1 : fade; g.fillStyle = INK;
@@ -215,9 +232,9 @@
 
       flow();
 
-      if (show.labels) PARTS.forEach(function(p){
+      if (show.labels) parts.forEach(function(p){
         if (p.ghost && !show.cab) return;
-        var s = proj(add(p.anchor, off(p)));
+        var s = proj(place(p.anchor, p));
         var dx = s[0] - (W/2 + cam.panX), dy = s[1] - (H/2 + cam.panY), len = Math.hypot(dx, dy) || 1;
         var lx = s[0] + dx / len * 26, ly = s[1] + dy / len * 22, right = dx >= 0;
         var txt = p.id + ' ' + p.name.toUpperCase();
@@ -252,7 +269,7 @@
         var f = (d - cum[j]) / ((cum[j+1] - cum[j]) || 1), A = pts[j], B = pts[j+1];
         var t = temps[j] + (temps[j+1] - temps[j]) * f;
         var c = [0,1,2].map(function(k){ return Math.round(COLD[k] + (HOT[k] - COLD[k]) * t); });
-        var s = proj([A[0] + (B[0]-A[0])*f, A[1] + (B[1]-A[1])*f, A[2] + (B[2]-A[2])*f]);
+        var s = proj(pw([A[0] + (B[0]-A[0])*f, A[1] + (B[1]-A[1])*f, A[2] + (B[2]-A[2])*f]));
         g.globalAlpha = alpha; g.fillStyle = 'rgb(' + c.join(',') + ')';
         g.beginPath(); g.arc(s[0], s[1], 2, 0, TAU); g.fill();
       }
@@ -261,7 +278,7 @@
     function pick(mx, my){
       for (var b = 0; b < labelBoxes.length; b++){ var L = labelBoxes[b]; if (mx >= L.x && mx <= L.x + L.w && my >= L.y && my <= L.y + L.h) return L.id; }
       var best = null, bd = 9;
-      PARTS.forEach(function(p){
+      parts.forEach(function(p){
         if (p.ghost) return;
         (drawn[p.id] || []).forEach(function(sp){ for (var i = 1; i < sp.length; i++){ var d = segDist(mx, my, sp[i-1], sp[i]); if (d < bd){ bd = d; best = p.id; } } });
       });
@@ -326,6 +343,15 @@
       set: function(k, v){ show[k] = v; },
       get: function(k){ return show[k]; },
       resize: size,
+      configure: function(cfg){
+        cfg = cfg || {};
+        pose = cfg.pose === 'side' ? 'side' : 'upright';
+        parts = PARTS.concat(doorParts(cfg.doors === 2 ? 2 : 1));
+        if (pose === 'side'){ target = [0, 28, 30]; HOME = 330; VIEWS.iso = [-0.42, 0.42]; }   // close to the photo: from the front, a little left, looking down
+        else { target = [0, 108, 0]; HOME = 375; VIEWS.iso = [-0.75, 0.32]; }
+        cam.yaw = VIEWS.iso[0]; cam.pitch = VIEWS.iso[1];
+        cam.dist = HOME; cam.panX = 0; cam.panY = 0; camGoal = null;
+      },
       view: function(name){
         var v = VIEWS[name], gy = v[0] + Math.round((cam.yaw - v[0]) / TAU) * TAU;
         camGoal = { yaw:gy, pitch:v[1], dist:cam.dist }; show.spin = false;

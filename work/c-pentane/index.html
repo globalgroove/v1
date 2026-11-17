@@ -174,7 +174,7 @@ td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
 <script>
 (function(){
   try {
-    var A = ARCHIVE, units = A.units || [];
+    var A = ARCHIVE, units = (A.units || []).slice().sort(function(a, b){ return a.code < b.code ? -1 : a.code > b.code ? 1 : 0; });   // CP-001 first
     function $(id){ return document.getElementById(id); }
     function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
     function fmt(s){ if (!isFinite(s)) return '—'; var m = Math.floor(s / 60), r = Math.floor(s % 60); return m + ':' + (r < 10 ? '0' : '') + r; }
@@ -228,6 +228,8 @@ td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
     }
     function showUnit(u){
       unit = u; buildView(); view.resize();
+      view.configure({ pose: u.pose, doors: u.doors });   // the drawing takes the unit's pose from the photo
+      document.querySelectorAll('[data-view]').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.view === 'iso'); });
       $('u-title').textContent = A.title + ' — ' + u.code;
       var n = Object.keys(u.tracks || {}).length;
       $('u-count').textContent = 'found ' + u.found + ' · ' + n + ' / 12 components';
