@@ -26,7 +26,7 @@
       document.addEventListener('keydown', function(e){
         if (e.key !== 'Escape') return;
         var menu = document.getElementById('site-menu'), dlg = document.querySelector('.lightbox');
-        if ((menu && !menu.hidden) || (dlg && dlg.open) || /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+        if ((dlg && dlg.open) || /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
         location.href = close.href;
       }, true);
     }

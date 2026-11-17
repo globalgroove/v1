@@ -256,7 +256,7 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
       if (!unit) return;
       var t = document.activeElement && document.activeElement.tagName;
       if (e.key === ' ' && order.length && !/INPUT|BUTTON|TEXTAREA|TR/.test(t)){ e.preventDefault(); toggle(); }
-      if (e.key === 'Escape'){ var menu = $('site-menu'); if (menu && !menu.hidden) return; location.hash = ''; }
+      if (e.key === 'Escape' && !/INPUT|TEXTAREA/.test(t)) location.hash = '';
     });
     function route(){
       var h = location.hash.replace('#', '').toLowerCase();

@@ -1,5 +1,7 @@
-/* BASE SCRIPT - shared by every page. Builds the logo and the site menu from assets/site.js.
-   Each page only needs an empty <nav class="site" id="site"></nav> and PAGE.root. No need to edit. */
+/* BASE SCRIPT - shared by every page. Builds the site title and the menu from assets/site.js.
+   Each page only needs an empty <nav class="site" id="site"></nav> and PAGE.root. No need to edit.
+   The menu is open by default and closes only with the arrow next to the title; the choice is
+   remembered from page to page. On the landing page (PAGE.menuFixed) it is always open, without arrow. */
 (function(){
   try {
     var S = (typeof SITE !== 'undefined') ? SITE : {}, P = (typeof PAGE !== 'undefined') ? PAGE : {}, root = P.root || '';
@@ -9,36 +11,22 @@
     var here = norm(location.pathname);
     nav.setAttribute('aria-label', 'Site');
 
-    // drawn logo marks
-    var marks = {
-      globe:
-        '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.2">' +
-        '<circle cx="12" cy="12" r="10.5"/><ellipse cx="12" cy="12" rx="4.6" ry="10.5"/><path d="M1.5 12h21"/></svg>',
-      registration:
-        '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x=".5" y=".5" width="23" height="23" fill="none" stroke="currentColor" vector-effect="non-scaling-stroke"/>' +
-        '<circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" vector-effect="non-scaling-stroke"/>' +
-        '<path d="M12 0v7M12 17v7M0 12h7M17 12h7" stroke="currentColor" vector-effect="non-scaling-stroke"/></svg>',
-      lens:
-        '<svg viewBox="0 0 28 28" aria-hidden="true" focusable="false"><ellipse class="ink" cx="14" cy="14" rx="10.5" ry="13.2"/>' +
-        '<ellipse class="cutl" cx="14" cy="14" rx="3.2" ry="12.2" stroke-width="1.5"/>' +
-        '<path class="cutl" stroke-width="1.4" d="M10.9 16.4H17.1M17.1 12.4H15.4"/>' +
-        '<path class="cut" d="M0 12.2 7 15.2 0 18.4Z"/><path class="cut" d="M28 12 21 15 28 18.2Z"/></svg>'
-    };
+    // logo: only when SITE.logo.src points to a file (for now the site title stands alone)
+    var lg = S.logo || {};
+    if (lg.src) {
+      var logo = el('a', 'logo'), im = new Image();
+      logo.href = root + 'index.html'; logo.setAttribute('aria-label', lg.alt || 'Home');
+      im.src = root + lg.src; im.alt = ''; im.onerror = function(){ logo.remove(); };
+      logo.appendChild(im); nav.appendChild(logo);
+    }
 
-    // logo: links to the site root
-    var lg = S.logo || {}, logo = el('a', 'logo');
-    logo.href = root + 'index.html';
-    logo.setAttribute('aria-label', lg.alt || 'Home');
-    function drawMark(){ logo.innerHTML = marks[lg.mark] || marks.globe; }
-    if (lg.src) { var im = new Image(); im.src = root + lg.src; im.alt = ''; im.onerror = drawMark; logo.appendChild(im); }
-    else drawMark();
-    nav.appendChild(logo);
-
-    // menu title button + list
-    var btn = el('button', 'site-btn'), menu = el('ul', 'site-menu');
-    btn.type = 'button'; btn.appendChild(el('span', null, S.title || ''));
-    menu.id = 'site-menu'; menu.hidden = true;
-    nav.appendChild(btn); nav.appendChild(menu);
+    // site title (links home) + the arrow that opens and closes the menu
+    var head = el('div', 'site-head'), title = el('a', 'site-title', S.title || ''), btn = el('button', 'site-btn'), menu = el('ul', 'site-menu');
+    title.href = root + 'index.html';
+    btn.type = 'button';
+    menu.id = 'site-menu';
+    head.appendChild(title); head.appendChild(btn);
+    nav.appendChild(head); nav.appendChild(menu);
 
     function link(l){
       var a = el('a', null, l[0]), hash = l[1].charAt(0) === '#';
@@ -122,16 +110,27 @@
         else if (e.key === 'Escape' && q.value){ e.stopPropagation(); q.value = ''; run(); place(); }
       });
       window.addEventListener('resize', place);
-      api.searchOpened = function(){ place(); if (window.matchMedia && window.matchMedia('(min-width: 761px) and (pointer: fine)').matches) q.focus({ preventScroll:true }); };
+      api.searchOpened = function(focus){ place(); if (focus && window.matchMedia && window.matchMedia('(min-width: 761px) and (pointer: fine)').matches) q.focus({ preventScroll:true }); };
     }
 
-    if (!menu.children.length) { btn.classList.add('static'); return; }
-    btn.setAttribute('aria-controls', 'site-menu'); btn.setAttribute('aria-expanded', 'false');
-    function setOpen(o){ menu.hidden = !o; btn.setAttribute('aria-expanded', o); if (o && api.searchOpened) api.searchOpened(); if (!o){ var nq = document.getElementById('nav-q'); if (nq && nq.value){ nq.value = ''; nq.dispatchEvent(new Event('input')); } } }
-    btn.addEventListener('click', function(){ setOpen(menu.hidden); });
-    menu.addEventListener('click', function(e){ if (e.target.closest('a')) setOpen(false); });
-    document.addEventListener('click', function(e){ if (!nav.contains(e.target)) setOpen(false); });
-    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !menu.hidden && !(document.activeElement && document.activeElement.id === 'nav-q' && document.activeElement.value)) { setOpen(false); btn.focus(); } });
+    if (!menu.children.length) { btn.remove(); menu.remove(); return; }
+
+    // open by default; closes only with the arrow; remembered across pages
+    var fixed = !!P.menuFixed, KEY = 'gog-menu';
+    function remembered(){ try { return localStorage.getItem(KEY) !== 'closed'; } catch (e) { return true; } }
+    function setOpen(o, byUser){
+      menu.hidden = !o; btn.setAttribute('aria-expanded', o); nav.classList.toggle('menu-open', o);
+      btn.setAttribute('aria-label', o ? 'Close the menu' : 'Open the menu');
+      if (byUser){ try { localStorage.setItem(KEY, o ? 'open' : 'closed'); } catch (e) {} }
+      if (o && api.searchOpened) api.searchOpened(byUser || fixed);
+      if (!o){ var nq = document.getElementById('nav-q'); if (nq && nq.value){ nq.value = ''; nq.dispatchEvent(new Event('input')); } }
+    }
+    if (fixed){ btn.remove(); nav.classList.add('menu-fixed'); setOpen(true); }
+    else {
+      btn.setAttribute('aria-controls', 'site-menu');
+      btn.addEventListener('click', function(){ setOpen(menu.hidden, true); });
+      setOpen(remembered());
+    }
   } catch (e) {
     console.error(e);
     document.body.insertAdjacentHTML('afterbegin', '<p style="padding:12px;font:14px monospace">Menu error: check the quotation marks and commas in assets/site.js.</p>');

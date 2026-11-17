@@ -8,32 +8,29 @@
      LANDING PAGE  (site root: /index.html)
      CONTENT BLOCK  -  THIS IS THE ONLY PART YOU NEED TO EDIT HERE
      =====================================================================
-     One sheet: logo, menu, info lines, search and one image.
-     The menu, logo and the list the search looks through are in assets/site.js.
+     The site title and the menu (always open here, with the search) come
+     from assets/site.js. Below them, optional info lines, text and an image.
 
      Rules:
        - Keep the quotation marks "like this" and the commas at line ends.
        - A quotation mark inside a value needs a backslash: "12\" LP"
-       - Info lines keep the order written here. To add one, copy a line and change it.
      ===================================================================== -->
 <script>
 const PAGE = {
 
   root: "",                      // path back to the site root: "" here (top folder)
+  menuFixed: true,               // the menu is always open on this page, without the arrow
 
   browserTitle: "Global Overgroove",     // text on the browser tab
   sideTab: "GOG",                // text in the black box on the right edge. "" hides it
 
-  /* ---- INFO LINES (top left):  [ "label", "value" ]. [] hides them ---- */
+  /* ---- INFO LINES (left column):  [ "label", "value" ]. [] hides them ---- */
   info: [],
 
-  /* ---- SEARCH: looks through "projects", "releases" and "catalog" in assets/site.js */
-  searchLabel: "Search",         // "" hides the search
-
-  /* ---- INTRO TEXT (optional): list of paragraphs, [] hides it ------- */
+  /* ---- TEXT (left column): list of paragraphs, [] hides it ---------- */
   text: [],
 
-  /* ---- IMAGE (right column, 3:2 landscape, no border, no caption). Empty src = no image, the left column takes the space ---- */
+  /* ---- IMAGE (right column, 3:2 landscape). "" = no image ----------- */
   figure: { src: "", alt: "" },
 };
 </script>
@@ -46,61 +43,19 @@ const PAGE = {
 <link rel="stylesheet" href="assets/base.css">
 <script src="assets/site.js"></script>
 <style>
-/* landing page only */
+/* landing page only: the same two columns as the list pages */
 .tab-side{font-size:22px}
-.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 22px;align-items:start}
-.cols.solo{grid-template-columns:minmax(0,760px)}   /* no image: one column, wide enough for the search results */
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 22px;align-items:start;margin-top:28px}
 .text{margin:0 0 18px}
-.text[hidden]{display:none}
 .text p{margin:0 0 .8em;font:400 15px/1.55 var(--label);hyphens:auto}
 .text p:last-child{margin-bottom:0}
-.meta{display:grid;grid-template-columns:auto 1fr;gap:4px 28px;margin:2px 0 18px;font-size:14px}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:4px 28px;margin:0 0 18px;font-size:14px}
 .meta dt{letter-spacing:.14em}
 .meta dd{margin:0;font-family:var(--value);font-size:13px}
-
-/* search: one thin underlined line; results appear only while typing */
-.find{margin:0 0 18px}
-.meta + .find{margin-top:0}
-main > .find:first-child{margin-top:28px}   /* no info lines above: a little space under the menu */
-.find[hidden]{display:none}
-.find-row{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--rule)}
-.find-row:focus-within{border-bottom-color:var(--ink)}
-.find label{font:500 12px var(--label);letter-spacing:.14em;flex:none;transition:opacity .25s}
-.find.filled label{opacity:.4}   /* once something is typed, the word Search steps back */
-@media (prefers-reduced-motion:reduce){.find label{transition:none}}
-.find input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:400 13px var(--value);padding:4px 0;outline:none;-webkit-appearance:none;appearance:none}
-.find input::-webkit-search-cancel-button{display:none}
-/* terminal-style cursor: a mid-grey block that blinks while the field waits, sits after the typed text,
-   and stays solid while typing. The browser's own thin caret is hidden while the block is shown */
-.q-wrap{position:relative;flex:1;min-width:0;display:flex}
-.q-wrap input{caret-color:transparent}
-.q-wrap.native input{caret-color:var(--ink)}
-.q-measure{position:absolute;visibility:hidden;white-space:pre;font:400 13px var(--value);pointer-events:none}
-.q-cursor{position:absolute;top:50%;left:0;width:7px;height:14px;margin-top:-7px;background:#6f706e;pointer-events:none;animation:q-blink 1.06s steps(1,end) infinite}
-.q-cursor.typing{animation:none}
-.q-cursor[hidden]{display:none}
-@keyframes q-blink{0%{opacity:1}50%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.q-cursor{animation:none}}
-/* phones zoom in on text fields under 16 px: keep the search at 16 px on touch screens */
-@media (pointer:coarse){.find input,.q-measure{font-size:16px}.q-cursor{height:17px;margin-top:-8px;width:8px}}
-.find .count{font:400 11px var(--value);opacity:.7;flex:none}
-.hits{list-style:none;margin:0;padding:0}
-.hits a span,.hits .soon span{white-space:nowrap;opacity:.8}
-.hits a,.hits .soon{font:500 11px/1.4 "Geist","Helvetica Neue",Arial,sans-serif!important;letter-spacing:.01em!important}
-.hits a span,.hits .soon span{font:400 11px "Geist Mono",ui-monospace,Menlo,monospace!important}
-@media (max-width:760px){.find .hits a,.find .hits .soon{display:block;padding:5px 0}.find .hits a span,.find .hits .soon span{display:block;line-height:1.3;margin-top:1px}}
-.hits a{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:4px 0;border-bottom:1px solid var(--rule);font-size:14px;letter-spacing:.06em;text-decoration:none}
-.hits a span{font:400 12px var(--value);letter-spacing:0}
-.hits .soon{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:4px 0;border-bottom:1px solid var(--rule);font-size:14px;letter-spacing:.06em;opacity:.7}
-.hits .soon span{font:400 12px var(--value);letter-spacing:0}
-.hits a.active,.hits a:hover,.hits a:focus-visible{background:var(--ink);color:var(--paper);outline:none}
-.hits .none{font:400 12px var(--value);padding:4px 0;opacity:.7}
-
 .fig-wrap{margin:0}
-.halftone{aspect-ratio:1.6/1;background:radial-gradient(circle at 50% 50%,var(--ink) 0 1.1px,transparent 1.5px) 0 0/5px 5px;-webkit-mask-image:radial-gradient(ellipse 48% 44% at 52% 54%,#000 30%,transparent 100%);mask-image:radial-gradient(ellipse 48% 44% at 52% 54%,#000 30%,transparent 100%)}
-.frame{position:relative;aspect-ratio:1.6/1;background:radial-gradient(circle at 50% 50%,var(--rule) 0 1px,transparent 1.4px) 0 0/5px 5px}
+.frame{position:relative;aspect-ratio:1.6/1}
 .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:var(--paper)}
-.frame img[hidden]{display:none}
+[hidden]{display:none!important}
 @media (max-width:760px){.cols{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
@@ -112,21 +67,9 @@ main > .find:first-child{margin-top:28px}   /* no info lines above: a little spa
 
   <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
 
-  <div class="cols">
+  <div class="cols" id="cols">
     <main>
       <dl class="meta" id="info"></dl>
-      <div class="find" id="find" role="search">
-        <div class="find-row">
-          <label for="q" id="q-label"></label>
-          <span class="q-wrap">
-            <input id="q" type="search" autocomplete="off" spellcheck="false">
-            <span class="q-measure" id="q-measure" aria-hidden="true"></span>
-            <span class="q-cursor" id="q-cursor" aria-hidden="true"></span>
-          </span>
-          <span class="count" id="count" aria-live="polite"></span>
-        </div>
-        <ul class="hits" id="hits" role="listbox" aria-label="Search results"></ul>
-      </div>
       <div class="text" id="text"></div>
     </main>
     <aside>
@@ -136,118 +79,27 @@ main > .find:first-child{margin-top:28px}   /* no info lines above: a little spa
 </div>
 
 <script src="assets/base.js"></script>
-<!-- LANDING BUILDER. Reads the PAGE block above and the project list in assets/site.js. No need to edit. -->
+<!-- LANDING BUILDER. Reads the PAGE block above. No need to edit. -->
 <script>
 (function(){
   try {
     var C = PAGE, root = C.root || '', S = (typeof SITE !== 'undefined') ? SITE : {};
     function $(id){ return document.getElementById(id); }
     function el(tag, cls, text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
-    function fold(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
 
     document.title = C.browserTitle;
     if (S.title) $('h1').textContent = S.title;
-
-    // right-edge box
     if (C.sideTab) $('tab-side').textContent = C.sideTab;
     else { $('tabs-side').remove(); document.querySelector('.page').classList.add('no-tabs'); }
 
-    // info lines
-    if (!C.info || !C.info.length) $('info').remove();     // no info lines: the search sits right under the menu
-    else C.info.forEach(function(r){ $('info').appendChild(el('dt', null, r[0])); $('info').appendChild(el('dd', null, r[1])); });
+    (C.info || []).forEach(function(r){ $('info').appendChild(el('dt', null, r[0])); $('info').appendChild(el('dd', null, r[1])); });
+    $('info').hidden = !(C.info || []).length;
+    (C.text || []).forEach(function(t){ var p = el('p'); p.innerHTML = t; $('text').appendChild(p); });
+    $('text').hidden = !(C.text || []).length;
 
-    // search: results show only while typing; every word typed must appear in the entry (accents ignored)
-    // what the search looks through: the projects, then the releases (each release leads to its row on the Discography page)
-    var items = (S.projects || []).map(function(s){
-      return { s: s, text: fold([s.title, s.year, s.type, s.keywords].join(' ')) };
-    }).concat((S.releases || []).map(function(r, i){
-      var s = { title: r.artist + (r.title ? ' — ' + r.title : ''), year: r.year, type: r.role, link: 'discography/index.html#r' + (i + 1) };
-      return { s: s, text: fold([r.artist, r.title, r.role, r.format, r.label, r.year, 'discography record release'].join(' ')) };
-    })).concat((S.catalog || []).map(function(r, i){
-      var s = { title: r.artist + ': ' + r.title, year: r.year, type: r.cat, link: 'catalog/index.html#c' + (i + 1) };
-      return { s: s, text: fold([r.artist, r.title, r.cat, r.type, r.format, r.status, r.year, (r.tracks || []).join(' '), 'catalog release'].join(' ')) };
-    }));
-    if (!C.searchLabel || !items.length) $('find').hidden = true;
-    else {
-      var q = $('q'), hits = $('hits');
-      $('q-label').textContent = C.searchLabel;
-      // keyboard: Down / Up move through the results that open a page, Enter opens the marked one (or the first)
-      var active = -1;
-      var links = function(){ return [].slice.call(hits.querySelectorAll('a')); };
-      var mark = function(i){
-        var ls = links(); if (!ls.length) return;
-        active = (i + ls.length) % ls.length;
-        ls.forEach(function(a, k){ a.classList.toggle('active', k === active); a.setAttribute('aria-selected', k === active); });
-        q.setAttribute('aria-activedescendant', ls[active].id);
-        ls[active].scrollIntoView({ block: 'nearest' });
-      };
-      var run = function(){
-        var words = fold(q.value).split(/\s+/).filter(Boolean);
-        active = -1; q.removeAttribute('aria-activedescendant');
-        hits.textContent = ''; $('count').textContent = '';
-        if (!words.length) return;
-        var found = items.filter(function(it){ return words.every(function(w){ return it.text.indexOf(w) > -1; }); });
-        $('count').textContent = found.length + ' / ' + items.length;
-        if (!found.length) { hits.appendChild(el('li', 'none', 'No match.')); return; }
-        found.forEach(function(it, n){
-          var li = el('li'), a = el(it.s.link ? 'a' : 'span', it.s.link ? null : 'soon'), meta = [it.s.year, it.s.type].filter(Boolean).join(' · ');
-          if (it.s.link) { a.href = root + it.s.link; a.id = 'hit-' + n; a.setAttribute('role', 'option'); }
-          a.appendChild(document.createTextNode(it.s.title));
-          if (meta) a.appendChild(el('span', null, meta));
-          li.appendChild(a); hits.appendChild(li);
-        });
-      };
-      q.addEventListener('input', run);
-
-      // blinking block cursor: follows the end of the text; solid while typing, blinks again after a pause.
-      // When the text caret is moved inside the text (arrows, a click), the browser's own caret takes over.
-      var cur = $('q-cursor'), meas = $('q-measure'), wrap = q.parentNode, pause = null;
-      var place = function(){
-        var atEnd = q.selectionStart === q.value.length && q.selectionEnd === q.value.length;
-        wrap.classList.toggle('native', !atEnd);
-        cur.hidden = !atEnd;
-        meas.textContent = q.value;
-        cur.style.left = Math.min(meas.offsetWidth + 1, Math.max(0, q.clientWidth - 8)) + 'px';
-      };
-      q.addEventListener('input', function(){
-        $('find').classList.toggle('filled', q.value.length > 0);
-        cur.classList.add('typing'); clearTimeout(pause);
-        pause = setTimeout(function(){ cur.classList.remove('typing'); }, 600);
-        place();
-      });
-      ['keyup', 'click', 'select', 'focus'].forEach(function(ev){ q.addEventListener(ev, place); });
-      document.addEventListener('selectionchange', function(){ if (document.activeElement === q) place(); });
-      window.addEventListener('resize', place);
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
-      place();
-      // on desktop the field is ready to type into as soon as the page opens (not on touch screens: no keyboard pop-up)
-      if (window.matchMedia && window.matchMedia('(pointer:fine)').matches) q.focus({ preventScroll: true });
-      q.addEventListener('keydown', function(e){
-        if (e.key === 'ArrowDown') { e.preventDefault(); mark(active + 1); }
-        if (e.key === 'ArrowUp')   { e.preventDefault(); mark(active < 0 ? -1 : active - 1); }
-        if (e.key === 'Enter') { var a = links()[active < 0 ? 0 : active]; if (a) location.href = a.href; }
-        if (e.key === 'Escape') { q.value = ''; run(); $('find').classList.remove('filled'); place(); }
-      });
-      document.addEventListener('keydown', function(e){
-        var t = document.activeElement;
-        if (e.key === '/' && t !== q && !(t && /INPUT|TEXTAREA/.test(t.tagName))) { e.preventDefault(); q.focus(); }
-      });
-    }
-
-    // intro text
-    var box = $('text');
-    if (!C.text || !C.text.length) box.hidden = true;
-    else C.text.forEach(function(t){ var p = el('p'); p.innerHTML = t; box.appendChild(p); });
-
-    // image
-    var fig = $('fig'), f = C.figure || {};
-    if (!f.src) {
-      fig.parentNode.remove(); document.querySelector('.cols').classList.add('solo');
-    } else {
-      var fr = el('div', 'frame'), im = new Image();
-      im.src = root + f.src; im.alt = f.alt || ''; im.loading = 'lazy'; im.onerror = function(){ im.hidden = true; };
-      fr.appendChild(im); fig.appendChild(fr);
-    }
+    var f = C.figure || {};
+    if (f.src){ var fr = el('div', 'frame'), im = new Image(); im.src = root + f.src; im.alt = f.alt || ''; im.onerror = function(){ im.hidden = true; }; fr.appendChild(im); $('fig').appendChild(fr); }
+    $('cols').hidden = !(C.info || []).length && !(C.text || []).length && !f.src;
   } catch (e) {
     console.error(e);
     document.body.insertAdjacentHTML('afterbegin', '<p style="padding:12px;font:14px monospace">Content error: check the quotation marks and commas in the content block at the top of the file.</p>');
