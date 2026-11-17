@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- =====================================================================
+     PROJECT PAGE  (work/gmr/index.html)
+     CONTENT BLOCK  -  THIS IS THE ONLY PART YOU NEED TO EDIT
+     =====================================================================
+     To make a new project: copy this whole folder (work/gmr/ -> work/new-name/),
+     change the values below, then add one line to "projects" in assets/site.js.
+     The menu and logo come from assets/site.js; the look from assets/*.css.
+
+     Rules:
+       - Keep the quotation marks "like this" and the commas at line ends.
+       - Paragraphs may contain simple HTML, e.g. <em>italic</em>.
+       - Leave a list empty ( [] ) to hide that part of the page.
+       - Image and audio paths are relative to this folder, e.g. "imgs/photo.jpg".
+         File names must match exactly, capitals included (.JPG is not .jpg online).
+         If an image is missing, a dotted placeholder is shown instead.
+     ===================================================================== -->
+<script>
+const PAGE = {
+
+  root: "../../",               // path back to the site root (project pages are two folders down)
+
+  back: "work/index.html",      // where the × (top right) and the Esc key lead, relative to the site root
+
+  /* ---- PAGE IDENTITY ------------------------------------------------ */
+  number: 1,                    // this page's number. Shows as 001 in the side tab and footer
+  nextPage: "",                 // the next project, e.g. "../next-project/index.html". A second box (number+1) appears
+                                // under the side index and links to it. Leave "" on the last page
+  browserTitle: "Gore Metal Redux",   // text on the browser tab
+  title: "gore metal redux",          // large title box (left)
+  variant: "ref. II – 151",         // small title box (right)
+
+  /* ---- SECTION HEADINGS --------------------------------------------- */
+  headings: {
+    main:  "technical specs",         // above the first table
+    audio: "recordings",             // above the track list
+    materials: "Title: Gore Metal Redux (series)",     // small label above the materials text
+    sheet: "Process and details"  // above the small images
+  },
+
+  /* ---- INFO LINES (top right):  [ "label", "value" ] ---------------- */
+  info: [
+    ["Year",   "2023"],
+    ["Series No.", "GR23 – 1100001"]
+  ],
+
+  /* ---- MAIN TABLE:  [ "label", "unit", "value" ] --------------------- */
+  /* leave the unit as "" when there is none; delete the rows a page does not need */
+  mainData: [
+    ["Title",      "",   "Untitled (Copper Study)"],
+    ["Year",       "",   "2026"],
+    ["Dimensions", "cm", "120 × 80 × 60"]           // H × W × D
+  ],
+  mainValuesLeft: false,        // false = values centred (good for numbers); true = left aligned
+
+  /* ---- MATERIALS: small technical text under the table ---------------- */
+  /* one line per item; an empty list [] hides it (e.g. on sound pages) */
+  materials: [
+    "Materials: Wood, Glass, Iron-Oxide, Bone, Teeth,",
+    "Butcher Hooks, Meal Worms, Car-Battery, Car-parts,",
+    "Electronics Components, Wire Jumpers, Handmade Circuitry,",
+    "2x 18 speakers, 1200W Subwoofer, Light"
+  ],
+
+  /* ---- TEXT BOXES: each is a list of paragraphs --------------------- */
+  texts: {
+    one: [        // left column, between the materials and Fig. 2
+      "Gore Metal Redux is a work series consisting of assembled object sculptures, live organisms, decomposing organic matter, chemical systems, light and sound devices. All objects are connected in a closed-loop system, forming a network. The system communicates on protocols such has sound propagation, oxidation, decomposition."
+    ],
+    two: [        // right column, between the table and the audio list
+      "Sound installation runs on a 12V battery and is based on a feedback loop. The system injects an electrical current into the sculptures which, given their properties, close the electrical circuit thus creating a path for the electrical signal to reach the speakers. The objects are exposed to air, promoting its oxidation, thus modulating the physical properties of the sound system."
+    ],
+    three: [      // full width, before the small images
+      "The work follows a protocol in three stages: measurement of the space, composition against that measurement, and adjustment on site. Each stage produces its own documentation, which is gathered below as process and detail images.",
+      "Speaker positions, delay times and levels are treated as compositional parameters and recorded in the score together with the musical material. The installation can be reconfigured for a new room by repeating the first stage and adapting the second."
+    ]
+  },
+
+  /* ---- MAIN IMAGES (3:2 landscape works best) ----------------------- */
+  /* "caption" is the text after "Fig. N –"; "alt" is a short description for screen readers */
+  figure1: { src: "imgs/fig1.JPG", alt: "", caption: "prostethic teeth" },   // right column. Empty src = halftone placeholder
+  figure2: { src: "imgs/fig2.JPG", alt: "Describe the image here", caption: "installation view" },   // left column
+
+  /* ---- AUDIO TRACKS ------------------------------------------------- */
+  /* add or delete lines freely. No tracks = audio list and player bar are hidden */
+  tracks: [
+    { src: "audio/track-01.mp3", title: "Track 01" },
+    { src: "audio/track-02.mp3", title: "Track 02" },
+    { src: "audio/track-03.mp3", title: "Track 03" }
+  ],
+
+  /* ---- SMALL IMAGES (square crops work best, click to enlarge) ------ */
+  /* Fig. numbers continue after the two main images (3, 4, 5 ...) */
+  sheetGray: false,              // true = grayscale, colour on hover. false = always colour
+  sheet: [
+    { src: "imgs/detail-01.JPG", alt: "Describe the image", caption: "electrolysis" },
+    { src: "imgs/detail-02.JPG", alt: "Describe the image", caption: "untitled" },
+    { src: "imgs/detail-03.JPG", alt: "Describe the image", caption: "untitled; teeth, tar;" },
+    { src: "imgs/detail-04.JPG", alt: "Describe the image", caption: "untitled" },
+    { src: "imgs/detail-05.jpg", alt: "Describe the image", caption: "description" },
+    { src: "imgs/detail-06.jpg", alt: "Describe the image", caption: "description" },
+    { src: "imgs/detail-07.jpg", alt: "Describe the image", caption: "description" },
+    { src: "imgs/detail-08.jpg", alt: "Describe the image", caption: "description" }
+  ]
+};
+</script>
+<!-- ===================== END OF CONTENT BLOCK ===================== -->
+
+<title>Gore Metal Redux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- shared files: the "../../" matches root above -->
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../../assets/work.css">
+<script src="../../assets/site.js"></script>
+</head>
+<body>
+<!-- PAGE SKELETON. Empty containers, filled by assets/base.js (menu) and assets/work.js (everything else). -->
+<div class="page" id="top">
+
+  <nav class="site" id="site"></nav>
+
+  <!-- close: back to the Work page (top right). Side tabs: this page (+ the next page when nextPage is set) -->
+  <a class="close" id="close"></a>
+  <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
+
+  <!-- two-column grid. Rows: [title | info] / [heading | info] / [left column | right column] -->
+  <div class="grid">
+    <div class="title"><h1 id="title-main"></h1><p id="title-variant"></p></div>
+    <dl class="meta meta-head" id="info"></dl>
+    <h2 id="h-main"></h2>
+
+    <!-- left column -->
+    <main>
+      <div class="tech" id="materials"></div>
+      <div class="text" id="text-1"></div>
+      <figure class="fig-wrap" id="fig-2"></figure>
+    </main>
+
+    <!-- right column -->
+    <aside>
+      <figure class="fig-wrap" id="fig-1"></figure>
+      <div class="scroll"><table><tbody id="main-data"></tbody></table></div>
+      <div class="text" id="text-2"></div>
+      <div id="audio-block">
+        <h2 id="h-audio"></h2>
+        <div class="player" data-player>
+          <audio preload="metadata"></audio>
+          <div class="scroll"><table><tbody id="tracks"></tbody></table></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- full-width text box -->
+  <div class="text" id="text-3"></div>
+
+  <!-- small images (contact sheet) -->
+  <div id="sheet-block">
+    <h2 id="h-sheet"></h2>
+    <div class="sheet" id="sheet"></div>
+  </div>
+
+  <!-- enlarged image viewer -->
+  <dialog class="lightbox" aria-label="Image viewer">
+    <figure><img alt=""><figcaption></figcaption></figure>
+    <div class="lb-bar">
+      <span class="lb-count"></span>
+      <button type="button" class="play" data-lb="prev">Prev</button>
+      <button type="button" class="play" data-lb="next">Next</button>
+      <button type="button" class="play" data-lb="close">Close</button>
+    </div>
+  </dialog>
+
+  <!-- audio player bar -->
+  <div class="strip" data-strip role="region" aria-label="Audio player">
+    <button type="button" class="play" aria-pressed="false">Play</button>
+    <div class="s-title" aria-live="polite">Select a track</div>
+    <canvas class="wave" tabindex="0" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></canvas>
+    <span class="time">0:00 / 0:00</span>
+  </div>
+
+  <div class="foot"><span id="foot-index"></span><a href="#top">Back to top</a></div>
+</div>
+
+<script src="../../assets/base.js"></script>
+<script src="../../assets/work.js"></script>
+</body>
+</html>

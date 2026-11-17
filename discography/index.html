@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- =====================================================================
+     DISCOGRAPHY PAGE  (discography/index.html)
+     CONTENT BLOCK  -  THIS IS THE ONLY PART YOU NEED TO EDIT HERE
+     =====================================================================
+     The list is built from "releases" in assets/site.js.
+     To add a record, add it there, not here. Covers go in discography/covers/.
+     ===================================================================== -->
+<script>
+const PAGE = {
+
+  root: "../",                   // path back to the site root (one folder down)
+
+  browserTitle: "Discography — Global Overgroove",
+  sideTab: "DISCOGRAPHY",        // text in the black box on the right edge. "" hides it
+  heading: "Discography",        // hidden heading, for screen readers
+
+  /* column headings of the list */
+  columns: { artist: "Artist", title: "Title", role: "Role", year: "Year" },
+
+  /* labels of the details under the cover, in this order */
+  labels: { title: "Title", artist: "Artist", role: "Role", format: "Format", label: "Label", year: "Year" },
+
+  /* small Discogs link under the details. It opens the release's own Discogs page
+     ("discogs" in the release, assets/site.js) or, while that is empty, the credits page (SITE.discogs) */
+  discogsLabel: "Discogs",
+};
+</script>
+<!-- ===================== END OF CONTENT BLOCK ===================== -->
+
+<title>Discography — Global Overgroove</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="../assets/list.css">
+<script src="../assets/site.js"></script>
+<style>
+/* discography page only: square covers, narrower frame, wider list. Type comes from assets/list.css */
+:root{--frame-ratio:1/1}
+.cols{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+tbody tr{cursor:default}
+td.t.a{font-weight:400}      /* artist regular, title medium, as in the type test */
+td.tt{font-weight:500}
+td.role{white-space:nowrap}
+.p-specs dd.n{font-family:var(--list-sans)}
+.p-specs dd.t{font-weight:500}
+.p-specs{margin-bottom:10px}
+/* Discogs: a small, quiet text link */
+.dg{display:inline-block;font:400 calc(var(--list-size) - 1px) var(--list-mono);letter-spacing:.04em;opacity:.55;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.dg:hover,.dg:focus-visible{opacity:1}
+.dg[hidden]{display:none}
+@media (max-width:760px){.cols{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div class="page" id="top">
+
+  <nav class="site" id="site"></nav>
+  <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
+
+  <!-- two columns: cover frame on the left, release list on the right -->
+  <div class="cols">
+    <aside class="preview" id="preview" aria-live="polite">
+      <div class="frame"><img id="p-img" alt=""></div>
+      <div class="body">
+        <dl class="p-specs" id="p-specs"></dl>
+        <a class="dg" id="p-open" target="_blank" rel="noopener"></a>
+      </div>
+    </aside>
+    <main>
+      <h1 class="sr" id="h1"></h1>
+      <table>
+        <thead><tr><th scope="col" id="h-artist"></th><th scope="col" id="h-title"></th><th scope="col" class="wide" id="h-role"></th><th scope="col" id="h-year"></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/base.js"></script>
+<!-- DISCOGRAPHY BUILDER. Reads "releases" in assets/site.js. No need to edit. -->
+<script>
+(function(){
+  try {
+    var C = PAGE, root = C.root || '', S = (typeof SITE !== 'undefined') ? SITE : {}, L = C.labels;
+    function $(id){ return document.getElementById(id); }
+    function el(tag, cls, text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+
+    document.title = C.browserTitle;
+    $('h1').textContent = C.heading;
+    if (C.sideTab) $('tab-side').textContent = C.sideTab;
+    else { $('tabs-side').remove(); document.querySelector('.page').classList.add('no-tabs'); }
+    $('p-open').textContent = C.discogsLabel + ' ↗';
+    ['artist', 'title', 'role', 'year'].forEach(function(k){ $('h-' + k).textContent = C.columns[k]; });
+
+    // cover: loaded in the background, shown only once loaded (a missing file keeps the dotted frame)
+    var img = $('p-img'), want = '', cache = {};
+    img.hidden = true;
+    function setImage(src, alt){
+      want = src; img.hidden = true;
+      if (!src || cache[src] === false) return;
+      var put = function(){ if (want === src) { img.src = src; img.alt = alt; img.hidden = false; } };
+      if (cache[src] === true) return put();
+      var probe = new Image();
+      probe.onload = function(){ cache[src] = true; put(); };
+      probe.onerror = function(){ cache[src] = false; };
+      probe.src = src;
+    }
+
+    function show(r, tr){
+      [].forEach.call($('rows').children, function(x){ x.classList.toggle('on', x === tr); });
+      var name = r.artist + (r.title ? ' — ' + r.title : '');
+      setImage(r.cover ? root + r.cover : '', name);
+      // tech sheet: Title, Artist, Role, Format, Label, Year (names in the sans, the rest in the mono)
+      var dl = $('p-specs'); dl.textContent = '';
+      [['title', r.title, 'n t'], ['artist', r.artist, 'n'], ['role', r.role], ['format', r.format], ['label', r.label], ['year', r.year]].forEach(function(f){
+        if (!f[1]) return;
+        dl.appendChild(el('dt', null, L[f[0]])); dl.appendChild(el('dd', f[2] || null, f[1]));
+      });
+      // Discogs: the release's own page, or the credits page
+      var dg = r.discogs || S.discogs || '';
+      $('p-open').hidden = !dg; if (dg) $('p-open').href = dg;
+    }
+
+    var list = S.releases || [];
+    if (!list.length) { $('preview').hidden = true; return; }
+    list.forEach(function(r, i){
+      var tr = el('tr'), ta = el('td', 't a'), tt = el('td', 'tt'), sub = el('span', 'sub', [r.role, r.format, r.label].filter(Boolean).join(' · '));
+      tr.tabIndex = 0; tr.id = 'r' + (i + 1);    // r1, r2 ... lets the landing search point at one release
+      ta.appendChild(document.createTextNode(r.artist));
+      tt.appendChild(document.createTextNode(r.title || '—'));
+      tt.appendChild(sub);                       // role · format · label, shown under the title on phones only
+      tr.appendChild(ta); tr.appendChild(tt);
+      tr.appendChild(el('td', 'role wide', r.role || '—'));   // hidden on phones, where it moves into the line under the title
+      tr.appendChild(el('td', 'yr', r.year || '—'));
+      tr.addEventListener('mouseenter', function(){ show(r, tr); });
+      tr.addEventListener('focus', function(){ show(r, tr); });
+      $('rows').appendChild(tr);
+    });
+    // arriving from the search (discography/index.html#r5): show that release and scroll to it
+    var m = /^#r(\d+)$/.exec(location.hash), n = m ? +m[1] - 1 : 0;
+    if (!list[n]) n = 0;
+    var start = $('rows').children[n];
+    show(list[n], start);
+    if (m) start.scrollIntoView({ block: 'center' });
+  } catch (e) {
+    console.error(e);
+    document.body.insertAdjacentHTML('afterbegin', '<p style="padding:12px;font:14px monospace">Content error: check the quotation marks and commas in assets/site.js.</p>');
+  }
+})();
+</script>
+</body>
+</html>

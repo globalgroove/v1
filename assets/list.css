@@ -1,0 +1,76 @@
+/* LIST PAGES STYLE SHEET - Work, Discography, Catalog: preview frame on the left, list on the right.
+   Loaded after base.css. The frame shape is set per page with --frame-ratio.
+   Type: Geist for names and titles, Geist Mono for numbers (years, catalogue numbers, durations, formats).
+   --list-size sets the text size of every list and preview in one place. */
+:root{
+  --list-size:11px;
+  --list-sans:"Geist","Helvetica Neue",Arial,sans-serif;
+  --list-mono:"Geist Mono",ui-monospace,Menlo,Consolas,monospace;
+  --row-line:#c3c4c1;                    /* faint line between rows, on the silver */
+  --panel:var(--ink);                    /* the cover panel is dark: ink ground, silver text */
+  --panel-text:var(--paper);
+  --panel-rule:#3b3c3b;
+}
+
+.cols{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:0 22px;align-items:start}
+
+/* list: one faint line under each row; the row under the pointer turns ink */
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+td{padding:7px 8px;text-align:left;vertical-align:baseline;border-bottom:1px solid var(--row-line);font:400 var(--list-size)/1.35 var(--list-sans);letter-spacing:.01em}
+td.yr,td.cat,td.m{font-family:var(--list-mono);white-space:nowrap}
+td.yr{width:4.5em}
+td.type{width:1%;white-space:nowrap}
+td.t{font-weight:500}
+td.t a{text-decoration:none}
+td.t a::after{content:"";position:absolute;inset:0}
+/* column headings: small spaced capitals with one thin line underneath */
+thead th{padding:0 8px 6px;text-align:left;font:500 calc(var(--list-size) - 2px) var(--list-sans);letter-spacing:.16em;text-transform:uppercase;opacity:.7;border-bottom:1px solid var(--rule)}
+thead + tbody tr:first-child td{padding-top:9px}
+
+tbody tr{position:relative;cursor:pointer;transition:background .12s,color .12s}
+tbody tr.soon{cursor:default}
+tbody tr.soon td{opacity:.75}
+tbody tr.soon:hover td,tbody tr.soon.on td{opacity:1}
+tbody tr:hover,tbody tr:focus-within,tbody tr.on{background:var(--ink);color:var(--paper)}
+tbody tr:hover td,tbody tr:focus-within td,tbody tr.on td{border-bottom-color:var(--ink)}
+tbody tr:focus-within a{outline:none}
+tbody tr:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+/* preview panel: dark, stays in view while scrolling the list */
+.preview{position:sticky;top:56px;background:var(--panel);color:var(--panel-text)}
+.preview .frame{position:relative;aspect-ratio:var(--frame-ratio,4/5);background:radial-gradient(circle at 50% 50%,var(--panel-rule) 0 1px,transparent 1.4px) 0 0/5px 5px}
+.preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:var(--panel)}
+.preview .tracks{border-top-color:var(--panel-rule)}
+.preview a:focus-visible{outline:2px solid var(--panel-text);outline-offset:2px}
+/* quiet text link inside the panel (Open, Discogs, shop links) */
+.ql{display:inline-block;font:400 calc(var(--list-size) - 1px) var(--list-mono);letter-spacing:.04em;opacity:.6;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.ql:hover,.ql:focus-visible{opacity:1}
+.ql[hidden]{display:none}
+.preview img[hidden]{display:none}
+.preview .body{padding:8px 10px 10px}
+.preview .p-title{margin:0 0 6px;font:500 calc(var(--list-size) + 2px)/1.3 var(--list-sans);letter-spacing:.02em}
+.preview .p-meta{margin:0 0 8px;font:400 var(--list-size) var(--list-mono);opacity:.8}
+.preview .p-text{margin:0 0 10px;font:400 calc(var(--list-size) + 2px)/1.5 var(--list-sans)}
+.preview .p-text:empty{display:none}
+.preview .p-open{font:500 var(--list-size) var(--list-sans);letter-spacing:.12em;text-decoration:none;border:1px solid currentColor;padding:3px 10px;display:inline-block}
+.preview .p-open[hidden]{display:none}
+.preview .p-open:hover,.preview .p-open:focus-visible{background:var(--panel-text);color:var(--panel);outline:none}
+.preview .p-soon,.preview .status{display:block;margin:0;font:400 var(--list-size) var(--list-mono);letter-spacing:.04em;opacity:.7}
+.preview .p-soon[hidden]{display:none}
+/* details under the cover: label / value lines, then a tracklist */
+.p-specs{display:grid;grid-template-columns:auto 1fr;gap:3px 18px;margin:0 0 10px}
+.p-specs dt{font:400 var(--list-size) var(--list-sans);letter-spacing:.06em;opacity:.75}
+.p-specs dd{margin:0;font:400 var(--list-size) var(--list-mono)}
+.tracks{list-style:none;margin:0 0 10px;padding:8px 0 0;border-top:1px solid var(--panel-rule);font:400 var(--list-size)/1.6 var(--list-mono)}
+
+/* phones: no preview panel; a tap on a row opens the page, and .sub lines appear under titles */
+.sub{display:none}
+@media (max-width:760px){
+  .cols{grid-template-columns:minmax(0,1fr)}
+  .preview{display:none}
+  td.type,td.wide,thead th.wide{display:none}
+  tbody tr.on:not(:hover){background:none;color:inherit}   /* no preview on phones, so no selected row either */
+  tbody tr.on:not(:hover) td{border-bottom-color:var(--row-line)}
+  .sub{display:block;margin-top:2px;font:400 calc(var(--list-size) - 1px) var(--list-mono);font-weight:400;letter-spacing:0;opacity:.75}
+}
+@media (prefers-reduced-motion:reduce){tbody tr{transition:none}}

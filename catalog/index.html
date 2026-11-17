@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- =====================================================================
+     CATALOG PAGE  (catalog/index.html)
+     CONTENT BLOCK  -  THIS IS THE ONLY PART YOU NEED TO EDIT HERE
+     =====================================================================
+     The list is built from "catalog" in assets/site.js.
+     To add a release, add it there, not here. Covers go in catalog/covers/.
+     ===================================================================== -->
+<script>
+const PAGE = {
+
+  root: "../",                   // path back to the site root (one folder down)
+
+  browserTitle: "Catalog — Global Overgroove",
+  sideTab: "CATALOG",            // text in the black box on the right edge. "" hides it
+  heading: "Catalog",            // hidden heading, for screen readers
+
+  /* column headings of the list */
+  columns: { cat: "Cat. No.", artist: "Artist", title: "Title", year: "Year" },
+
+  /* labels of the details under the cover, in this order */
+  labels: { title: "Title", artist: "Artist", year: "Year", cat: "Cat. No.", format: "Format", status: "Status" },
+};
+</script>
+<!-- ===================== END OF CONTENT BLOCK ===================== -->
+
+<title>Catalog — Global Overgroove</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="../assets/list.css">
+<script src="../assets/site.js"></script>
+<style>
+/* catalog page only: square covers, narrower frame, wider list. Type comes from assets/list.css */
+:root{--frame-ratio:1/1}
+.cols{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+tbody tr{cursor:default}
+td.t.a{font-weight:400}      /* artist regular, title medium, as in the type test */
+td.tt{font-weight:500}
+.p-specs dd.n{font-family:var(--list-sans)}
+.p-specs dd.t{font-weight:500}
+.p-specs a.q{opacity:.75;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.p-specs a.q:hover,.p-specs a.q:focus-visible{opacity:1}
+@media (max-width:760px){.cols{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<div class="page" id="top">
+
+  <nav class="site" id="site"></nav>
+  <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
+
+  <!-- two columns: cover frame on the left, release list on the right -->
+  <div class="cols">
+    <aside class="preview" id="preview" aria-live="polite">
+      <div class="frame"><img id="p-img" alt=""></div>
+      <div class="body" id="note"></div>
+    </aside>
+    <main>
+      <h1 class="sr" id="h1"></h1>
+      <table>
+        <thead><tr><th scope="col" class="wide" id="h-cat"></th><th scope="col" id="h-artist"></th><th scope="col" id="h-title"></th><th scope="col" id="h-year"></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/base.js"></script>
+<!-- CATALOG BUILDER. Reads "catalog" in assets/site.js. No need to edit. -->
+<script>
+(function(){
+  try {
+    var C = PAGE, root = C.root || '', S = (typeof SITE !== 'undefined') ? SITE : {};
+    function $(id){ return document.getElementById(id); }
+    function el(tag, cls, text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+
+    document.title = C.browserTitle;
+    $('h1').textContent = C.heading;
+    if (C.sideTab) $('tab-side').textContent = C.sideTab;
+    else { $('tabs-side').remove(); document.querySelector('.page').classList.add('no-tabs'); }
+    ['artist', 'title', 'cat', 'year'].forEach(function(k){ $('h-' + k).textContent = C.columns[k]; });
+
+    // cover: loaded in the background, shown only once loaded (a missing file keeps the dotted frame)
+    var img = $('p-img'), want = '', cache = {};
+    img.hidden = true;
+    function setImage(src, alt){
+      want = src; img.hidden = true;
+      if (!src || cache[src] === false) return;
+      var put = function(){ if (want === src) { img.src = src; img.alt = alt; img.hidden = false; } };
+      if (cache[src] === true) return put();
+      var probe = new Image();
+      probe.onload = function(){ cache[src] = true; put(); };
+      probe.onerror = function(){ cache[src] = false; };
+      probe.src = src;
+    }
+
+    // the note under the cover
+    function show(r, tr){
+      [].forEach.call($('rows').children, function(x){ x.classList.toggle('on', x === tr); });
+      setImage(r.cover ? root + r.cover : '', r.artist + ': ' + r.title);
+      var n = $('note'); n.textContent = '';
+      // tech sheet, as on the Discography page: Title, Artist, Year, Cat. No., Format, Status
+      // (names in the sans, the rest in the mono), then the tracklist
+      var dl = el('dl', 'p-specs');
+      [['title', r.title, 'n t'], ['artist', r.artist, 'n'], ['year', r.year], ['cat', r.cat], ['format', r.format], ['status', r.status]].forEach(function(f){
+        if (!f[1]) return;
+        dl.appendChild(el('dt', null, C.labels[f[0]]));
+        var dd = el('dd', f[2] || null);
+        if (f[0] === 'status' && r.link) {                  // with a link, the status is a quiet text link
+          var a = el('a', 'q', f[1] + ' ↗'); a.href = r.link; a.target = '_blank'; a.rel = 'noopener'; dd.appendChild(a);
+        } else dd.textContent = f[1];
+        dl.appendChild(dd);
+      });
+      n.appendChild(dl);
+      if (r.tracks && r.tracks.length) {                    // tracklist
+        var ol = el('ol', 'tracks'); r.tracks.forEach(function(t){ ol.appendChild(el('li', null, t)); }); n.appendChild(ol);
+      }
+    }
+
+    var list = S.catalog || [];
+    if (!list.length) { $('preview').hidden = true; return; }
+    list.forEach(function(r, i){
+      var tr = el('tr'), ta = el('td', 't a'), tt = el('td', 'tt');
+      var sub = el('span', 'sub', [r.cat, r.type, r.format, r.status].filter(Boolean).join(' · '));
+      tr.tabIndex = 0; tr.id = 'c' + (i + 1);    // c1, c2 ... lets the landing search point at one release
+      ta.appendChild(document.createTextNode(r.artist));
+      tt.appendChild(document.createTextNode(r.title || '—'));
+      tt.appendChild(sub);                       // cat · type · format · status, under the title on phones only
+      tr.appendChild(el('td', 'cat wide', r.cat || '—'));   // catalogue number first (hidden on phones, where it moves under the title)
+      tr.appendChild(ta); tr.appendChild(tt);
+      tr.appendChild(el('td', 'yr', r.year || '—'));
+      tr.addEventListener('mouseenter', function(){ show(r, tr); });
+      tr.addEventListener('focus', function(){ show(r, tr); });
+      $('rows').appendChild(tr);
+    });
+
+    // arriving from the search (catalog/index.html#c3): show that release and scroll to it
+    var m = /^#c(\d+)$/.exec(location.hash), k = m ? +m[1] - 1 : 0;
+    if (!list[k]) k = 0;
+    var start = $('rows').children[k];
+    show(list[k], start);
+    if (m) start.scrollIntoView({ block: 'center' });
+  } catch (e) {
+    console.error(e);
+    document.body.insertAdjacentHTML('afterbegin', '<p style="padding:12px;font:14px monospace">Content error: check the quotation marks and commas in assets/site.js.</p>');
+  }
+})();
+</script>
+</body>
+</html>

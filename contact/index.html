@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- =====================================================================
+     CONTACT PAGE  (contact/index.html)
+     CONTENT BLOCK  -  THIS IS THE ONLY PART YOU NEED TO EDIT HERE
+     =====================================================================
+     The list is built from "contact" in assets/site.js.
+     To add a channel (Bandcamp, Instagram ...), add it there, not here.
+     ===================================================================== -->
+<script>
+const PAGE = {
+
+  root: "../",                   // path back to the site root (one folder down)
+
+  browserTitle: "Contact — Global Overgroove",
+  sideTab: "CONTACT",            // text in the black box on the right edge. "" hides it
+  heading: "Contact",            // hidden heading, for screen readers
+
+  image: "contact/contact.jpg",                     // optional square image in the panel, relative to the site root,
+                                 // e.g. "id/contact.jpg". "" = dotted placeholder
+
+  /* column headings of the list */
+  columns: { channel: "Channel", value: "Address" },
+
+  /* link texts in the panel */
+  copyLabel: "Copy",             // email only: copies the address
+  copiedLabel: "Copied",
+  writeLabel: "Write",           // email only: opens the visitor's mail app
+  openLabel: "Open",             // other channels: opens the page in a new tab
+};
+</script>
+<!-- ===================== END OF CONTENT BLOCK ===================== -->
+
+<title>Contact — Global Overgroove</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="../assets/list.css">
+<script src="../assets/site.js"></script>
+<style>
+/* contact page only: square frame, narrower panel, wider list. Type comes from assets/list.css */
+:root{--frame-ratio:1/1}
+.cols{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+td.ch{width:9em}
+td.val{font-family:var(--list-mono)}
+td.val a{text-decoration:none}
+.p-specs dd{user-select:all;-webkit-user-select:all;word-break:break-all}   /* one click selects the whole address */
+.acts{display:flex;gap:16px;margin-top:2px}
+.acts button.ql{background:none;border:0;padding:0;color:inherit;cursor:pointer}
+.note{margin:8px 0 0;font:400 var(--list-size)/1.5 var(--list-sans);opacity:.75}
+.note:empty{display:none}
+@media (max-width:760px){
+  .cols{grid-template-columns:minmax(0,1fr)}
+  td.val a::after{content:"";position:absolute;inset:0}   /* phones: a tap on the row opens / writes */
+}
+</style>
+</head>
+<body>
+<div class="page" id="top">
+
+  <nav class="site" id="site"></nav>
+  <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
+
+  <!-- two columns: panel on the left, contact list on the right -->
+  <div class="cols">
+    <aside class="preview" id="preview" aria-live="polite">
+      <div class="frame"><img id="p-img" alt=""></div>
+      <div class="body">
+        <dl class="p-specs" id="p-specs"></dl>
+        <div class="acts" id="acts"></div>
+        <p class="note" id="note"></p>
+      </div>
+    </aside>
+    <main>
+      <h1 class="sr" id="h1"></h1>
+      <table>
+        <thead><tr><th scope="col" id="h-channel"></th><th scope="col" id="h-value"></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/base.js"></script>
+<!-- CONTACT BUILDER. Reads "contact" in assets/site.js. No need to edit. -->
+<script>
+(function(){
+  try {
+    var C = PAGE, root = C.root || '', S = (typeof SITE !== 'undefined') ? SITE : {};
+    function $(id){ return document.getElementById(id); }
+    function el(tag, cls, text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+    function isMail(c){ return /^email$/i.test(c.channel) || /@/.test(c.link) && !/^https?:/.test(c.link); }
+    function href(c){ return !c.link ? '' : isMail(c) ? 'mailto:' + c.link.replace(/^mailto:/, '') : c.link; }
+
+    document.title = C.browserTitle;
+    $('h1').textContent = C.heading;
+    if (C.sideTab) $('tab-side').textContent = C.sideTab;
+    else { $('tabs-side').remove(); document.querySelector('.page').classList.add('no-tabs'); }
+    $('h-channel').textContent = C.columns.channel; $('h-value').textContent = C.columns.value;
+
+    // panel image: shown only once loaded (a missing file keeps the dotted frame)
+    var img = $('p-img'); img.hidden = true;
+    if (C.image) { var probe = new Image(); probe.onload = function(){ img.src = probe.src; img.hidden = false; }; probe.src = root + C.image; }
+
+    // copy: clipboard where the browser allows it, otherwise the address is selected for the visitor to copy
+    function copy(text, btn, dd){
+      var done = function(){ btn.textContent = C.copiedLabel; setTimeout(function(){ btn.textContent = C.copyLabel; }, 1600); };
+      var select = function(){ var r = document.createRange(); r.selectNodeContents(dd); var s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+      try { navigator.clipboard.writeText(text).then(done, select); } catch (e) { select(); }
+    }
+
+    function show(c, tr){
+      [].forEach.call($('rows').children, function(x){ x.classList.toggle('on', x === tr); });
+      var dl = $('p-specs'); dl.textContent = '';
+      dl.appendChild(el('dt', null, c.channel));
+      var dd = el('dd', null, c.value); dl.appendChild(dd);
+      var acts = $('acts'); acts.textContent = '';
+      var h = href(c);
+      if (h && isMail(c)) {
+        var b = el('button', 'ql', C.copyLabel); b.type = 'button';
+        b.addEventListener('click', function(){ copy(c.link.replace(/^mailto:/, ''), b, dd); });
+        acts.appendChild(b);
+        var w = el('a', 'ql', C.writeLabel + ' ↗'); w.href = h; acts.appendChild(w);
+      } else if (h) {
+        var o = el('a', 'ql', C.openLabel + ' ↗'); o.href = h; o.target = '_blank'; o.rel = 'noopener'; acts.appendChild(o);
+      }
+      $('note').textContent = c.note || '';
+    }
+
+    var list = S.contact || [];
+    if (!list.length) { $('preview').hidden = true; return; }
+    list.forEach(function(c){
+      var tr = el('tr'), v = el('td', 'val'), h = href(c);
+      tr.tabIndex = 0; tr.style.cursor = 'default';
+      if (h) { var a = el('a', null, c.value); a.href = h; if (!isMail(c)) { a.target = '_blank'; a.rel = 'noopener'; } v.appendChild(a); }
+      else v.textContent = c.value;
+      tr.appendChild(el('td', 't ch', c.channel)); tr.appendChild(v);
+      tr.addEventListener('mouseenter', function(){ show(c, tr); });
+      tr.addEventListener('focus', function(){ show(c, tr); });
+      $('rows').appendChild(tr);
+    });
+    show(list[0], $('rows').firstChild);
+  } catch (e) {
+    console.error(e);
+    document.body.insertAdjacentHTML('afterbegin', '<p style="padding:12px;font:14px monospace">Content error: check the quotation marks and commas in assets/site.js.</p>');
+  }
+})();
+</script>
+</body>
+</html>

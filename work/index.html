@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- =====================================================================
+     WORK PAGE  (work/index.html)
+     CONTENT BLOCK  -  THIS IS THE ONLY PART YOU NEED TO EDIT HERE
+     =====================================================================
+     The table is built from "projects" in assets/site.js.
+     To add a project, add it there, not here.
+     ===================================================================== -->
+<script>
+const PAGE = {
+
+  root: "../",                   // path back to the site root (one folder down)
+
+  browserTitle: "Work — Global Overgroove",
+  sideTab: "WORK",               // text in the black box on the right edge. "" hides it
+  heading: "Work",               // above the table
+  previewLabel: "Open",          // link text under the preview
+  showText: false,               // true = show each project's short "text" (assets/site.js) under the preview
+  soonLabel: "Page in preparation",   // shown instead, for projects without a page yet
+};
+</script>
+<!-- ===================== END OF CONTENT BLOCK ===================== -->
+
+<title>Work — Global Overgroove</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<script src="../assets/site.js"></script>
+<link rel="stylesheet" href="../assets/list.css">
+<style>
+/* work page only: frame shape (width / height) */
+:root{--frame-ratio:4/5}
+</style>
+</head>
+<body>
+<div class="page" id="top">
+
+  <nav class="site" id="site"></nav>
+  <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
+
+  <!-- two columns: preview frame on the left, project table on the right -->
+  <div class="cols">
+    <aside class="preview" id="preview" aria-live="polite">
+      <div class="frame"><img id="p-img" alt=""></div>
+      <div class="body">
+        <p class="p-title" id="p-title"></p>
+        <p class="p-meta" id="p-meta"></p>
+        <p class="p-text" id="p-text"></p>
+        <a class="ql" id="p-open"></a>
+        <span class="p-soon" id="p-soon"></span>
+      </div>
+    </aside>
+    <main>
+      <h1 class="sr" id="h1"></h1>
+      <table>
+        <tbody id="rows"></tbody>
+      </table>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/base.js"></script>
+<!-- WORK PAGE BUILDER. Reads "projects" in assets/site.js. No need to edit. -->
+<script>
+(function(){
+  try {
+    var C = PAGE, root = C.root || '', S = (typeof SITE !== 'undefined') ? SITE : {};
+    function $(id){ return document.getElementById(id); }
+    function el(tag, cls, text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+    function pad(n){ return String(n).padStart(3,'0'); }
+
+    document.title = C.browserTitle;
+    $('h1').textContent = C.heading;     // hidden heading, for screen readers only
+    if (C.sideTab) $('tab-side').textContent = C.sideTab;
+    else { $('tabs-side').remove(); document.querySelector('.page').classList.add('no-tabs'); }
+    $('p-open').textContent = C.previewLabel + ' →';
+
+    // preview image: loaded in the background and shown only once it has loaded,
+    // so a missing file never flashes a broken image; until then the dotted frame stays
+    var img = $('p-img'), want = '', cache = {};
+    img.hidden = true;
+    function setImage(p){
+      var src = p.image ? root + p.image : '';
+      want = src; img.hidden = true;
+      if (!src || cache[src] === false) return;
+      var put = function(){ if (want === src) { img.src = src; img.alt = p.title; img.hidden = false; } };
+      if (cache[src] === true) return put();
+      var probe = new Image();
+      probe.onload = function(){ cache[src] = true; put(); };
+      probe.onerror = function(){ cache[src] = false; };
+      probe.src = src;
+    }
+    function show(p, tr){
+      [].forEach.call($('rows').children, function(r){ r.classList.toggle('on', r === tr); });
+      setImage(p);
+      $('p-title').textContent = p.title;
+      $('p-meta').textContent = [p.year, p.type, p.role].filter(Boolean).join(' · ');
+      $('p-text').textContent = C.showText ? (p.text || '') : '';
+      $('p-open').hidden = !p.link; $('p-soon').hidden = !!p.link;
+      if (p.link) $('p-open').href = root + p.link;
+    }
+    $('p-soon').textContent = C.soonLabel || '';
+
+    var list = S.projects || [];
+    if (!list.length) { $('preview').hidden = true; return; }
+    list.forEach(function(p, i){
+      // with a page: the title is a link covering the row; without: plain text, the row only previews
+      var tr = el('tr', p.link ? null : 'soon'), t = el('td', 't'), a = el(p.link ? 'a' : 'span', null, p.title);
+      if (p.link) a.href = root + p.link; else { tr.tabIndex = 0; tr.addEventListener('focus', function(){ show(p, tr); }); }
+      t.appendChild(a);
+      tr.appendChild(t);
+      tr.appendChild(el('td', 'yr', p.year || '—'));
+      tr.appendChild(el('td', 'type', p.type || '—'));
+      tr.addEventListener('mouseenter', function(){ show(p, tr); });
+      a.addEventListener('focus', function(){ show(p, tr); });
+      $('rows').appendChild(tr);
+    });
+    show(list[0], $('rows').firstChild);
+  } catch (e) {
+    console.error(e);
+    document.body.insertAdjacentHTML('afterbegin', '<p style="padding:12px;font:14px monospace">Content error: check the quotation marks and commas in assets/site.js.</p>');
+  }
+})();
+</script>
+</body>
+</html>
