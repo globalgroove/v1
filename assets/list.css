@@ -35,6 +35,10 @@ tbody tr:hover,tbody tr:focus-within,tbody tr.on{background:var(--ink);color:var
 tbody tr:hover td,tbody tr:focus-within td,tbody tr.on td{border-bottom-color:var(--ink)}
 tbody tr:focus-within a{outline:none}
 tbody tr:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+/* the last hovered row is not kept highlighted once the pointer leaves the list */
+#rows:not(:hover) tr.on:not(:focus-within){background:none;color:inherit}
+#rows:not(:hover) tr.on:not(:focus-within) td{border-bottom-color:var(--row-line)}
+#rows:not(:hover) tr.soon.on:not(:focus-within) td{opacity:.75}
 
 /* preview panel: dark, stays in view while scrolling the list */
 .preview{position:sticky;top:56px;background:var(--panel);color:var(--panel-text)}
