@@ -6,7 +6,7 @@
 
 <!-- =====================================================================
      C-PENTANE  (work/c-pentane/index.html)
-     An inventory of found fridges; each unit's components hold tracks.
+     An inventory of found fridges; each unit holds a few tracks.
      Nothing to edit here: units and tracks are in archive.js (this folder),
      photos in imgs/, audio in audio/<unit code>/.
      ===================================================================== -->
@@ -22,59 +22,55 @@ const PAGE = { root: "../../" };   // path back to the site root (two folders do
 <link rel="stylesheet" href="../../assets/list.css">
 <script src="../../assets/site.js"></script>
 <script src="archive.js"></script>
-<script src="fridge.js"></script>
+<script src="mesh.js"></script>
 <style>
-/* C-Pentane only. Type and colours come from base.css / list.css */
+/* C-Pentane only. Type and colours come from base.css / list.css.
+   On a computer the unit view fits one screen, like a game inventory: nothing scrolls. */
+:root{--player-h:58px}
+[hidden]{display:none!important}
 .head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--ink);padding-bottom:6px;margin:6px 0 14px}
 .head h1{margin:0;font:500 13px var(--list-sans);letter-spacing:.14em;text-transform:uppercase}
 .head p{margin:0;font:400 var(--list-size) var(--list-mono);opacity:.75}
-[hidden]{display:none!important}
 
-/* ---- inventory: a grid of slots ---- */
+/* ---- inventory: a row of slots ---- */
 .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
 .slot{display:block;text-decoration:none;color:inherit}
 .slot .ph{position:relative;aspect-ratio:1/1;background:var(--panel) radial-gradient(circle at 50% 50%,var(--panel-rule) 0 1px,transparent 1.4px) 0 0/5px 5px}
 .slot .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .slot .tag{position:absolute;left:6px;top:6px;font:500 9px var(--list-mono);letter-spacing:.12em;color:var(--panel-text);background:var(--panel);padding:2px 5px}
-.slot .meta{display:flex;justify-content:space-between;gap:8px;padding:6px 0 4px;font:400 var(--list-size)/1.3 var(--list-mono)}
+.slot .meta{display:flex;justify-content:space-between;gap:8px;padding:6px 0 0;font:400 var(--list-size)/1.35 var(--list-mono)}
 .slot .meta b{font-weight:500}
-.slot .cells{display:grid;grid-template-columns:repeat(12,1fr);gap:2px}
-.slot .cells i{display:block;height:5px;border:1px solid var(--ink);opacity:.35}
-.slot .cells i.on{background:var(--ink);opacity:1}
+.slot .meta + .meta{padding-top:1px;opacity:.7}
 a.slot:hover .ph,a.slot:focus-visible .ph{outline:2px solid var(--ink);outline-offset:2px}
 a.slot:focus-visible{outline:none}
 .slot.empty .ph{background:none;border:1px dashed var(--rule)}
 .slot.empty .meta{opacity:.4}
 
-/* ---- unit view ---- */
+/* ---- unit view: one screen ---- */
 .close{position:fixed;top:calc(28px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));width:28px;height:28px;background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1px var(--rule);z-index:7}
 .close::before,.close::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:1px;background:currentColor;transform:translate(-50%,-50%) rotate(45deg)}
 .close::after{transform:translate(-50%,-50%) rotate(-45deg)}
 .close:hover,.close:focus-visible{background:var(--ink);color:var(--paper);box-shadow:none;outline:none}
-.board{position:relative;border:1px solid var(--rule)}
-#cv{display:block;width:100%;height:min(60vh,560px);min-height:340px;touch-action:none;cursor:grab}
-#cv.drag{cursor:grabbing} #cv.hot{cursor:pointer}
+#unit{display:flex;flex-direction:column;height:calc(100dvh - 96px - var(--player-h));min-height:520px}
+.hud{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 22px}
+.hud .left{min-height:0;display:flex;flex-direction:column}
+.hud .preview{position:static;display:flex;flex-direction:column;min-height:0}
+.hud .preview .frame{flex:0 1 auto;aspect-ratio:1/1;max-height:calc(100% - 130px);width:auto;max-width:100%}
+.hud .right{min-height:0;display:flex;flex-direction:column}
+.board{position:relative;flex:1;min-height:200px;border:1px solid var(--rule)}
+#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
+#cv.drag{cursor:grabbing}
 .hint{position:absolute;left:10px;bottom:8px;margin:0;font:400 10px var(--list-mono);opacity:.6;pointer-events:none}
-.legend{position:absolute;right:10px;bottom:8px;margin:0;display:flex;gap:14px;flex-wrap:wrap;font:400 10px var(--list-mono);pointer-events:none}
-.legend i{display:inline-block;width:14px;height:0;border-top:1px solid var(--ink);vertical-align:3px;margin-right:5px}
-.legend i.f{border-top-style:dashed;opacity:.5}
-.bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;padding:8px 0;border-bottom:1px solid var(--row-line)}
-.grp{display:flex;align-items:center;gap:6px}
-.grp > span{font:500 9px var(--list-sans);letter-spacing:.16em;text-transform:uppercase;opacity:.7;margin-right:2px}
-.bar button{font:400 var(--list-size) var(--list-mono);background:transparent;color:var(--ink);border:1px solid var(--rule);padding:3px 8px;cursor:pointer}
-.bar button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.bar button:hover{border-color:var(--ink)}
-.bar input[type=range]{width:120px;accent-color:var(--ink)}
-.unit-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 22px;align-items:start;margin-top:14px;padding-bottom:90px}
-.unit-cols .preview{position:sticky;top:56px}
+.ctl{position:absolute;right:8px;top:8px;display:flex;gap:6px}
+.ctl button{font:400 var(--list-size) var(--list-mono);background:var(--paper);color:var(--ink);border:1px solid var(--rule);padding:3px 8px;cursor:pointer}
+.ctl button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.ctl button:hover{border-color:var(--ink)}
+.tracks-box{flex:0 0 auto;max-height:34%;overflow:auto;margin-top:12px}
 .p-specs dd.n{font-family:var(--list-sans);font-weight:500}
 .tag-ex{display:inline-block;margin-left:6px;font:500 9px var(--list-mono);letter-spacing:.12em;border:1px solid currentColor;padding:0 4px;vertical-align:1px}
-#rows tr.none{cursor:default}
-#rows tr.none td{opacity:.4}
-#rows tr.none:hover{background:none;color:inherit}
-#rows tr.none:hover td{border-bottom-color:var(--row-line)}
 #rows tr.playing td.c::before{content:"\25B6";font-size:.7em;margin-right:4px}
 td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
+.none-yet{margin:10px 0 0;font:400 var(--list-size) var(--list-mono);opacity:.6}
 
 /* ---- player: fixed to the bottom while a unit is open ---- */
 .player{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--paper);border-top:1px solid var(--ink);padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
@@ -86,16 +82,21 @@ td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
 .player .now{font:500 var(--list-size)/1.3 var(--list-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .player .now span{font-family:var(--list-mono);font-weight:400;opacity:.7}
 .player .time{font:400 var(--list-size) var(--list-mono);white-space:nowrap}
-.player .track{grid-column:1/-1;position:relative;height:14px;cursor:pointer;touch-action:none}
-.player .track::before{content:"";position:absolute;left:0;right:0;top:6px;height:1px;background:var(--rule)}
-.player .fill{position:absolute;left:0;top:5px;height:3px;background:var(--ink);width:0}
+.player .track{grid-column:1/-1;position:relative;height:12px;cursor:pointer;touch-action:none}
+.player .track::before{content:"";position:absolute;left:0;right:0;top:5px;height:1px;background:var(--rule)}
+.player .fill{position:absolute;left:0;top:4px;height:3px;background:var(--ink);width:0}
 .player .track:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
+/* small or short screens: the view stacks and scrolls as a normal page */
+@media (max-width:760px), (max-height:560px){
+  #unit{height:auto;min-height:0;padding-bottom:calc(var(--player-h) + 24px)}
+  .hud{grid-template-columns:minmax(0,1fr);gap:14px}
+  .hud .preview{display:flex}
+  .hud .preview .frame{max-height:none;width:100%}
+  .board{flex:none;height:52vh}
+  .tracks-box{max-height:none;overflow:visible}
+}
 @media (max-width:760px){
-  .unit-cols{grid-template-columns:minmax(0,1fr);gap:14px}
-  .unit-cols .preview{display:block;position:static}
-  #cv{height:52vh}
-  .legend,.hint{position:static;padding:4px 10px 6px}
   td.tm{display:none}
   .slots{grid-template-columns:repeat(2,minmax(0,1fr))}
   .close{top:calc(20px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px))}
@@ -119,37 +120,30 @@ td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
   <section id="unit" hidden>
     <a class="close" href="#" id="close" aria-label="Close, back to the inventory" title="Back to the inventory"></a>
     <div class="head"><h1 id="u-title"></h1><p id="u-count"></p></div>
-    <div class="board">
-      <canvas id="cv" role="img" aria-label="Exploded view of the unit. Components that hold a track are drawn solid; click one to play it. Drag to rotate, scroll or pinch to zoom."></canvas>
-      <p class="hint">drag: rotate · scroll / pinch: zoom · click a component: play</p>
-      <p class="legend"><span><i></i>holds a track</span><span><i class="f"></i>empty</span></p>
-    </div>
-    <div class="bar">
-      <div class="grp"><span>Explode</span><input type="range" id="ex" min="0" max="100" value="70" aria-label="Explode"></div>
-      <div class="grp" role="group" aria-label="View"><span>View</span>
-        <button type="button" data-view="iso" aria-pressed="true">ISO</button>
-        <button type="button" data-view="front">Front</button>
-        <button type="button" data-view="side">Side</button>
-        <button type="button" data-view="rear">Rear</button>
-        <button type="button" data-view="top">Top</button>
+    <div class="hud">
+      <div class="left">
+        <aside class="preview" aria-live="polite">
+          <div class="frame"><img id="u-img" alt=""></div>
+          <div class="body"><dl class="p-specs" id="u-specs"></dl></div>
+        </aside>
       </div>
-      <div class="grp" role="group" aria-label="Show"><span>Show</span>
-        <button type="button" id="t-labels" aria-pressed="true">Labels</button>
-        <button type="button" id="t-cab" aria-pressed="true">Cabinet</button>
-        <button type="button" id="t-spin" aria-pressed="true">Turn</button>
+      <div class="right">
+        <div class="board">
+          <canvas id="cv" role="img" aria-label="The unit's photo as a wire grid relief. Drag to turn, scroll or pinch to zoom, double-click to reset."></canvas>
+          <div class="ctl">
+            <button type="button" id="t-spin" aria-pressed="true">Sway</button>
+            <button type="button" id="t-reset">Reset</button>
+          </div>
+          <p class="hint">drag: turn · scroll / pinch: zoom · double-click: reset</p>
+        </div>
+        <div class="tracks-box">
+          <table>
+            <thead><tr><th>Ref.</th><th>Component</th><th>Track</th><th class="wide">Time</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+          <p class="none-yet" id="none-yet" hidden>No tracks in this unit yet.</p>
+        </div>
       </div>
-    </div>
-    <div class="unit-cols">
-      <aside class="preview" aria-live="polite">
-        <div class="frame"><img id="u-img" alt=""></div>
-        <div class="body"><dl class="p-specs" id="u-specs"></dl></div>
-      </aside>
-      <main>
-        <table>
-          <thead><tr><th>Ref.</th><th>Component</th><th>Track</th><th class="wide">Time</th></tr></thead>
-          <tbody id="rows"></tbody>
-        </table>
-      </main>
     </div>
   </section>
 </div>
@@ -162,7 +156,7 @@ td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
       <button type="button" id="p-play" aria-pressed="false" aria-label="Play">Play</button>
       <button type="button" id="p-next" aria-label="Next track">&#9654;&#9654;</button>
     </div>
-    <div class="now" id="p-now" aria-live="polite">Select a component</div>
+    <div class="now" id="p-now" aria-live="polite">Select a track</div>
     <div class="time" id="p-time">0:00 / 0:00</div>
     <div class="track" id="p-track" role="slider" tabindex="0" aria-label="Position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="p-fill"></div></div>
   </div>
@@ -175,72 +169,58 @@ td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
 (function(){
   try {
     var A = ARCHIVE, units = (A.units || []).slice().sort(function(a, b){ return a.code < b.code ? -1 : a.code > b.code ? 1 : 0; });   // CP-001 first
+    var NAMES = { 'R-01':'Compressor', 'R-02':'Condenser', 'R-03':'Filter-drier', 'R-04':'Capillary tube', 'R-05':'Evaporator', 'R-06':'Suction line',
+                  'E-01':'Power cord', 'E-02':'Thermostat', 'E-03':'Start relay', 'E-04':'Overload protector', 'E-05':'Door switch', 'E-06':'Lamp' };
+    var REFS = Object.keys(NAMES);
     function $(id){ return document.getElementById(id); }
     function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
     function fmt(s){ if (!isFinite(s)) return '—'; var m = Math.floor(s / 60), r = Math.floor(s % 60); return m + ':' + (r < 10 ? '0' : '') + r; }
     function slug(u){ return u.code.toLowerCase(); }
-    var view = null, unit = null, order = [], cur = -1, audio = $('audio');
-    var COMPS = [];
+    function trackRefs(u){ return REFS.filter(function(r){ return (u.tracks || {})[r]; }); }   // in component order
+    function count(n){ return n ? n + (n === 1 ? ' track' : ' tracks') : 'no tracks'; }
+    var mesh = null, unit = null, order = [], cur = -1, audio = $('audio');
 
     /* ---------- inventory ---------- */
     $('inv-title').textContent = A.title;
-    var totalTracks = 0;
-    units.forEach(function(u){ totalTracks += Object.keys(u.tracks || {}).length; });
-    $('inv-count').textContent = units.length + (units.length === 1 ? ' unit' : ' units') + ' · ' + totalTracks + ' tracks';
-    var REFS = ['R-01','R-02','R-03','R-04','R-05','R-06','E-01','E-02','E-03','E-04','E-05','E-06'];
+    var total = 0; units.forEach(function(u){ total += trackRefs(u).length; });
+    $('inv-count').textContent = units.length + (units.length === 1 ? ' unit' : ' units') + ' · ' + count(total);
     units.forEach(function(u){
-      var a = el('a', 'slot'); a.href = '#' + slug(u);
-      var n = Object.keys(u.tracks || {}).length;
-      a.setAttribute('aria-label', u.code + ', found ' + u.found + ', ' + n + ' of 12 components hold a track');
+      var a = el('a', 'slot'), n = trackRefs(u).length; a.href = '#' + slug(u);
+      a.setAttribute('aria-label', u.code + ', found ' + u.found + ', ' + count(n));
       var ph = el('div', 'ph');
       if (u.photo){ var im = new Image(); im.alt = ''; im.loading = 'lazy'; im.onerror = function(){ im.remove(); }; im.src = u.photo; ph.appendChild(im); }
       if (u.example) ph.appendChild(el('span', 'tag', 'EXAMPLE'));
       a.appendChild(ph);
-      var meta = el('div', 'meta'); meta.appendChild(el('b', null, u.code)); meta.appendChild(el('span', null, u.found)); a.appendChild(meta);
-      var cells = el('div', 'cells'); cells.setAttribute('aria-hidden', 'true');
-      REFS.forEach(function(r){ cells.appendChild(el('i', (u.tracks || {})[r] ? 'on' : null)); });
-      a.appendChild(cells);
+      var m1 = el('div', 'meta'); m1.appendChild(el('b', null, u.code)); m1.appendChild(el('span', null, u.found)); a.appendChild(m1);
+      a.appendChild(el('div', 'meta', count(n)));
       $('slots').appendChild(a);
     });
     for (var e = units.length; e < (A.slots || 0); e++){
-      var s = el('div', 'slot empty'); s.setAttribute('aria-hidden', 'true');
-      s.appendChild(el('div', 'ph'));
+      var s = el('div', 'slot empty'); s.setAttribute('aria-hidden', 'true'); s.appendChild(el('div', 'ph'));
       var m = el('div', 'meta'); m.appendChild(el('b', null, 'CP-' + String(e + 1).padStart(3, '0'))); m.appendChild(el('span', null, '—')); s.appendChild(m);
       $('slots').appendChild(s);
     }
 
     /* ---------- unit view ---------- */
-    function buildView(){
-      if (view) return;
-      view = FridgeView($('cv'), {
-        onHover: function(id){ markRow(id, 'hover'); },
-        onPick: function(id){ if (id && unit.tracks[id]) playRef(id); },
-        onSpin: function(on){ $('t-spin').setAttribute('aria-pressed', on); },
-        onView: function(name){ document.querySelectorAll('[data-view]').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.view === name); }); }
-      });
-      COMPS = view.COMPONENTS;
-      $('ex').addEventListener('input', function(){ view.setExplode(this.value / 100); });
-      document.querySelectorAll('[data-view]').forEach(function(b){ b.addEventListener('click', function(){ view.view(b.dataset.view); }); });
-      [['t-labels','labels'],['t-cab','cab'],['t-spin','spin']].forEach(function(t){
-        var b = $(t[0]); b.setAttribute('aria-pressed', view.get(t[1]));
-        b.addEventListener('click', function(){ var v = !view.get(t[1]); view.set(t[1], v); b.setAttribute('aria-pressed', v); });
-      });
-    }
     function showUnit(u){
-      unit = u; buildView(); view.resize();
-      view.configure({ pose: u.pose, doors: u.doors });   // the drawing takes the unit's pose from the photo
-      document.querySelectorAll('[data-view]').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.view === 'iso'); });
+      unit = u;
+      $('inv').hidden = true; $('unit').hidden = false; $('player').hidden = false;
+      if (!mesh){
+        mesh = PhotoMesh($('cv'), { onSpin: function(on){ $('t-spin').setAttribute('aria-pressed', on); } });
+        $('t-spin').addEventListener('click', function(){ var v = !mesh.get('spin'); mesh.set('spin', v); this.setAttribute('aria-pressed', v); });
+        $('t-reset').addEventListener('click', function(){ mesh.reset(); });
+      }
+      mesh.resize(); mesh.load(u.photo || ''); mesh.reset();
+      var refs = trackRefs(u);
       $('u-title').textContent = A.title + ' — ' + u.code;
-      var n = Object.keys(u.tracks || {}).length;
-      $('u-count').textContent = 'found ' + u.found + ' · ' + n + ' / 12 components';
+      $('u-count').textContent = 'found ' + u.found + ' · ' + count(refs.length);
       $('tab-side').textContent = u.code;
       document.title = u.code + ' — C-Pentane';
 
-      // photo + specs
       var img = $('u-img'); img.hidden = true; img.removeAttribute('src');
       if (u.photo){ var pr = new Image(); pr.onload = function(){ if (unit === u){ img.src = u.photo; img.alt = 'Unit ' + u.code + ' as found'; img.hidden = false; } }; pr.src = u.photo; }
       var dl = $('u-specs'); dl.textContent = '';
-      [['Unit', u.code, 'n'], ['Found', u.found], ['Brand', u.brand], ['Model', u.model], ['Refrigerant', u.refrigerant], ['Condition', u.condition], ['Tracks', n + ' / 12']].forEach(function(r){
+      [['Unit', u.code, 'n'], ['Found', u.found], ['Brand', u.brand], ['Model', u.model], ['Refrigerant', u.refrigerant], ['Tracks', String(refs.length)]].forEach(function(r){
         if (!r[1]) return;
         dl.appendChild(el('dt', null, r[0]));
         var dd = el('dd', r[2] || null, r[1]);
@@ -248,30 +228,22 @@ td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
         dl.appendChild(dd);
       });
 
-      // component list; order = the components that hold a track, in list order
-      var tb = $('rows'); tb.textContent = ''; order = [];
-      COMPS.forEach(function(c){
-        var t = (u.tracks || {})[c.id], tr = el('tr', t ? null : 'none');
-        tr.dataset.id = c.id;
-        tr.appendChild(el('td', 'c', c.id)); tr.appendChild(el('td', null, c.name));
-        tr.appendChild(el('td', null, t ? t.title : '—'));
+      // only the tracks this unit holds, in component order
+      var tb = $('rows'); tb.textContent = ''; order = refs.slice();
+      refs.forEach(function(ref){
+        var t = u.tracks[ref], tr = el('tr'); tr.dataset.id = ref; tr.tabIndex = 0;
+        tr.appendChild(el('td', 'c', ref)); tr.appendChild(el('td', null, NAMES[ref])); tr.appendChild(el('td', null, t.title));
         var tm = el('td', 'tm wide', '—'); tr.appendChild(tm);
-        if (t){
-          order.push(c.id); tr.tabIndex = 0;
-          var probe = new Audio(); probe.preload = 'metadata'; probe.src = t.src;
-          probe.addEventListener('loadedmetadata', function(){ tm.textContent = fmt(probe.duration); });
-          tr.addEventListener('click', function(){ playRef(c.id); });
-          tr.addEventListener('keydown', function(ev){ if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); playRef(c.id); } });
-        }
-        tr.addEventListener('mouseenter', function(){ view.setHover(c.id); });
-        tr.addEventListener('mouseleave', function(){ view.setHover(null); });
+        var probe = new Audio(); probe.preload = 'metadata'; probe.src = t.src;
+        probe.addEventListener('loadedmetadata', function(){ tm.textContent = fmt(probe.duration); });
+        tr.addEventListener('click', function(){ playRef(ref); });
+        tr.addEventListener('keydown', function(ev){ if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); playRef(ref); } });
         tb.appendChild(tr);
       });
-      view.setLit(order.slice()); view.setActive(null); view.setRunning(false);
-      stop(); $('p-now').textContent = order.length ? 'Select a component, or press Play' : 'No tracks yet';
+      $('none-yet').hidden = refs.length > 0;
+      document.querySelector('.tracks-box table').hidden = !refs.length;
+      stop(); $('p-now').textContent = refs.length ? 'Select a track, or press Play' : 'No tracks yet';
       updateButtons();
-      $('inv').hidden = true; $('unit').hidden = false; $('player').hidden = false;
-      view.resize();                                  // measure the drawing now that it is visible
       window.scrollTo(0, 0);
     }
     function showInventory(){
@@ -280,31 +252,53 @@ td.tm{width:4.5em;font-family:var(--list-mono);white-space:nowrap}
       $('tab-side').textContent = A.sideTab; document.title = 'C-Pentane — Global Overgroove';
     }
 
-    /* ---------- player ---------- */
-    function markRow(id, cls){ [].forEach.call($('rows').children, function(r){ r.classList.toggle(cls === 'hover' ? 'on' : cls, r.dataset.id === id); }); }
-    function playRef(id){
-      var i = order.indexOf(id); if (i < 0) return;
-      if (i === cur && audio.src){ toggle(); return; }
-      cur = i; var t = unit.tracks[id], c = COMPS.filter(function(x){ return x.id === id; })[0];
-      audio.src = t.src; audio.play().catch(function(){});
-      $('p-now').textContent = ''; $('p-now').appendChild(document.createTextNode(c.name + ' — ' + t.title + ' '));
-      $('p-now').appendChild(el('span', null, unit.code + ' · ' + id));
-      view.setActive(id); markRow(id, 'playing'); updateButtons();
+    /* ---------- sound level for the mesh (not available when the page is opened as a local file) ---------- */
+    var actx = null, analyser = null, buf = null;
+    function hookLevel(){
+      if (actx || location.protocol === 'file:') return;
+      try {
+        actx = new (window.AudioContext || window.webkitAudioContext)();
+        var srcNode = actx.createMediaElementSource(audio);
+        analyser = actx.createAnalyser(); analyser.fftSize = 1024; buf = new Uint8Array(analyser.fftSize);
+        srcNode.connect(analyser); analyser.connect(actx.destination);
+      } catch (e) { analyser = null; }
     }
-    function toggle(){ if (!audio.src){ if (order.length) playRef(order[0]); return; } if (audio.paused) audio.play().catch(function(){}); else audio.pause(); }
-    function stop(){ audio.pause(); audio.removeAttribute('src'); audio.load(); cur = -1; $('p-fill').style.width = '0'; $('p-time').textContent = '0:00 / 0:00'; markRow(null, 'playing'); if (view){ view.setActive(null); view.setRunning(false); } $('p-play').textContent = 'Play'; $('p-play').setAttribute('aria-pressed', 'false'); }
+    (function meter(){
+      if (mesh){
+        var v = 0;
+        if (analyser && !audio.paused){ analyser.getByteTimeDomainData(buf); var sum = 0; for (var i = 0; i < buf.length; i++){ var x = (buf[i] - 128) / 128; sum += x * x; } v = Math.min(1, Math.sqrt(sum / buf.length) * 3); }
+        else if (!analyser && !audio.paused) v = 0.25;                   // no level available: a steady movement while playing
+        mesh.setLevel(v);
+      }
+      requestAnimationFrame(meter);
+    })();
+
+    /* ---------- player ---------- */
+    function markRow(id){ [].forEach.call($('rows').children, function(r){ r.classList.toggle('playing', r.dataset.id === id); r.classList.toggle('on', r.dataset.id === id); }); }
+    function playRef(ref){
+      var i = order.indexOf(ref); if (i < 0) return;
+      if (i === cur && audio.getAttribute('src')){ toggle(); return; }
+      hookLevel(); if (actx && actx.state === 'suspended') actx.resume();
+      cur = i; var t = unit.tracks[ref];
+      audio.src = t.src; audio.play().catch(function(){});
+      $('p-now').textContent = ''; $('p-now').appendChild(document.createTextNode(t.title + ' '));
+      $('p-now').appendChild(el('span', null, unit.code + ' · ' + ref + ' ' + NAMES[ref]));
+      markRow(ref); updateButtons();
+    }
+    function toggle(){ if (!audio.getAttribute('src')){ if (order.length) playRef(order[0]); return; } if (audio.paused){ if (actx && actx.state === 'suspended') actx.resume(); audio.play().catch(function(){}); } else audio.pause(); }
+    function stop(){ audio.pause(); audio.removeAttribute('src'); audio.load(); cur = -1; $('p-fill').style.width = '0'; $('p-time').textContent = '0:00 / 0:00'; markRow(null); $('p-play').textContent = 'Play'; $('p-play').setAttribute('aria-pressed', 'false'); }
     function updateButtons(){ $('p-prev').disabled = cur <= 0; $('p-next').disabled = cur < 0 || cur >= order.length - 1; $('p-play').disabled = !order.length; }
     $('p-play').addEventListener('click', toggle);
     $('p-prev').addEventListener('click', function(){ if (cur > 0) playRef(order[cur - 1]); });
     $('p-next').addEventListener('click', function(){ if (cur < order.length - 1) playRef(order[cur + 1]); });
-    audio.addEventListener('play', function(){ $('p-play').textContent = 'Pause'; $('p-play').setAttribute('aria-pressed', 'true'); view.setRunning(true); });
-    audio.addEventListener('pause', function(){ $('p-play').textContent = 'Play'; $('p-play').setAttribute('aria-pressed', 'false'); view.setRunning(false); });
+    audio.addEventListener('play', function(){ $('p-play').textContent = 'Pause'; $('p-play').setAttribute('aria-pressed', 'true'); });
+    audio.addEventListener('pause', function(){ $('p-play').textContent = 'Play'; $('p-play').setAttribute('aria-pressed', 'false'); });
     audio.addEventListener('timeupdate', function(){
       var d = audio.duration, p = d ? audio.currentTime / d : 0;
       $('p-fill').style.width = (p * 100) + '%'; $('p-time').textContent = fmt(audio.currentTime) + ' / ' + fmt(d);
       $('p-track').setAttribute('aria-valuenow', Math.round(p * 100));
     });
-    audio.addEventListener('ended', function(){ if (cur < order.length - 1) playRef(order[cur + 1]); else { view.setRunning(false); } });   // the unit plays through, component by component
+    audio.addEventListener('ended', function(){ if (cur < order.length - 1) playRef(order[cur + 1]); });   // the unit plays through
     audio.addEventListener('error', function(){ if (audio.getAttribute('src')) $('p-now').textContent = 'File not found: ' + audio.getAttribute('src'); });
     var seeking = false;
     function seekAt(x){ var r = $('p-track').getBoundingClientRect(); if (audio.duration) audio.currentTime = Math.max(0, Math.min(1, (x - r.left) / r.width)) * audio.duration; }
