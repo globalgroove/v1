@@ -28,9 +28,8 @@ const PAGE = {
   back: "work/index.html",      // where the × (top right) and the Esc key lead, relative to the site root
 
   /* ---- PAGE IDENTITY ------------------------------------------------ */
-  number: 4,                    // this page's number. Shows as 004 in the side tab and footer
-  nextPage: "",                 // the next project. A second box (number+1) appears under the side index
-                                // and links to it. Leave "" on the last page
+  number: 0,                    // automatic: the side index and footer number come from the order of
+  nextPage: "",                 // "projects" in assets/site.js, and the next box leads to the next project
   browserTitle: "SWARM OR The Transparency of Evil",   // text on the browser tab
   title: "swarm",                                     // large title box (left)
   variant: "or the transparency of evil",            // small title box (right)
@@ -51,11 +50,7 @@ const PAGE = {
 
   /* ---- MAIN TABLE:  [ "label", "unit", "value" ] --------------------- */
   /* leave the unit as "" when there is none; delete the rows a page does not need */
-  mainData: [
-    ["Title",  "",   "SWARM OR The Transparency of Evil"],
-    ["Year",   "",   "2019"],
-    ["Format", "",   "Installation"]
-  ],
+  mainData: [],                 // e.g. [ ["Dimensions", "cm", "120 × 80 × 60"] ]. [] hides the table
   mainValuesLeft: true,         // false = values centred (good for numbers); true = left aligned
 
   /* ---- MATERIALS: small technical text under the table ---------------- */
@@ -95,6 +90,7 @@ const PAGE = {
 <!-- shared files: the "../../" matches root above -->
 <link rel="stylesheet" href="../../assets/base.css">
 <link rel="stylesheet" href="../../assets/work.css">
+<link rel="stylesheet" href="../../assets/player.css">
 <script src="../../assets/site.js"></script>
 </head>
 <body>
@@ -127,10 +123,10 @@ const PAGE = {
       <div class="text" id="text-2"></div>
       <div id="audio-block">
         <h2 id="h-audio"></h2>
-        <div class="player" data-player>
-          <audio preload="metadata"></audio>
-          <div class="scroll"><table><tbody id="tracks"></tbody></table></div>
-        </div>
+        <table class="tl">
+          <thead><tr><th>No.</th><th>Track</th><th class="r">Time</th></tr></thead>
+          <tbody id="tracks"></tbody>
+        </table>
       </div>
     </aside>
   </div>
@@ -155,15 +151,22 @@ const PAGE = {
     </div>
   </dialog>
 
-  <!-- audio player bar -->
-  <div class="strip" data-strip role="region" aria-label="Audio player">
-    <button type="button" class="play" aria-pressed="false">Play</button>
-    <div class="s-title" aria-live="polite">Select a track</div>
-    <canvas class="wave" tabindex="0" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></canvas>
-    <span class="time">0:00 / 0:00</span>
-  </div>
-
   <div class="foot"><span id="foot-index"></span><a href="#top">Back to top</a></div>
+</div>
+
+<!-- player, fixed to the bottom (hidden when the page has no tracks) -->
+<div class="player" id="player" role="region" aria-label="Audio player" hidden>
+  <div class="in">
+    <div class="btns">
+      <button type="button" id="p-prev" aria-label="Previous track">&#9664;&#9664;</button>
+      <button type="button" id="p-play" aria-pressed="false" aria-label="Play">Play</button>
+      <button type="button" id="p-next" aria-label="Next track">&#9654;&#9654;</button>
+    </div>
+    <div class="now" id="p-now" aria-live="polite"></div>
+    <div class="time" id="p-time">0:00 / 0:00</div>
+    <div class="track" id="p-track" role="slider" tabindex="0" aria-label="Position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="p-fill"></div></div>
+  </div>
+  <audio id="audio" preload="metadata"></audio>
 </div>
 
 <script src="../../assets/base.js"></script>

@@ -20,11 +20,12 @@ const PAGE = { root: "../../" };   // path back to the site root (two folders do
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/base.css">
 <link rel="stylesheet" href="../../assets/list.css">
+<link rel="stylesheet" href="../../assets/player.css">
 <script src="../../assets/site.js"></script>
 <script src="archive.js"></script>
 <style>
 /* C-Pentane only. Type and colours come from base.css / list.css */
-:root{--player-h:58px;--frame-ratio:1/1}
+:root{--frame-ratio:1/1}
 [hidden]{display:none!important}
 .head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--ink);padding-bottom:6px;margin:6px 0 14px}
 .head h1{margin:0;font:500 13px var(--list-sans);letter-spacing:.14em;text-transform:uppercase}
@@ -44,50 +45,23 @@ a.slot:focus-visible{outline:none}
 .slot.empty .meta{opacity:.4}
 
 /* ---- one unit: photo and details | tracks ---- */
-.close{position:fixed;top:calc(28px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));width:28px;height:28px;background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1px var(--rule);z-index:7}
-.close::before,.close::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:1px;background:currentColor;transform:translate(-50%,-50%) rotate(45deg)}
-.close::after{transform:translate(-50%,-50%) rotate(-45deg)}
-.close:hover,.close:focus-visible{background:var(--ink);color:var(--paper);box-shadow:none;outline:none}
-#unit{padding-bottom:calc(var(--player-h) + 20px)}
 .unit-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 22px;align-items:start}
 .unit-cols .preview{position:static}
 .p-specs dd.n{font-family:var(--list-sans);font-weight:500}
-td.no{width:3em;font-family:var(--list-mono)}
-td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right}
-#rows tr.none{cursor:default}
-#rows tr.none td{opacity:.45}
-#rows tr.none:hover{background:none;color:inherit}
-#rows tr.none:hover td{border-bottom-color:var(--row-line)}
-#rows tr.playing td.no::before{content:"\25B6";font-size:.7em;margin-right:4px}
-
-/* ---- player: fixed to the bottom while a unit is open ---- */
-.player{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--paper);border-top:1px solid var(--ink);padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.player .in{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 14px;align-items:center}
-.player .btns{display:flex;gap:6px}
-.player button{font:500 var(--list-size) var(--list-mono);background:transparent;color:var(--ink);border:1px solid var(--ink);padding:3px 9px;cursor:pointer;min-width:2.6em}
-.player button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
-.player button:disabled{opacity:.35;cursor:default}
-.player .now{font:500 var(--list-size)/1.3 var(--list-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.player .now span{font-family:var(--list-mono);font-weight:400;opacity:.7}
-.player .time{font:400 var(--list-size) var(--list-mono);white-space:nowrap}
-.player .track{grid-column:1/-1;position:relative;height:12px;cursor:pointer;touch-action:none}
-.player .track::before{content:"";position:absolute;left:0;right:0;top:5px;height:1px;background:var(--rule)}
-.player .fill{position:absolute;left:0;top:4px;height:3px;background:var(--ink);width:0}
-.player .track:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
 @media (max-width:760px){
   .unit-cols{grid-template-columns:minmax(0,1fr);gap:14px}
   .unit-cols .preview{display:block}
   .slots{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .close{top:calc(20px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px))}
 }
-@media (pointer:coarse){.close{width:36px;height:36px}}
 </style>
 </head>
 <body>
 <div class="page" id="top">
 
   <nav class="site" id="site"></nav>
+  <!-- close: back to Work from the inventory, back to the inventory from a unit -->
+  <a class="close" href="../index.html" id="close"></a>
   <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
 
   <!-- INVENTORY -->
@@ -98,7 +72,6 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
 
   <!-- ONE UNIT -->
   <section id="unit" hidden>
-    <a class="close" href="#" id="close" aria-label="Close, back to the inventory" title="Back to the inventory"></a>
     <div class="head"><h1 id="u-title"></h1><p id="u-count"></p></div>
     <div class="unit-cols">
       <aside class="preview">
@@ -106,8 +79,8 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
         <div class="body"><dl class="p-specs" id="u-specs"></dl></div>
       </aside>
       <main>
-        <table>
-          <thead><tr><th>No.</th><th>Track</th><th style="text-align:right">Time</th></tr></thead>
+        <table class="tl">
+          <thead><tr><th>No.</th><th>Track</th><th class="r">Time</th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
       </main>
@@ -123,7 +96,7 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
       <button type="button" id="p-play" aria-pressed="false" aria-label="Play">Play</button>
       <button type="button" id="p-next" aria-label="Next track">&#9654;&#9654;</button>
     </div>
-    <div class="now" id="p-now" aria-live="polite">Select a track</div>
+    <div class="now" id="p-now" aria-live="polite"></div>
     <div class="time" id="p-time">0:00 / 0:00</div>
     <div class="track" id="p-track" role="slider" tabindex="0" aria-label="Position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="p-fill"></div></div>
   </div>
@@ -179,7 +152,7 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
       var n = playable(u), state = stateOf(u);
       $('u-title').textContent = A.title + ' — ' + u.code;
       $('u-count').textContent = 'found ' + u.found + ' · ' + state.toLowerCase();
-      $('tab-side').textContent = u.code;
+      setClose(true);
       document.title = u.code + ' — C-Pentane';
 
       // photo + details: Unit, Found, Model, Tracks
@@ -209,13 +182,19 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
         tb.appendChild(tr);
       });
       stop(); updateButtons();
-      $('inv').hidden = true; $('unit').hidden = false; $('player').hidden = false;   // the player stays, even with nothing to play
+      $('inv').hidden = true; $('unit').hidden = false; $('player').hidden = false; document.body.classList.add('has-player');   // the player stays, even with nothing to play
       window.scrollTo(0, 0);
+    }
+    // close (top right): from a unit back to the inventory, from the inventory back to Work
+    function setClose(inUnit){
+      var c = $('close'); c.href = inUnit ? '#' : (PAGE.root + 'work/index.html');
+      c.setAttribute('aria-label', inUnit ? 'Close, back to the inventory' : 'Close, back to Work');
+      c.title = inUnit ? 'Back to the inventory' : 'Back to Work';
     }
     function showInventory(){
       stop(); unit = null;
-      $('unit').hidden = true; $('player').hidden = true; $('inv').hidden = false;
-      $('tab-side').textContent = A.sideTab; document.title = 'C-Pentane — Global Overgroove';
+      $('unit').hidden = true; $('player').hidden = true; $('inv').hidden = false; document.body.classList.remove('has-player');
+      setClose(false); document.title = 'C-Pentane — Global Overgroove';
     }
 
     /* ---------- player ---------- */
@@ -230,7 +209,7 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
       markRow(i); updateButtons();
     }
     function toggle(){ if (!audio.getAttribute('src')){ if (order.length) play(order[0]); return; } if (audio.paused) audio.play().catch(function(){}); else audio.pause(); }
-    function stop(){ audio.pause(); audio.removeAttribute('src'); audio.load(); cur = -1; $('p-fill').style.width = '0'; $('p-time').textContent = '0:00 / 0:00'; markRow(-1); $('p-play').textContent = 'Play'; $('p-play').setAttribute('aria-pressed', 'false'); $('p-now').textContent = order.length ? 'Select a track, or press Play' : (A.offlineLabel || 'Unit is offline'); }
+    function stop(){ audio.pause(); audio.removeAttribute('src'); audio.load(); cur = -1; $('p-fill').style.width = '0'; $('p-time').textContent = '0:00 / 0:00'; markRow(-1); $('p-play').textContent = 'Play'; $('p-play').setAttribute('aria-pressed', 'false'); $('p-now').textContent = order.length ? '' : (A.offlineLabel || 'Unit is offline'); }
     function updateButtons(){ $('p-prev').disabled = cur <= 0; $('p-next').disabled = cur < 0 || cur >= order.length - 1; $('p-play').disabled = !order.length; }
     $('p-play').addEventListener('click', toggle);
     $('p-prev').addEventListener('click', function(){ if (cur > 0) play(order[cur - 1]); });
@@ -253,8 +232,8 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
 
     /* ---------- keys and routing ---------- */
     document.addEventListener('keydown', function(e){
-      if (!unit) return;
       var t = document.activeElement && document.activeElement.tagName;
+      if (!unit){ if (e.key === 'Escape' && !/INPUT|TEXTAREA/.test(t)) location.href = $('close').href; return; }
       if (e.key === ' ' && order.length && !/INPUT|BUTTON|TEXTAREA|TR/.test(t)){ e.preventDefault(); toggle(); }
       if (e.key === 'Escape' && !/INPUT|TEXTAREA/.test(t)) location.hash = '';
     });
@@ -264,7 +243,7 @@ td.tm{width:4em;font-family:var(--list-mono);white-space:nowrap;text-align:right
       if (u) showUnit(u); else showInventory();
     }
     window.addEventListener('hashchange', route);
-    $('tab-side').textContent = A.sideTab;
+    if (!window.GOG_PROJECT) $('tab-side').textContent = A.sideTab;   // normally the project number, from assets/base.js
     route();
   } catch (e) {
     console.error(e);

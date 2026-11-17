@@ -139,3 +139,31 @@
     document.body.insertAdjacentHTML('afterbegin', '<p style="padding:12px;font:14px monospace">Menu error: check the quotation marks and commas in assets/site.js.</p>');
   }
 })();
+
+/* PROJECT INDEX - on a project page (any page listed in "projects" in assets/site.js) the side tab
+   shows its number, 001, 002 ... in the order of that list, and an outlined box under it leads to
+   the next project with a page (after the last one, back to the first). No need to edit. */
+(function(){
+  try {
+    var S = (typeof SITE !== 'undefined') ? SITE : {}, P = (typeof PAGE !== 'undefined') ? PAGE : {}, root = P.root || '';
+    var tabs = document.getElementById('tabs-side'), tab = document.getElementById('tab-side');
+    if (!tabs || !tab || !S.projects) return;
+    function key(href){ return new URL(href, location.href).pathname.replace(/index\.html$/, ''); }
+    function pad(n){ return String(n).padStart(3, '0'); }
+    var here = key(location.href), list = S.projects, n = -1;
+    list.forEach(function(p, i){ if (p.link && key(root + p.link) === here) n = i; });
+    if (n < 0) return;
+    window.GOG_PROJECT = { number: n + 1 };
+    tabs.classList.add('idx');
+    tab.textContent = pad(n + 1);
+    for (var k = 1; k < list.length; k++){
+      var j = (n + k) % list.length;
+      if (!list[j].link) continue;
+      var a = document.createElement('a');
+      a.className = 'tab-side'; a.href = root + list[j].link; a.textContent = pad(j + 1);
+      a.setAttribute('aria-label', 'Next project, ' + pad(j + 1) + ': ' + list[j].title); a.title = list[j].title;
+      tabs.appendChild(a);
+      break;
+    }
+  } catch (e) { console.error(e); }
+})();

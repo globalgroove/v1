@@ -30,15 +30,19 @@
         location.href = close.href;
       }, true);
     }
-    $('foot-index').textContent = 'Index ' + pad(C.number);
-    // side tabs: current page number; with nextPage set, a second outlined box (number+1) links to the next page
-    $('tab-side').textContent = pad(C.number);
+    // number: from the order of "projects" in assets/site.js (assets/base.js also draws the side index);
+    // a page not listed there falls back to its own number and nextPage
+    var G = window.GOG_PROJECT, num = G ? G.number : C.number;
+    $('foot-index').textContent = 'Index ' + pad(num);
+    if (!G) {
+      $('tab-side').textContent = pad(C.number);
       if (C.nextPage) {
         var next = el('a', 'tab-side', pad(C.number + 1));
         next.href = C.nextPage;
         next.setAttribute('aria-label', 'Next page, ' + pad(C.number + 1));
         $('tabs-side').appendChild(next);
-        }
+      }
+    }
 
     // section headings
     $('h-main').textContent = C.headings.main;
@@ -48,8 +52,9 @@
     // info lines (top right)
     C.info.forEach(function(r){ $('info').appendChild(el('dt', null, r[0])); $('info').appendChild(el('dd', null, r[1])); });
 
-    // main table: label | unit | value
-    C.mainData.forEach(function(r){
+    // main table: label | unit | value. An empty list [] hides it
+    if (!C.mainData || !C.mainData.length) $('main-data').closest('.scroll').hidden = true;
+    (C.mainData || []).forEach(function(r){
       var tr = el('tr'), th = el('th', null, r[0]); th.scope = 'row';
       tr.appendChild(th); tr.appendChild(el('td', 'u', r[1])); tr.appendChild(el('td', C.mainValuesLeft ? 'left' : null, r[2]));
       $('main-data').appendChild(tr);
@@ -90,15 +95,7 @@
     figure('fig-1', 1, C.figure1, true);
     figure('fig-2', 2, C.figure2, false);
 
-    // audio track list (the player script below turns these rows into the player)
-    if (!C.tracks.length) { $('audio-block').hidden = true; document.querySelector('[data-strip]').hidden = true; }
-    C.tracks.forEach(function(t){
-      var tr = el('tr'), th = el('th', 'tight'), b = el('button', 'play', 'Play'), nm = el('td', 'name', t.title);
-      th.scope = 'row'; tr.dataset.src = t.src; tr.dataset.title = t.title;
-      b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-label', 'Play ' + t.title);
-      th.appendChild(b); tr.appendChild(th); tr.appendChild(nm); tr.appendChild(el('td', 'u dur', '--:--'));
-      $('tracks').appendChild(tr);
-    });
+    // audio: the track table and the player are built by part 2 below
 
     // small images: contact sheet (Fig. numbers continue from 3)
     if (!C.sheet.length) $('sheet-block').hidden = true;
@@ -116,105 +113,75 @@
   }
 })();
 
-/* ---- PART 2 of 3: AUDIO PLAYER ---- */
+/* ---- PART 2 of 3: TRACKS AND PLAYER ----
+   The same table and player as in C-Pentane: No. / Track / Time, and a bar fixed to the bottom
+   with previous / play / next, the track name and a position line. Tracks play through in order. */
 (function(){
-  var p=document.querySelector('[data-player]'), strip=document.querySelector('[data-strip]');
-  if(!p||!strip) return;
-  var a=p.querySelector('audio'), rows=[].slice.call(p.querySelectorAll('tr[data-src]'));
-  var title=strip.querySelector('.s-title'), btn=strip.querySelector('.play'), c=strip.querySelector('.wave'), tm=strip.querySelector('.time');
-  var cur=null, peaks={}, ctx=null, N=240;
+  try {
+    var C = (typeof PAGE !== 'undefined') ? PAGE : {}, list = C.tracks || [];
+    function $(id){ return document.getElementById(id); }
+    function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+    function fmt(s){ if (!isFinite(s)) return '—'; var m = Math.floor(s / 60), r = Math.floor(s % 60); return m + ':' + (r < 10 ? '0' : '') + r; }
+    function pad2(n){ return (n < 10 ? '0' : '') + n; }
+    function name(t, i){ return t.title || ('Track ' + pad2(i + 1)); }
+    var tb = $('tracks'), pl = $('player'), audio = $('audio');
+    if (!tb || !pl) return;
+    if (!list.length){ $('audio-block').hidden = true; pl.hidden = true; return; }
+    document.body.classList.add('has-player'); pl.hidden = false;
+    var order = [], cur = -1;
 
-  function fmt(s){ if(!isFinite(s)) return '0:00'; var m=Math.floor(s/60), r=Math.floor(s%60); return m+':'+(r<10?'0':'')+r; }
-  function mark(){
-    var playing=!a.paused;
-    rows.forEach(function(r){
-      var b=r.querySelector('button'), on=(r===cur&&playing);
-      b.setAttribute('aria-pressed',on); b.textContent=on?'Pause':'Play';
-      r.classList.toggle('on',r===cur);
-    });
-    btn.setAttribute('aria-pressed',playing); btn.textContent=playing?'Pause':'Play';
-  }
-
-  function getPeaks(src){
-    if(src in peaks) return Promise.resolve(peaks[src]);
-    return fetch(src).then(function(r){ if(!r.ok) throw new Error('missing'); return r.arrayBuffer(); })
-    .then(function(buf){
-      ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();
-      return new Promise(function(res,rej){ ctx.decodeAudioData(buf,res,rej); });
-    })
-    .then(function(ab){
-      var d=ab.getChannelData(0), step=Math.max(1,Math.floor(d.length/N)), skip=Math.max(1,step>>6), out=[], i, j, v, m;
-      for(i=0;i<N;i++){
-        m=0;
-        for(j=i*step;j<(i+1)*step&&j<d.length;j+=skip){ v=Math.abs(d[j]); if(v>m) m=v; }
-        out.push(m);
+    list.forEach(function(t, i){
+      var tr = el('tr', t.src ? null : 'none'); tr.dataset.i = i;
+      tr.appendChild(el('td', 'no', pad2(i + 1)));
+      tr.appendChild(el('td', null, name(t, i)));
+      var tm = el('td', 'tm', '—'); tr.appendChild(tm);
+      if (t.src){
+        order.push(i); tr.tabIndex = 0;
+        var probe = new Audio(); probe.preload = 'metadata'; probe.src = t.src;
+        probe.addEventListener('loadedmetadata', function(){ tm.textContent = fmt(probe.duration); });
+        tr.addEventListener('click', function(){ play(i); });
+        tr.addEventListener('keydown', function(ev){ if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); play(i); } });
       }
-      var top=Math.max.apply(null,out)||1;
-      peaks[src]=out.map(function(x){ return x/top; });
-      return peaks[src];
-    })
-    .catch(function(){ peaks[src]=null; return null; });
-  }
+      tb.appendChild(tr);
+    });
 
-  function draw(){
-    var cs=getComputedStyle(document.documentElement), ink=cs.getPropertyValue('--ink').trim(), rule=cs.getPropertyValue('--rule').trim();
-    var pk=cur?peaks[cur.dataset.src]:null, prog=(a.duration?a.currentTime/a.duration:0), dpr=window.devicePixelRatio||1;
-    var w=c.clientWidth, h=c.clientHeight; if(!w||!h) return;
-    if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){ c.width=Math.round(w*dpr); c.height=Math.round(h*dpr); }
-    var g=c.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,w,h);
-    if(!pk){
-      g.fillStyle=rule; g.fillRect(0,h/2-1,w,2);
-      g.fillStyle=ink; g.fillRect(0,h/2-1,w*prog,2);
-      return;
+    function markRow(i){ [].forEach.call(tb.children, function(r){ var on = +r.dataset.i === i; r.classList.toggle('playing', on); r.classList.toggle('on', on); }); }
+    function play(i){
+      var k = order.indexOf(i); if (k < 0) return;
+      if (k === cur && audio.getAttribute('src')){ toggle(); return; }
+      cur = k; var t = list[i];
+      audio.src = t.src; audio.play().catch(function(){});
+      $('p-now').textContent = ''; $('p-now').appendChild(document.createTextNode(name(t, i) + ' '));
+      $('p-now').appendChild(el('span', null, C.browserTitle || ''));
+      markRow(i); updateButtons();
     }
-    var bw=w/pk.length, gap=Math.min(1.5,bw*0.3);
-    for(var i=0;i<pk.length;i++){
-      var bh=Math.max(2,pk[i]*h*0.92);
-      g.fillStyle=(i/pk.length<prog)?ink:rule;
-      g.fillRect(i*bw,(h-bh)/2,Math.max(1,bw-gap),bh);
-    }
-  }
-
-  function play(r){
-    if(r===cur){ if(a.paused){ a.play().catch(function(){}); } else { a.pause(); } return; }
-    cur=r; a.src=r.dataset.src; title.textContent=r.dataset.title;
-    a.play().catch(function(){});
-    mark(); draw();
-    getPeaks(r.dataset.src).then(draw);
-  }
-
-  var dragging=false;
-  function at(e){ var b=c.getBoundingClientRect(); if(a.duration) a.currentTime=Math.min(1,Math.max(0,(e.clientX-b.left)/b.width))*a.duration; }
-  c.addEventListener('pointerdown',function(e){ dragging=true; c.setPointerCapture(e.pointerId); at(e); });
-  c.addEventListener('pointermove',function(e){ if(dragging) at(e); });
-  c.addEventListener('pointerup',function(){ dragging=false; });
-  c.addEventListener('pointercancel',function(){ dragging=false; });
-  c.addEventListener('keydown',function(e){
-    if(!a.duration) return;
-    if(e.key==='ArrowRight'){ a.currentTime=Math.min(a.duration,a.currentTime+5); e.preventDefault(); }
-    else if(e.key==='ArrowLeft'){ a.currentTime=Math.max(0,a.currentTime-5); e.preventDefault(); }
-    else if(e.key==='Home'){ a.currentTime=0; e.preventDefault(); }
-  });
-
-  rows.forEach(function(r){ r.querySelector('button').addEventListener('click',function(){ play(r); }); });
-  btn.addEventListener('click',function(){ if(cur) play(cur); else if(rows[0]) play(rows[0]); });
-
-  a.addEventListener('play',mark); a.addEventListener('pause',mark);
-  a.addEventListener('loadedmetadata',function(){ if(cur) cur.querySelector('.dur').textContent=fmt(a.duration); });
-  a.addEventListener('timeupdate',function(){
-    tm.textContent=fmt(a.currentTime)+' / '+fmt(a.duration);
-    c.setAttribute('aria-valuenow',a.duration?Math.round(a.currentTime/a.duration*100):0);
-    draw();
-  });
-  a.addEventListener('ended',function(){
-    var i=rows.indexOf(cur);
-    if(rows[i+1]) play(rows[i+1]); else { mark(); title.textContent='Stopped'; }
-  });
-  a.addEventListener('error',function(){ title.textContent='File not found: '+(cur?cur.dataset.src:''); });
-
-  window.addEventListener('resize',draw);
-  if(window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
-  draw();
+    function toggle(){ if (!audio.getAttribute('src')){ if (order.length) play(order[0]); return; } if (audio.paused) audio.play().catch(function(){}); else audio.pause(); }
+    function updateButtons(){ $('p-prev').disabled = cur <= 0; $('p-next').disabled = cur < 0 || cur >= order.length - 1; $('p-play').disabled = !order.length; }
+    $('p-play').addEventListener('click', toggle);
+    $('p-prev').addEventListener('click', function(){ if (cur > 0) play(order[cur - 1]); });
+    $('p-next').addEventListener('click', function(){ if (cur < order.length - 1) play(order[cur + 1]); });
+    audio.addEventListener('play', function(){ $('p-play').textContent = 'Pause'; $('p-play').setAttribute('aria-pressed', 'true'); });
+    audio.addEventListener('pause', function(){ $('p-play').textContent = 'Play'; $('p-play').setAttribute('aria-pressed', 'false'); });
+    audio.addEventListener('timeupdate', function(){
+      var d = audio.duration, p = d ? audio.currentTime / d : 0;
+      $('p-fill').style.width = (p * 100) + '%'; $('p-time').textContent = fmt(audio.currentTime) + ' / ' + fmt(d);
+      $('p-track').setAttribute('aria-valuenow', Math.round(p * 100));
+    });
+    audio.addEventListener('ended', function(){ if (cur < order.length - 1) play(order[cur + 1]); });
+    audio.addEventListener('error', function(){ if (audio.getAttribute('src')) $('p-now').textContent = 'File not found: ' + audio.getAttribute('src'); });
+    var seeking = false;
+    function seekAt(x){ var r = $('p-track').getBoundingClientRect(); if (audio.duration) audio.currentTime = Math.max(0, Math.min(1, (x - r.left) / r.width)) * audio.duration; }
+    $('p-track').addEventListener('pointerdown', function(e){ seeking = true; this.setPointerCapture(e.pointerId); seekAt(e.clientX); });
+    $('p-track').addEventListener('pointermove', function(e){ if (seeking) seekAt(e.clientX); });
+    $('p-track').addEventListener('pointerup', function(){ seeking = false; });
+    $('p-track').addEventListener('keydown', function(e){ if (!audio.duration) return; if (e.key === 'ArrowRight') audio.currentTime += 5; if (e.key === 'ArrowLeft') audio.currentTime -= 5; });
+    document.addEventListener('keydown', function(e){
+      var t = document.activeElement && document.activeElement.tagName, dlg = document.querySelector('.lightbox');
+      if (e.key === ' ' && order.length && !(dlg && dlg.open) && !/INPUT|BUTTON|TEXTAREA|TR|A/.test(t)){ e.preventDefault(); toggle(); }
+    });
+    $('p-time').textContent = '0:00 / 0:00'; $('p-now').textContent = '';
+    updateButtons();
+  } catch (e) { console.error(e); }
 })();
 
 /* ---- PART 3 of 3: IMAGE VIEWER ---- */

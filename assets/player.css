@@ -1,0 +1,46 @@
+/* TRACK LIST + PLAYER - shared by C-Pentane and every project page. No need to edit.
+   The track table (No. / Track / Time) and the player bar fixed to the bottom of the screen.
+   Type as in the lists: Geist for names, Geist Mono for numbers and times. */
+:root{
+  --tl-size:11px;
+  --tl-sans:"Geist","Helvetica Neue",Arial,sans-serif;
+  --tl-mono:"Geist Mono",ui-monospace,Menlo,Consolas,monospace;
+  --tl-line:#c3c4c1;
+  --player-h:58px;
+}
+
+/* ---- track table ---- */
+table.tl{width:100%;border-collapse:collapse;border:0;margin:0 0 22px;font-variant-numeric:tabular-nums}
+table.tl th,table.tl td{border:0;border-bottom:1px solid var(--tl-line);padding:7px 8px;text-align:left;vertical-align:baseline;font:400 var(--tl-size)/1.35 var(--tl-sans);letter-spacing:.01em;white-space:normal}
+table.tl thead th{padding:0 8px 6px;font:500 calc(var(--tl-size) - 2px) var(--tl-sans);letter-spacing:.16em;text-transform:uppercase;opacity:.7;border-bottom:1px solid var(--rule)}
+table.tl thead th.r{text-align:right}
+table.tl tbody tr:first-child td{padding-top:9px}
+table.tl tbody tr{cursor:pointer;transition:background .12s,color .12s}
+table.tl tbody tr:hover,table.tl tbody tr:focus-visible,table.tl tbody tr.on{background:var(--ink);color:var(--paper)}
+table.tl tbody tr:hover td,table.tl tbody tr:focus-visible td,table.tl tbody tr.on td{border-bottom-color:var(--ink)}
+table.tl tbody tr:focus-visible{outline:none}
+table.tl td.no{width:3em;font-family:var(--tl-mono)}
+table.tl td.tm{width:4em;font-family:var(--tl-mono);white-space:nowrap;text-align:right}
+table.tl tr.none{cursor:default}
+table.tl tr.none td{opacity:.45}
+table.tl tr.none:hover{background:none;color:inherit}
+table.tl tr.none:hover td{border-bottom-color:var(--tl-line)}
+table.tl tr.playing td.no::before{content:"\25B6";font-size:.7em;margin-right:4px}
+
+/* ---- player bar, fixed to the bottom ---- */
+.player{position:fixed;left:0;right:0;bottom:0;z-index:9;margin:0;background:var(--paper);border-top:1px solid var(--ink);padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.player[hidden]{display:none}
+.player .in{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 14px;align-items:center}
+.player .btns{display:flex;gap:6px}
+.player button{font:500 var(--tl-size) var(--tl-mono);letter-spacing:0;background:transparent;color:var(--ink);border:1px solid var(--ink);padding:3px 9px;cursor:pointer;min-width:2.6em}
+.player button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.player button:disabled{opacity:.35;cursor:default}
+.player .now{font:500 var(--tl-size)/1.3 var(--tl-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1.3em}
+.player .now span{font-family:var(--tl-mono);font-weight:400;opacity:.7}
+.player .time{font:400 var(--tl-size) var(--tl-mono);white-space:nowrap}
+.player .track{grid-column:1/-1;position:relative;height:12px;cursor:pointer;touch-action:none}
+.player .track::before{content:"";position:absolute;left:0;right:0;top:5px;height:1px;background:var(--rule)}
+.player .fill{position:absolute;left:0;top:4px;height:3px;background:var(--ink);width:0}
+.player .track:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+body.has-player .page{padding-bottom:calc(var(--player-h) + 40px)}
+@media (prefers-reduced-motion:reduce){table.tl tbody tr{transition:none}}
