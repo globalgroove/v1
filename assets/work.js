@@ -63,7 +63,7 @@
     var mat = $('materials');
     if (!C.materials || !C.materials.length) { mat.hidden = true; }
     else {
-      mat.appendChild(el('p', 'tech-label', C.headings.materials));
+      if (C.headings.materials) mat.appendChild(el('p', 'tech-label', C.headings.materials));
       C.materials.forEach(function(t){ var p = el('p'); p.innerHTML = t; mat.appendChild(p); });
     }
 
@@ -81,29 +81,30 @@
       im.onerror = function(){ im.hidden = true; };
       return im;
     }
-    function figure(id, n, f, halftone){
+    function figure(id, f, halftone){
       var box = $(id);
       if (!f.src && halftone) {             // figure 1 with no image: the original halftone block
         var h = el('div', 'halftone'); h.setAttribute('role', 'img'); h.setAttribute('aria-label', f.alt || 'Image placeholder');
         box.appendChild(h);
-      } else {
-        var fr = el('div', 'frame'); if (f.src) fr.appendChild(image(f.src, f.alt)); box.appendChild(fr);
-      }
-      box.appendChild(el('figcaption', null, 'Fig. ' + n + (f.caption ? ' \u2014 ' + f.caption : '')));
+      } else if (f.src) {                   // an image: click to enlarge, like the small images
+        var b = el('button', 'frame zoom'); b.type = 'button'; b.setAttribute('aria-label', 'Enlarge' + (f.caption ? ': ' + f.caption : ' image'));
+        b.appendChild(image(f.src, f.alt)); box.appendChild(b);
+      } else box.appendChild(el('div', 'frame'));
+      if (f.caption) box.appendChild(el('figcaption', null, f.caption));
     }
-    figure('fig-1', 1, C.figure1, true);
-    figure('fig-2', 2, C.figure2, false);
+    figure('fig-1', C.figure1, true);
+    figure('fig-2', C.figure2, false);
 
     // audio: the track table and the player are built by part 2 below
 
-    // small images: contact sheet (Fig. numbers continue from 3)
+    // small images: contact sheet
     if (!C.sheet.length) $('sheet-block').hidden = true;
     if (C.sheetGray) $('sheet').classList.add('gray');
     C.sheet.forEach(function(s, i){
-      var n = i + 3, fg = el('figure', 'cell'), b = el('button', 'frame sq zoom');
-      b.type = 'button'; b.setAttribute('aria-label', 'Enlarge Fig. ' + n);
+      var fg = el('figure', 'cell'), b = el('button', 'frame sq zoom');
+      b.type = 'button'; b.setAttribute('aria-label', 'Enlarge' + (s.caption ? ': ' + s.caption : ' image ' + (i + 1)));
       b.appendChild(image(s.src, s.alt)); fg.appendChild(b);
-      fg.appendChild(el('figcaption', null, 'Fig. ' + n + (s.caption ? ' \u2014 ' + s.caption : '')));
+      if (s.caption) fg.appendChild(el('figcaption', null, s.caption));
       $('sheet').appendChild(fg);
     });
   } catch (e) {
@@ -185,14 +186,14 @@
 
 /* ---- PART 3 of 3: IMAGE VIEWER ---- */
 (function(){
-  var dlg=document.querySelector('.lightbox'), cells=[].slice.call(document.querySelectorAll('.sheet .zoom'));
+  var dlg=document.querySelector('.lightbox'), cells=['#fig-1 .zoom','#fig-2 .zoom','.sheet .zoom'].reduce(function(a,q){ return a.concat([].slice.call(document.querySelectorAll(q))); },[]);   // Fig. 1, Fig. 2, then the small images
   if(!dlg||!cells.length||!dlg.showModal) return;
   var img=dlg.querySelector('img'), cap=dlg.querySelector('figcaption'), count=dlg.querySelector('.lb-count'), cur=0;
   function ok(i){ var m=cells[i].querySelector('img'); return m&&!m.hidden; }
   function show(i){
     var m=cells[i].querySelector('img'); cur=i;
     img.src=m.currentSrc||m.src; img.alt=m.alt;
-    cap.textContent=cells[i].closest('figure').querySelector('figcaption').textContent;
+    var fc=cells[i].closest('figure').querySelector('figcaption'); cap.textContent=fc?fc.textContent:'';
     count.textContent=(i+1)+' / '+cells.length;
   }
   function step(d){

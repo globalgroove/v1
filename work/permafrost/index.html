@@ -37,7 +37,7 @@ const PAGE = {
   headings: {
     main:  "technical specs",         // above the first table
     audio: "recordings",              // above the track list
-    materials: "Title: Permafrost",   // small label above the materials text
+    materials: "",                    // small label above the materials text. "" = none
     sheet: "Process and details"      // above the small images
   },
 
@@ -71,7 +71,8 @@ const PAGE = {
   },
 
   /* ---- MAIN IMAGES (3:2 landscape works best) ----------------------- */
-  /* "caption" is the text after "Fig. N –"; "alt" is a short description for screen readers */
+  /* "caption" is shown under the image ("" = none); "alt" is a short description for screen readers.
+     Click an image to enlarge it; the viewer steps through these two and the small images below */
   figure1: { src: "imgs/permafrost1.jpg", alt: "Permafrost", caption: "permafrost" },   // right column. Empty src = halftone placeholder
   figure2: { src: "", alt: "", caption: "" },                                         // left column
 
@@ -80,7 +81,6 @@ const PAGE = {
   tracks: [],
 
   /* ---- SMALL IMAGES (square crops work best, click to enlarge) ------ */
-  /* Fig. numbers continue after the two main images (3, 4, 5 ...) */
   sheetGray: false,              // true = grayscale, colour on hover. false = always colour
   sheet: []
 };

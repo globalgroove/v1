@@ -3,9 +3,9 @@
 
 /* boxes */
 .box{border:3px solid var(--ink);margin-bottom:18px}
-/* title line, as in C-Pentane: title left in capitals, info right in the mono, a line under both */
+/* title line: title left in capitals, info right, both in the mono; a line under both */
 .head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--ink);padding-bottom:6px;margin:6px 0 14px}
-.head h1{margin:0;font:500 13px var(--nav);letter-spacing:.14em;text-transform:uppercase}
+.head h1{margin:0;font:400 11px var(--nav-mono);letter-spacing:.06em;text-transform:uppercase;opacity:.75}
 .head p{margin:0;font:400 11px var(--nav-mono);opacity:.75}
 .head p:empty{display:none}
 h2{font-size:12px;font-weight:700;margin:14px 0 4px;letter-spacing:.08em}
