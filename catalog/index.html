@@ -25,6 +25,9 @@ const PAGE = {
 
   /* labels of the details under the cover, in this order */
   labels: { title: "Title", artist: "Artist", year: "Year", cat: "Cat. No.", format: "Format", status: "Status" },
+
+  /* shown in the list while every release is hidden (hide: true in assets/site.js). "" = nothing */
+  emptyText: "In preparation",
 };
 </script>
 <!-- ===================== END OF CONTENT BLOCK ===================== -->
@@ -48,6 +51,12 @@ td.tt{font-weight:500}
 .p-specs a.q{opacity:.75;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 .p-specs a.q:hover,.p-specs a.q:focus-visible{opacity:1}
 @media (max-width:760px){.cols{grid-template-columns:minmax(0,1fr)}}
+/* every release hidden: the list alone, one quiet line, no panel */
+.cols.empty{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+.cols.empty main{grid-column:2}
+tr.none,tr.none:hover{background:none!important;color:inherit!important;cursor:default}
+tr.none td{opacity:.6;font-family:var(--list-mono)}
+@media (max-width:760px){.cols.empty main{grid-column:1}}
 </style>
 </head>
 <body>
@@ -124,9 +133,16 @@ td.tt{font-weight:500}
       }
     }
 
-    var list = S.catalog || [];
-    if (!list.length) { $('preview').hidden = true; return; }
-    list.forEach(function(r, i){
+    // releases with hide: true in assets/site.js are left out (their c-numbers stay the same)
+    var list = [], ids = [];
+    (S.catalog || []).forEach(function(r, i){ if (!r.hide) { list.push(r); ids.push(i); } });
+    if (!list.length) {
+      $('preview').hidden = true; document.querySelector('.cols').classList.add('empty');
+      if (C.emptyText) { var er = el('tr', 'none'), ec = el('td', null, C.emptyText); ec.colSpan = 4; er.appendChild(ec); $('rows').appendChild(er); }
+      return;
+    }
+    list.forEach(function(r, j){
+      var i = ids[j];
       var tr = el('tr'), ta = el('td', 't a'), tt = el('td', 'tt');
       var sub = el('span', 'sub', [r.cat, r.type, r.format, r.status].filter(Boolean).join(' · '));
       tr.tabIndex = 0; tr.id = 'c' + (i + 1);    // c1, c2 ... lets the landing search point at one release
@@ -142,8 +158,8 @@ td.tt{font-weight:500}
     });
 
     // arriving from the search (catalog/index.html#c3): show that release and scroll to it
-    var m = /^#c(\d+)$/.exec(location.hash), k = m ? +m[1] - 1 : 0;
-    if (!list[k]) k = 0;
+    var m = /^#c(\d+)$/.exec(location.hash), k = m ? ids.indexOf(+m[1] - 1) : 0;
+    if (k < 0) { k = 0; m = null; }
 
     // once the page has loaded, fetch every cover quietly in the background, so hovering shows it at once
     window.addEventListener('load', function(){

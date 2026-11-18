@@ -55,7 +55,7 @@ const SITE = {
     },
     {
       title: "Permafrost", year: "2023", type: "Live AV / Installation", role: "",
-      link: "",                          // later: "work/permafrost/index.html"
+      link: "work/permafrost/index.html",
       image: "work/permafrost/imgs/permafrost1.jpg",
       text: "",
       keywords: "live audiovisual av"
@@ -63,13 +63,13 @@ const SITE = {
     {
       title: "C-Pentane", year: "2022", type: "Archive, ongoing", role: "",
       link: "work/c-pentane/index.html",
-      image: "work/permafrost/imgs/permafrost2.JPG",
+      image: "work/c-pentane/imgs/cp-002.jpg",
       text: "",
       keywords: "archive cpentane"
     },
     {
       title: "SWARM OR The Transparency of Evil", year: "2019", type: "Installation", role: "",
-      link: "",                          // later: "work/swarm/index.html"
+      link: "work/swarm/index.html",
       image: "work/swarm/imgs/k7.png",
       text: "",
       keywords: "swarm"
@@ -86,8 +86,8 @@ const SITE = {
   /*             "https://www.discogs.com/release/123456-Artist-Title".    */
   /*             "" = the link goes to the Discogs credits page above      */
   releases: [
-    { artist: "SPITBENDER",          title: "SPIN",                     role: "AUTHOR, PRODUCER",             format: "VINYL, 12\" LP",  label: "PERF",              year: "2026",    cover: "", discogs: "" },
-    { artist: "TRASGO",              title: "TRASGO",                   role: "PRODUCER, RECORDING, MIXING",  format: "CD, LP",          label: "NOT ON LABEL",      year: "2026",    cover: "", discogs: "" },
+    { artist: "SPITBENDER",          title: "SPIN",                     role: "AUTHOR, PRODUCER",             format: "VINYL, 12\" LP",  label: "PERF",              year: "2026",    cover: "discography/covers/spin.jpg", discogs: "" },
+    { artist: "TRASGO",              title: "TRASGO",                   role: "PRODUCER, RECORDING, MIXING",  format: "CD, LP",          label: "NOT ON LABEL",      year: "2026",    cover: "discography/covers/trasgo.jpg", discogs: "" },
     { artist: "ANTÓNIO FEITEIRA",    title: "PERFORMING THE HEIMLICH..", role: "CO-PRODUCER, MIXING",         format: "K7, EP",          label: "EASTERN NURSERIES", year: "2025",    cover: "discography/covers/AF.jpg", discogs: "" },
     { artist: "AMULETO APOTROPAICO", title: "AMULETO APOTROPAICO",      role: "CO-PRODUCER, MIXING",          format: "VINYL, 12\" LP",  label: "PERF",              year: "2025",    cover: "discography/covers/Amuleto.jpg", discogs: "" },
     { artist: "RAMRIFE",             title: "DESTERRADO",               role: "MASTERING",                    format: "CD-R, LP",        label: "KHTHON",            year: "2025",    cover: "discography/covers/ramrife_cover.jpg", discogs: "" },
@@ -120,22 +120,24 @@ const SITE = {
   /*            "catalog/covers/earthbound.jpg". "" = dotted placeholder   */
   /*   link   : optional shop or listening page; the status becomes a      */
   /*            button that opens it in a new tab                          */
+  /*   hide   : true = left out of the page and the search for now;        */
+  /*            delete it (or set false) to show the release again         */
   catalog: [
-    { artist: "spitbender", type: "Single", title: "earthbound", cat: "GOG-SG-01", year: "2026", format: "Digital", status: "",
+    { hide: true, artist: "spitbender", type: "Single", title: "earthbound", cat: "GOG-SG-01", year: "2026", format: "Digital", status: "",
       tracks: ["A. earthbound (Original Mix) 05:58", "B. earthbound (Extended Mix) 06:49"], cover: "", link: "" },
-    { artist: "spitbender", type: "Live", title: "2k250504: Ácida ATM", cat: "GOG-LV-01", year: "2025", format: "Digital", status: "",
+    { hide: true, artist: "spitbender", type: "Live", title: "2k250504: Ácida ATM", cat: "GOG-LV-01", year: "2025", format: "Digital", status: "",
       tracks: [], cover: "", link: "" },
-    { artist: "Global Overgroove", type: "Mixtape", title: "Concentric Cirkles", cat: "GOG-MX-02", year: "2025", format: "CS", status: "Pre-Order",
+    { hide: true, artist: "Global Overgroove", type: "Mixtape", title: "Concentric Cirkles", cat: "GOG-MX-02", year: "2025", format: "CS", status: "Pre-Order",
       tracks: [], cover: "", link: "" },
-    { artist: "Global Overgroove", type: "Mixtape", title: "A Máquina de Emaranhar Paisagens", cat: "GOG-MX-01", year: "2023", format: "CS", status: "Pre-Order",
+    { hide: true, artist: "Global Overgroove", type: "Mixtape", title: "A Máquina de Emaranhar Paisagens", cat: "GOG-MX-01", year: "2023", format: "CS", status: "Pre-Order",
       tracks: [], cover: "", link: "" },
-    { artist: "spitbender", type: "EP", title: "Touch & Release", cat: "GOG-EP-02", year: "2022", format: "CD / Digital", status: "Coming Soon",
+    { hide: true, artist: "spitbender", type: "EP", title: "Touch & Release", cat: "GOG-EP-02", year: "2022", format: "CD / Digital", status: "Coming Soon",
       tracks: [], cover: "", link: "" },
-    { artist: "spitbender", type: "EP", title: "Core Syn", cat: "GOG-EP-01", year: "2022", format: "CS / Digital", status: "Coming Soon",
+    { hide: true, artist: "spitbender", type: "EP", title: "Core Syn", cat: "GOG-EP-01", year: "2022", format: "CS / Digital", status: "Coming Soon",
       tracks: [], cover: "", link: "" },
-    { artist: "Golden Korae", type: "Archive", title: "Ov Maps Perceived But Not Drawn", cat: "GOG-CS-01", year: "2021", format: "CS / Digital", status: "On Request",
+    { hide: true, artist: "Golden Korae", type: "Archive", title: "Ov Maps Perceived But Not Drawn", cat: "GOG-CS-01", year: "2021", format: "CS / Digital", status: "On Request",
       tracks: [], cover: "", link: "" },
-    { artist: "unknown", type: "File-Report", title: "Technical Allucinations: Excursions", cat: "UNK-00-00", year: "Ongoing", format: "Assembly-Program", status: "unavailable",
+    { hide: true, artist: "unknown", type: "File-Report", title: "Technical Allucinations: Excursions", cat: "UNK-00-00", year: "Ongoing", format: "Assembly-Program", status: "unavailable",
       tracks: [], cover: "", link: "" }
   ]
 };

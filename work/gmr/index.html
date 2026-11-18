@@ -28,22 +28,20 @@ const PAGE = {
   back: "work/index.html",      // where the × (top right) and the Esc key lead, relative to the site root
 
   /* ---- PAGE IDENTITY ------------------------------------------------ */
-  number: 1,                    // this page's number. Shows as 001 in the side tab and footer
-  nextPage: "",                 // the next project, e.g. "../next-project/index.html". A second box (number+1) appears
-                                // under the side index and links to it. Leave "" on the last page
+  number: 0,                    // automatic: the side index number comes from the order of
+  nextPage: "",                 // "projects" in assets/site.js, and the next box leads to the next project
   browserTitle: "Gore Metal Redux",   // text on the browser tab
-  title: "gore metal redux",          // large title box (left)
-  variant: "ref. II – 151",         // small title box (right)
+  title: "gore metal redux",   // title, top left (shown in capitals)
 
-  /* ---- SECTION HEADINGS --------------------------------------------- */
+  /* ---- SECTION HEADINGS: "" = none (the small headings with the dot) ---- */
   headings: {
-    main:  "technical specs",         // above the first table
-    audio: "recordings",             // above the track list
-    materials: "Title: Gore Metal Redux (series)",     // small label above the materials text
-    sheet: "Process and details"  // above the small images
+    main:  "",                    // above the materials and texts
+    audio: "",                    // above the track list
+    materials: "",                // small label above the materials text
+    sheet: ""                     // above the small images
   },
 
-  /* ---- INFO LINES (top right):  [ "label", "value" ] ---------------- */
+  /* ---- INFO (top right, on the title line):  [ "label", "value" ] ---- */
   info: [
     ["Year",   "2023"],
     ["Series No.", "GR23 – 1100001"]
@@ -51,11 +49,7 @@ const PAGE = {
 
   /* ---- MAIN TABLE:  [ "label", "unit", "value" ] --------------------- */
   /* leave the unit as "" when there is none; delete the rows a page does not need */
-  mainData: [
-    ["Title",      "",   "Untitled (Copper Study)"],
-    ["Year",       "",   "2026"],
-    ["Dimensions", "cm", "120 × 80 × 60"]           // H × W × D
-  ],
+  mainData: [],                 // e.g. [ ["Dimensions", "cm", "120 × 80 × 60"] ]. [] hides the table
   mainValuesLeft: false,        // false = values centred (good for numbers); true = left aligned
 
   /* ---- MATERIALS: small technical text under the table ---------------- */
@@ -82,7 +76,8 @@ const PAGE = {
   },
 
   /* ---- MAIN IMAGES (3:2 landscape works best) ----------------------- */
-  /* "caption" is the text after "Fig. N –"; "alt" is a short description for screen readers */
+  /* "caption" is shown under the image ("" = none); "alt" is a short description for screen readers.
+     Click an image to enlarge it; the viewer steps through these two and the small images below */
   figure1: { src: "imgs/fig1.JPG", alt: "", caption: "prostethic teeth" },   // right column. Empty src = halftone placeholder
   figure2: { src: "imgs/fig2.JPG", alt: "Describe the image here", caption: "installation view" },   // left column
 
@@ -95,7 +90,6 @@ const PAGE = {
   ],
 
   /* ---- SMALL IMAGES (square crops work best, click to enlarge) ------ */
-  /* Fig. numbers continue after the two main images (3, 4, 5 ...) */
   sheetGray: false,              // true = grayscale, colour on hover. false = always colour
   sheet: [
     { src: "imgs/detail-01.JPG", alt: "Describe the image", caption: "electrolysis" },
@@ -118,6 +112,7 @@ const PAGE = {
 <!-- shared files: the "../../" matches root above -->
 <link rel="stylesheet" href="../../assets/base.css">
 <link rel="stylesheet" href="../../assets/work.css">
+<link rel="stylesheet" href="../../assets/player.css">
 <script src="../../assets/site.js"></script>
 </head>
 <body>
@@ -130,10 +125,11 @@ const PAGE = {
   <a class="close" id="close"></a>
   <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
 
-  <!-- two-column grid. Rows: [title | info] / [heading | info] / [left column | right column] -->
+  <!-- title line: title left, info right (as in C-Pentane) -->
+  <div class="head"><h1 id="title-main"></h1><p id="info"></p></div>
+
+  <!-- two-column grid. Rows: [heading] / [left column | right column] -->
   <div class="grid">
-    <div class="title"><h1 id="title-main"></h1><p id="title-variant"></p></div>
-    <dl class="meta meta-head" id="info"></dl>
     <h2 id="h-main"></h2>
 
     <!-- left column -->
@@ -150,10 +146,10 @@ const PAGE = {
       <div class="text" id="text-2"></div>
       <div id="audio-block">
         <h2 id="h-audio"></h2>
-        <div class="player" data-player>
-          <audio preload="metadata"></audio>
-          <div class="scroll"><table><tbody id="tracks"></tbody></table></div>
-        </div>
+        <table class="tl">
+          <thead><tr><th>No.</th><th>Track</th><th class="r">Time</th></tr></thead>
+          <tbody id="tracks"></tbody>
+        </table>
       </div>
     </aside>
   </div>
@@ -178,15 +174,22 @@ const PAGE = {
     </div>
   </dialog>
 
-  <!-- audio player bar -->
-  <div class="strip" data-strip role="region" aria-label="Audio player">
-    <button type="button" class="play" aria-pressed="false">Play</button>
-    <div class="s-title" aria-live="polite">Select a track</div>
-    <canvas class="wave" tabindex="0" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></canvas>
-    <span class="time">0:00 / 0:00</span>
-  </div>
-
   <div class="foot"><span id="foot-index"></span><a href="#top">Back to top</a></div>
+</div>
+
+<!-- player, fixed to the bottom (hidden when the page has no tracks) -->
+<div class="player" id="player" role="region" aria-label="Audio player" hidden>
+  <div class="in">
+    <div class="btns">
+      <button type="button" id="p-prev" aria-label="Previous track">&#9664;&#9664;</button>
+      <button type="button" id="p-play" aria-pressed="false" aria-label="Play">Play</button>
+      <button type="button" id="p-next" aria-label="Next track">&#9654;&#9654;</button>
+    </div>
+    <div class="now" id="p-now" aria-live="polite"></div>
+    <div class="time" id="p-time">0:00 / 0:00</div>
+    <div class="track" id="p-track" role="slider" tabindex="0" aria-label="Position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="p-fill"></div></div>
+  </div>
+  <audio id="audio" preload="metadata"></audio>
 </div>
 
 <script src="../../assets/base.js"></script>

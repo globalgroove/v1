@@ -25,7 +25,7 @@
    ===================================================================== */
 const ARCHIVE = {
 
-  sideTab: "C-PENTANE",          // text in the black box on the right edge
+  sideTab: "C-PENTANE",          // side tab text, only if C-Pentane is not in "projects" (assets/site.js); normally the tab shows its number
   title: "C-Pentane",            // shown above the inventory
   slots: 5,                      // inventory size: empty slots fill the grid up to this number
   unknown: "Unknown",            // shown for a missing model

@@ -75,6 +75,19 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--ink);outline-offset
 a.tab-side{text-decoration:none;cursor:pointer;background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 a.tab-side:hover,a.tab-side:focus-visible{background:var(--ink);color:var(--tab-text);outline:none}
 
+/* project pages: the side index shows the project's number (001, 002 ...) in Geist Mono, and the
+   outlined box under it leads to the next project (assets/base.js numbers them from site.js) */
+.tabs-side.idx{gap:4px}
+.tabs-side.idx .tab-side{font:500 11px/1 var(--nav-mono);letter-spacing:.08em;padding:10px 5px}
+/* close: a small square top right with a thin x; back to Work (or, in C-Pentane, to the inventory) */
+.close{position:fixed;top:calc(30px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));width:20px;height:20px;background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1px var(--rule);z-index:7}
+.close::before,.close::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:1px;background:currentColor;transform:translate(-50%,-50%) rotate(45deg)}
+.close::after{transform:translate(-50%,-50%) rotate(-45deg)}
+.close:hover,.close:focus-visible{background:var(--ink);color:var(--paper);box-shadow:none;outline:none}
+.close::selection{background:none}
+@media (max-width:760px){.close{top:calc(14px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));z-index:10}}
+@media (pointer:coarse){.close{width:28px;height:28px}}
+
 .foot{margin-top:6px;font:400 12px var(--value);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 @media (max-width:760px){
@@ -82,6 +95,7 @@ a.tab-side:hover,a.tab-side:focus-visible{background:var(--ink);color:var(--tab-
   .page.no-tabs{padding-right:12px}
   .tab-top{font-size:48px;height:56px;width:100px;top:20px}
   .tab-side{font-size:18px;padding:12px 6px}
+  .tabs-side.idx .tab-side{font-size:11px;padding:9px 4px}
   /* phones: only the title line stays at the top while scrolling; the menu scrolls away under it */
   .site{display:contents}
   .site-head{position:sticky;top:0;z-index:9;background:var(--paper);margin:-12px 0 0;padding:12px 0 10px}

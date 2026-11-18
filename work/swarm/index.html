@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- =====================================================================
+     PROJECT PAGE  (work/swarm/index.html)
+     CONTENT BLOCK  -  THIS IS THE ONLY PART YOU NEED TO EDIT
+     =====================================================================
+     To make a new project: copy this whole folder (work/gmr/ -> work/new-name/),
+     change the values below, then add one line to "projects" in assets/site.js.
+     The menu and logo come from assets/site.js; the look from assets/*.css.
+
+     Rules:
+       - Keep the quotation marks "like this" and the commas at line ends.
+       - Paragraphs may contain simple HTML, e.g. <em>italic</em>.
+       - Leave a list empty ( [] ) to hide that part of the page.
+       - Image and audio paths are relative to this folder, e.g. "imgs/photo.jpg".
+         File names must match exactly, capitals included (.JPG is not .jpg online).
+         If an image is missing, a dotted placeholder is shown instead.
+     ===================================================================== -->
+<script>
+const PAGE = {
+
+  root: "../../",               // path back to the site root (project pages are two folders down)
+
+  back: "work/index.html",      // where the × (top right) and the Esc key lead, relative to the site root
+
+  /* ---- PAGE IDENTITY ------------------------------------------------ */
+  number: 0,                    // automatic: the side index number comes from the order of
+  nextPage: "",                 // "projects" in assets/site.js, and the next box leads to the next project
+  browserTitle: "SWARM OR The Transparency of Evil",   // text on the browser tab
+  title: "swarm",   // title, top left (shown in capitals)
+
+  /* ---- SECTION HEADINGS: "" = none (the small headings with the dot) ---- */
+  headings: {
+    main:  "",                    // above the materials and texts
+    audio: "",                    // above the track list
+    materials: "",                // small label above the materials text
+    sheet: ""                     // above the small images
+  },
+
+  /* ---- INFO (top right, on the title line):  [ "label", "value" ] ---- */
+  info: [
+    ["Year",   "2019"],
+    ["Format", "Installation"]
+  ],
+
+  /* ---- MAIN TABLE:  [ "label", "unit", "value" ] --------------------- */
+  /* leave the unit as "" when there is none; delete the rows a page does not need */
+  mainData: [],                 // e.g. [ ["Dimensions", "cm", "120 × 80 × 60"] ]. [] hides the table
+  mainValuesLeft: true,         // false = values centred (good for numbers); true = left aligned
+
+  /* ---- MATERIALS: small technical text under the table ---------------- */
+  /* one line per item, e.g. "Materials: ...". An empty list [] hides it */
+  materials: [],
+
+  /* ---- TEXT BOXES: each is a list of paragraphs. [] hides a box ------ */
+  texts: {
+    one: [],      // left column, between the materials and Fig. 2
+    two: [],      // right column, between the table and the audio list
+    three: []     // full width, before the small images
+  },
+
+  /* ---- MAIN IMAGES (3:2 landscape works best) ----------------------- */
+  /* "caption" is shown under the image ("" = none); "alt" is a short description for screen readers.
+     Click an image to enlarge it; the viewer steps through these two and the small images below */
+  figure1: { src: "imgs/k7.png", alt: "Cassette", caption: "k7" },   // right column. Empty src = halftone placeholder
+  figure2: { src: "", alt: "", caption: "" },                       // left column
+
+  /* ---- AUDIO TRACKS ------------------------------------------------- */
+  /* e.g. { src: "audio/track-01.mp3", title: "Track 01" }. No tracks = audio list and player bar are hidden */
+  tracks: [],
+
+  /* ---- SMALL IMAGES (square crops work best, click to enlarge) ------ */
+  sheetGray: false,              // true = grayscale, colour on hover. false = always colour
+  sheet: [
+    { src: "imgs/dictafone.png", alt: "Dictaphone", caption: "dictaphone" }
+  ]
+};
+</script>
+<!-- ===================== END OF CONTENT BLOCK ===================== -->
+
+<title>SWARM OR The Transparency of Evil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- shared files: the "../../" matches root above -->
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../../assets/work.css">
+<link rel="stylesheet" href="../../assets/player.css">
+<script src="../../assets/site.js"></script>
+</head>
+<body>
+<!-- PAGE SKELETON. Empty containers, filled by assets/base.js (menu) and assets/work.js (everything else). -->
+<div class="page" id="top">
+
+  <nav class="site" id="site"></nav>
+
+  <!-- close: back to the Work page (top right). Side tabs: this page (+ the next page when nextPage is set) -->
+  <a class="close" id="close"></a>
+  <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
+
+  <!-- title line: title left, info right (as in C-Pentane) -->
+  <div class="head"><h1 id="title-main"></h1><p id="info"></p></div>
+
+  <!-- two-column grid. Rows: [heading] / [left column | right column] -->
+  <div class="grid">
+    <h2 id="h-main"></h2>
+
+    <!-- left column -->
+    <main>
+      <div class="tech" id="materials"></div>
+      <div class="text" id="text-1"></div>
+      <figure class="fig-wrap" id="fig-2"></figure>
+    </main>
+
+    <!-- right column -->
+    <aside>
+      <figure class="fig-wrap" id="fig-1"></figure>
+      <div class="scroll"><table><tbody id="main-data"></tbody></table></div>
+      <div class="text" id="text-2"></div>
+      <div id="audio-block">
+        <h2 id="h-audio"></h2>
+        <table class="tl">
+          <thead><tr><th>No.</th><th>Track</th><th class="r">Time</th></tr></thead>
+          <tbody id="tracks"></tbody>
+        </table>
+      </div>
+    </aside>
+  </div>
+
+  <!-- full-width text box -->
+  <div class="text" id="text-3"></div>
+
+  <!-- small images (contact sheet) -->
+  <div id="sheet-block">
+    <h2 id="h-sheet"></h2>
+    <div class="sheet" id="sheet"></div>
+  </div>
+
+  <!-- enlarged image viewer -->
+  <dialog class="lightbox" aria-label="Image viewer">
+    <figure><img alt=""><figcaption></figcaption></figure>
+    <div class="lb-bar">
+      <span class="lb-count"></span>
+      <button type="button" class="play" data-lb="prev">Prev</button>
+      <button type="button" class="play" data-lb="next">Next</button>
+      <button type="button" class="play" data-lb="close">Close</button>
+    </div>
+  </dialog>
+
+  <div class="foot"><span id="foot-index"></span><a href="#top">Back to top</a></div>
+</div>
+
+<!-- player, fixed to the bottom (hidden when the page has no tracks) -->
+<div class="player" id="player" role="region" aria-label="Audio player" hidden>
+  <div class="in">
+    <div class="btns">
+      <button type="button" id="p-prev" aria-label="Previous track">&#9664;&#9664;</button>
+      <button type="button" id="p-play" aria-pressed="false" aria-label="Play">Play</button>
+      <button type="button" id="p-next" aria-label="Next track">&#9654;&#9654;</button>
+    </div>
+    <div class="now" id="p-now" aria-live="polite"></div>
+    <div class="time" id="p-time">0:00 / 0:00</div>
+    <div class="track" id="p-track" role="slider" tabindex="0" aria-label="Position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="p-fill"></div></div>
+  </div>
+  <audio id="audio" preload="metadata"></audio>
+</div>
+
+<script src="../../assets/base.js"></script>
+<script src="../../assets/work.js"></script>
+</body>
+</html>
