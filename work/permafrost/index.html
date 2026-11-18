@@ -31,8 +31,7 @@ const PAGE = {
   number: 0,                    // automatic: the side index and footer number come from the order of
   nextPage: "",                 // "projects" in assets/site.js, and the next box leads to the next project
   browserTitle: "Permafrost",   // text on the browser tab
-  title: "permafrost",          // large title box (left)
-  variant: "live av / installation",   // small title box (right)
+  title: "permafrost",   // title, top left (shown in capitals)
 
   /* ---- SECTION HEADINGS --------------------------------------------- */
   headings: {
@@ -42,7 +41,7 @@ const PAGE = {
     sheet: "Process and details"      // above the small images
   },
 
-  /* ---- INFO LINES (top right):  [ "label", "value" ] ---------------- */
+  /* ---- INFO (top right, on the title line):  [ "label", "value" ] ---- */
   info: [
     ["Year",   "2023"],
     ["Format", "Live AV / Installation"]
@@ -108,10 +107,11 @@ const PAGE = {
   <a class="close" id="close"></a>
   <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
 
-  <!-- two-column grid. Rows: [title | info] / [heading | info] / [left column | right column] -->
+  <!-- title line: title left, info right (as in C-Pentane) -->
+  <div class="head"><h1 id="title-main"></h1><p id="info"></p></div>
+
+  <!-- two-column grid. Rows: [heading] / [left column | right column] -->
   <div class="grid">
-    <div class="title"><h1 id="title-main"></h1><p id="title-variant"></p></div>
-    <dl class="meta meta-head" id="info"></dl>
     <h2 id="h-main"></h2>
 
     <!-- left column -->

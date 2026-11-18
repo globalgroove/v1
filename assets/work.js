@@ -13,7 +13,6 @@
     // page identity: browser tab title, big title, tabs, footer
     document.title = C.browserTitle;
     $('title-main').textContent = C.title;
-    $('title-variant').textContent = C.variant;
     if ($('tab-top')) $('tab-top').textContent = pad(C.number);
 
     // close (×, top right) and the Esc key: back to the Work page.
@@ -49,8 +48,8 @@
     $('h-audio').textContent = C.headings.audio;
     $('h-sheet').textContent = C.headings.sheet;
 
-    // info lines (top right)
-    C.info.forEach(function(r){ $('info').appendChild(el('dt', null, r[0])); $('info').appendChild(el('dd', null, r[1])); });
+    // info, right end of the title line: "year 2023 · series no. GR23 – 1100001"
+    $('info').textContent = (C.info || []).map(function(r){ return (r[0] ? r[0].toLowerCase() + ' ' : '') + r[1]; }).join(' \u00b7 ');
 
     // main table: label | unit | value. An empty list [] hides it
     if (!C.mainData || !C.mainData.length) $('main-data').closest('.scroll').hidden = true;
