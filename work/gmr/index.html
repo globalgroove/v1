@@ -28,17 +28,17 @@ const PAGE = {
   back: "work/index.html",      // where the × (top right) and the Esc key lead, relative to the site root
 
   /* ---- PAGE IDENTITY ------------------------------------------------ */
-  number: 0,                    // automatic: the side index and footer number come from the order of
+  number: 0,                    // automatic: the side index number comes from the order of
   nextPage: "",                 // "projects" in assets/site.js, and the next box leads to the next project
   browserTitle: "Gore Metal Redux",   // text on the browser tab
   title: "gore metal redux",   // title, top left (shown in capitals)
 
-  /* ---- SECTION HEADINGS --------------------------------------------- */
+  /* ---- SECTION HEADINGS: "" = none (the small headings with the dot) ---- */
   headings: {
-    main:  "technical specs",         // above the first table
-    audio: "recordings",             // above the track list
-    materials: "",                    // small label above the materials text. "" = none
-    sheet: "Process and details"  // above the small images
+    main:  "",                    // above the materials and texts
+    audio: "",                    // above the track list
+    materials: "",                // small label above the materials text
+    sheet: ""                     // above the small images
   },
 
   /* ---- INFO (top right, on the title line):  [ "label", "value" ] ---- */

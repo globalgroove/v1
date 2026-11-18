@@ -32,7 +32,7 @@
     // number: from the order of "projects" in assets/site.js (assets/base.js also draws the side index);
     // a page not listed there falls back to its own number and nextPage
     var G = window.GOG_PROJECT, num = G ? G.number : C.number;
-    $('foot-index').textContent = 'Index ' + pad(num);
+    var fi = $('foot-index'); if (fi) fi.remove();          // no index number at the bottom; the side index shows it
     if (!G) {
       $('tab-side').textContent = pad(C.number);
       if (C.nextPage) {
@@ -44,9 +44,10 @@
     }
 
     // section headings
-    $('h-main').textContent = C.headings.main;
-    $('h-audio').textContent = C.headings.audio;
-    $('h-sheet').textContent = C.headings.sheet;
+    [['h-main', 'main'], ['h-audio', 'audio'], ['h-sheet', 'sheet']].forEach(function(k){   // "" removes the heading
+      var t = (C.headings || {})[k[1]], h = $(k[0]);
+      if (t) h.textContent = t; else h.remove();
+    });
 
     // info, right end of the title line: "year 2023 · series no. GR23 – 1100001"
     $('info').textContent = (C.info || []).map(function(r){ return (r[0] ? r[0].toLowerCase() + ' ' : '') + r[1]; }).join(' \u00b7 ');

@@ -83,6 +83,8 @@ tbody tr:hover th,tbody tr:hover td{border-color:var(--paper)}
 .grid>h2{grid-column:1;grid-row:1}
 .grid>main{grid-column:1;grid-row:2}
 .grid>aside{grid-column:2;grid-row:2}
+.foot{justify-content:flex-end}
+#sheet-block{margin-top:6px}
 @media (max-width:760px){
   .grid{grid-template-columns:minmax(0,1fr)}
   .grid>*{grid-column:auto!important;grid-row:auto!important}
