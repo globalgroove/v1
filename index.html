@@ -414,31 +414,32 @@ main{grid-area:past;min-width:0}      /* upcoming and past events stack in the r
 
 /* event frame (left column): poster, title, details, text, link. Stays in view while the past events scroll */
 aside{align-self:stretch}
-.detail{position:sticky;top:56px;border:1px solid var(--rule);width:min(100%,calc((100vh - 200px) * var(--ar-n,.75)))}   /* the whole frame takes the poster's proportions; on a short screen it narrows instead of leaving margins */
+.detail{--panel:var(--ink);--panel-text:var(--paper);--panel-rule:#3b3c3b;position:sticky;top:56px;background:var(--panel);color:var(--panel-text);width:min(100%,calc((100vh - 200px) * var(--ar-n,.75)))}   /* dark panel, like the discography preview. The frame takes the poster's proportions; on a short screen it narrows instead of leaving margins */
 .detail[hidden]{display:none}
-.detail .close{position:absolute;top:6px;right:6px;z-index:2;background:var(--paper);color:var(--ink);border:1px solid var(--rule);font:500 11px/1 var(--label);letter-spacing:.14em;padding:4px 8px;cursor:pointer}
-.detail .close:hover,.detail .close:focus-visible{background:var(--ink);color:var(--paper)}
+.detail .close{position:absolute;top:6px;right:6px;z-index:2;background:var(--paper);color:var(--ink);border:0;font:500 10px/1 var(--label);letter-spacing:.14em;padding:4px 7px;cursor:pointer}
+.detail .close:hover,.detail .close:focus-visible{background:var(--ink);color:var(--paper);outline:1px solid var(--paper)}
 .detail .stage{position:relative}
-.detail .info{position:absolute;inset:0;z-index:1;overflow:auto;background:var(--paper);padding:38px 12px 12px;scrollbar-width:thin;scrollbar-color:var(--rule) transparent}
+.detail .info{position:absolute;inset:0;z-index:1;overflow:auto;background:var(--panel);color:var(--panel-text);padding:34px 10px 10px;scrollbar-width:thin;scrollbar-color:var(--panel-rule) transparent}
 .detail .info[hidden]{display:none}
 .detail.has-info .poster{cursor:pointer}
-.detail .poster{position:relative;aspect-ratio:var(--ar,3/4);width:100%;background:radial-gradient(circle at 50% 50%,var(--rule) 0 1px,transparent 1.4px) 0 0/5px 5px}
-.detail .poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;background:var(--paper)}
+.detail .poster{position:relative;aspect-ratio:var(--ar,3/4);width:100%;background:radial-gradient(circle at 50% 50%,var(--panel-rule) 0 1px,transparent 1.4px) 0 0/5px 5px}
+.detail .poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;background:var(--panel)}
 .detail .poster img[hidden]{display:none}
-.detail .body{padding:10px 12px 10px;border-top:1px solid var(--rule)}
-.specs{display:grid;grid-template-columns:auto 1fr;gap:5px 16px;margin:0}   /* small spec list under the poster, like the discography frame */
-.specs dt{font:400 10px/1.6 var(--label);letter-spacing:.14em;text-transform:uppercase;opacity:.6}
-.specs dd{margin:0;font:400 11px/1.6 var(--value);letter-spacing:.02em}
-.specs dd.q{font-size:10.5px;opacity:.55}                                    /* the date is the quietest line */
-.specs .row-off{display:none}
-.info-btn{display:inline-block;margin:10px 0 0;padding:0;background:none;border:0;color:var(--ink);font:400 10px/1.4 var(--label);letter-spacing:.14em;text-transform:uppercase;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;opacity:.6;cursor:pointer}
+.detail .body{padding:8px 10px 10px}
+.specs{display:grid;grid-template-columns:auto 1fr;gap:3px 18px;margin:0}      /* same spec list as the discography preview */
+.specs dt{font:400 11px/1.5 var(--label);letter-spacing:.06em;opacity:.75}
+.specs dd{margin:0;font:400 11px/1.5 var(--value)}
+.specs dd.q{opacity:.55}                                                       /* the date is the quietest line */
+.info-btn{display:inline-block;margin:8px 0 0;padding:0;background:none;border:0;color:inherit;font:400 10px/1.4 var(--value);letter-spacing:.04em;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;opacity:.6;cursor:pointer}
 .info-btn:hover,.info-btn:focus-visible{opacity:1}
 .info-btn[hidden]{display:none}
+.detail a{color:inherit}
 .detail .info-none{margin:0;font:400 11px/1.5 var(--value);opacity:.55}
-.detail .meta{margin:0 0 12px;gap:3px 18px;font-size:13px}
-.detail .meta dd{font-size:12px}
+.detail .meta{margin:0 0 10px;gap:3px 18px}
+.detail .meta dt{font:400 11px/1.5 var(--label);letter-spacing:.06em;opacity:.75}
+.detail .meta dd{font:400 11px/1.5 var(--value)}
 .detail .meta[hidden]{display:none}
-.detail p{margin:0 0 .7em;font:400 14px/1.5 var(--label)}
+.detail p{margin:0 0 .7em;font:400 12px/1.5 var(--label)}
 .detail .more{margin:0}
 
 /* image */
