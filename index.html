@@ -407,7 +407,7 @@ main{grid-area:past;min-width:0}      /* upcoming and past events stack in the r
 
 /* event frame (left column): poster, title, details, text, link. Stays in view while the past events scroll */
 aside{align-self:stretch}
-.detail{position:sticky;top:56px;border:1px solid var(--rule)}
+.detail{position:sticky;top:56px;border:1px solid var(--rule);width:min(100%,calc((100vh - 200px) * var(--ar-n,.75)))}   /* the whole frame takes the poster's proportions; on a short screen it narrows instead of leaving margins */
 .detail[hidden]{display:none}
 .detail .close{position:absolute;top:6px;right:6px;z-index:2;background:var(--paper);color:var(--ink);border:1px solid var(--rule);font:500 11px/1 var(--label);letter-spacing:.14em;padding:4px 8px;cursor:pointer}
 .detail .close:hover,.detail .close:focus-visible{background:var(--ink);color:var(--paper)}
@@ -418,7 +418,7 @@ aside{align-self:stretch}
 .detail .info{position:absolute;inset:0;z-index:1;overflow:auto;background:var(--paper);padding:40px 12px 12px;scrollbar-width:thin;scrollbar-color:var(--rule) transparent}
 .detail .info[hidden]{display:none}
 .detail.has-info .poster{cursor:pointer}
-.detail .poster{position:relative;aspect-ratio:3/4;min-height:300px;max-height:70vh;width:100%;background:radial-gradient(circle at 50% 50%,var(--rule) 0 1px,transparent 1.4px) 0 0/5px 5px}
+.detail .poster{position:relative;aspect-ratio:var(--ar,3/4);width:100%;background:radial-gradient(circle at 50% 50%,var(--rule) 0 1px,transparent 1.4px) 0 0/5px 5px}
 .detail .poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;background:var(--paper)}
 .detail .poster img[hidden]{display:none}
 .detail .body{padding:10px 12px 10px;border-top:1px solid var(--rule)}
@@ -450,7 +450,7 @@ aside{align-self:stretch}
   main,aside{grid-area:auto}
   aside{order:0;align-self:start;margin:6px 0 22px} main{order:1}
   .rest-logo{max-width:230px}
-  .detail{position:relative;top:auto}   /* relative, so that Info and Close stay inside the frame */
+  .detail{position:relative;top:auto;width:100%}   /* relative, so that Info and Close stay inside the frame */
   .ag-scroll{max-height:none!important;overflow:visible}   /* phone: no scrolling box, the page itself scrolls */
   .site{width:auto}
   .ag-ctrl{position:sticky;top:40px;z-index:6;background:var(--paper);padding:8px 0 6px}   /* the year index stays in view under the menu */
@@ -624,10 +624,10 @@ aside{align-self:stretch}
       if (current) { current.classList.remove('on'); current.querySelector('.ev').setAttribute('aria-expanded', 'false'); }
       current = tr; tr.classList.add('on'); tr.querySelector('.ev').setAttribute('aria-expanded', 'true');
       $('d-title').textContent = ev.title; $('d-date').textContent = (ev.date || '') + (ev.place ? '  \u00b7  ' + ev.place : '');
-      var pbox = $('d-poster'); pbox.innerHTML = ''; pbox.style.aspectRatio = '';
+      var pbox = $('d-poster'); pbox.innerHTML = ''; detail.style.removeProperty('--ar-n'); pbox.style.removeProperty('--ar');
       if (ev.poster) {                                   // the frame takes the poster's own proportions once it has loaded
         var im = new Image(); im.alt = ev.alt || '';
-        im.onload = function(){ pbox.style.aspectRatio = im.naturalWidth + '/' + im.naturalHeight; };
+        im.onload = function(){ pbox.style.setProperty('--ar', im.naturalWidth + '/' + im.naturalHeight); detail.style.setProperty('--ar-n', im.naturalWidth / im.naturalHeight); };
         im.onerror = function(){ im.hidden = true; };
         im.src = root + ev.poster; pbox.appendChild(im);
       }
