@@ -60,21 +60,21 @@ const AGENDA = [
     tools: true,
     rows: [
     ["CREPITÁCULO (FEST)",  "2026 . 10 . 31", "crepitaculo"],
-    ["PRADO, BANDA HUMILDE, FOLGOSA CADAFAZ",          "2026 . 10 . 30"],
+    ["PRADO, BANDA HUMILDE, FOLGOSA CADAFAZ",          "2026 . 10 . 30","prado"],
     ["HEROÍNA, CALHAU!, BANDA HUMILDE, DJ CONCRETE ",                 "2026 . 10 . 09"],
     ["PREHISTORIC WAR CULT",          "2026 . 09 . 24"],
-    ["MÉCANOSPHÉRE: PROJECTO DE MECANIZAÇÃO DOS MORTOS",          "2026 . 09 . 09"],
+    ["MÉCANOSPHÉRE: PROJECTO DE MECANIZAÇÃO DOS MORTOS",          "2026 . 09 . 09","mecanosphere"],
     ["MARKET SATURÉE, MANGUALDE, MONGOLIAN THROAT FUCK (JURASSIC DUB VERSION), DRENAGEM",          "2026 . 07 . 11"],
-    ["VICENTE MATEUS, PAULA SANCHEZ, MARIJA KEROCEVIC, GABRIEL VALTCHEV",          "2026 . 07 . 02"],
-    ["AXEL LARSEN, HOCHIWAH, JANIK WEU, KIRA KREMPOVA",          "2026 . 06 . 15"],
+    ["VICENTE MATEUS, PAULA SANCHEZ, MARIJA KEROCEVIC, GABRIEL VALTCHEV",          "2026 . 07 . 02","vicente"],
+    ["AXEL LARSEN, HOCHIWAH, JANIK WEU, KIRA KREMPOVA",          "2026 . 06 . 15","axel"],
     ["TRASGO, PETROZAVODSK, CANÁRIOS MORTOS, RECEPTOR",          "2026 . 06 . 10","trasgo"],
-    ["TRANSFORMER (ES/PE), MEGABASSE (FR), TELOMANTE (ES)",          "2026 . 05 . 14"],
+    ["TRANSFORMER (ES/PE), MEGABASSE (FR), TELOMANTE (ES)",          "2026 . 05 . 14","transformer"],
     ["FUCK IT (PT), MOTHER EARTH (GT)",          "2026 . 02 . 17","gallaecian"],
     ["COUNTERCULTURE IN GUATEMALA: MOTHER EARTH (TALK)",          "2026 . 02 . 17"],
 
     ["TRAMA FEST II",  "2025 . 12 . 07","trama"],
-    ["NEVER STOP + JUST FISH",  "2025 . 10 . 29"],
-    ["BEAR BONES LAY LOW",  "2025 . 10 . 23"],
+    ["NEVER STOP + JUST FISH",  "2025 . 10 . 29","neverstop"],
+    ["BEAR BONES LAY LOW",  "2025 . 10 . 23","bearbones"],
     ["OCCUPIED HEAD, NEITHER-NEITHER",  "2025 . 09 . 15","occupied"],
     ["LOUP UBERTO, IAN DUCLOS",  "2025 . 07 . 11"],
     ["TERMITÁRIO #3",  "2025 . 06 . 14","termitario"],
@@ -100,7 +100,7 @@ const AGENDA = [
     ["KEVIN MURRAY",  "2023 . 07 . 21"],
     ["LAURA COCKS, IAN DUCLOS, ANTÓNIO FEITEIRA",  "2023 . 04 . 08"],
 
-    ["SENSOR",  "2022 . 07 . 10"],
+    ["SENSOR",  "2022 . 07 . 10","sensor"],
 
     ]
   }
@@ -123,6 +123,47 @@ const AGENDA = [
      ===================================================================== -->
 <script>
 const TEXTS = {
+
+  sensor: {
+    poster: "assets/img/agenda/220710-sensor.webp",
+    alt: "Poster: Sensor, ARM.5-A, 10 July"
+  },
+
+  transformer: {
+    poster: "assets/img/agenda/260514-transformer-megabasse-telomante.webp",
+    alt: "Poster: Transformer, Megabasse, Telomante, 14 May"
+  },
+
+  axel: {
+    poster: "assets/img/agenda/260615-axel-larsen.webp",
+    alt: "Poster: Axel Larsen, Hochiwah, Kira Krempova, 15 June"
+  },
+
+  vicente: {
+    poster: "assets/img/agenda/260702-vicente-mateus.webp",
+    alt: "Poster: Vicente Mateus, Paula Sanchez, Gabriel Valtchev, Marija Kerocevic, 2 July"
+  },
+
+  mecanosphere: {
+    poster: "assets/img/agenda/260909-mecanosphere.webp",
+    alt: "Poster: Mécanosphère, projecto de mecanização dos mortos"
+  },
+
+  prado: {
+    price: "8 paus",
+    poster: "assets/img/agenda/261030-prado.webp",
+    alt: "Poster: Prado, Banda Humilde, Folgosa Cadafaz, 30 October"
+  },
+
+  bearbones: {
+    poster: "assets/img/agenda/251023-bear-bones-lay-low.webp",
+    alt: "Poster: Bear Bones Lay Low, 23 October"
+  },
+
+  neverstop: {
+    poster: "assets/img/agenda/251029-never-stop-just-fish.webp",
+    alt: "Poster: Animated poster: Never Stop, Just Fish"
+  },
 
   trama: {
     poster: "assets/img/agenda/251207-trama-fest-2.webp",
