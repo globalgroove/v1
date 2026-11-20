@@ -4,944 +4,103 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<!-- #####################################################################
-     HOW THIS FILE IS ORGANISED
-     #####################################################################
-     You only ever edit the three blocks right below, in this order:
-
-       1. AGENDA       the lines of the agenda: title, date and the name of its details.   (edit most often)
-       2. EVENT TEXTS  the text of each event, one named entry per event: poster, venue, time, text, link.
-       3. SETTINGS     menu, logo, side tab, image, table height.                            (edit rarely)
-
-     Everything after the line "END OF CONTENT" is code and does not need editing.
-
-     How the blocks connect: a line of the AGENDA can end with a name, for example "cannibe".
-     When someone clicks that line, the entry called cannibe in EVENT TEXTS opens in the frame on the right.
-     A line without a name still shows, it just opens nothing.
-
-     To add an event:  1) add a line to the AGENDA   2) add an entry with the same name to EVENT TEXTS.
-
-     Rules for all three blocks:
-       - Keep the quotation marks "like this" and the commas at line ends (the last item of a list has no comma).
-       - A quotation mark inside a text needs a backslash: "12\" LP"
-       - Paragraphs may contain simple HTML, e.g. <em>italic</em> or <a href="...">a link</a>.
-       - Image and file paths are relative to the site root.
-     ##################################################################### -->
-
-
 <!-- =====================================================================
-     1. AGENDA
+     LANDING PAGE  (site root: /index.html)
+     CONTENT BLOCK  -  THIS IS THE ONLY PART YOU NEED TO EDIT HERE
      =====================================================================
-     One [ "title", "date", "name" ] per line. The name is optional and must match an entry in EVENT TEXTS.
-     Each { title, rows } is a separate table with its own heading, shown in the order written here.
-     Add  tools: true  to a table to give it the search field and the year index (and the year rows).
-     (A plain [ ... ] list of lines still works: it becomes a table with no heading and no tools.)
-     Lines keep the order written here. A table taller than the height limit (see SETTINGS) scrolls.
+     The site title and the menu (always open here, with the search) come
+     from assets/site.js. Below them, optional info lines, text and an image.
 
-     YEARS (tables with tools: true): write the full date, year first ("2026 . 11 . 14"). The rows of that table show only
-     month and day ("11 . 14"); the year is read from the date and drives the year rows and the year index. Whenever the year changes from one line to the next,
-     a small year row appears by itself (and stays pinned at the top while you scroll). You never type the year rows.
-     Just keep the lines in order. A line whose date has no year (like "OUT") stays under the previous year.
-
-     SEARCH (same tables): the search field looks at the title, the date and the event's details and text (accents and capitals ignored).
-     ===================================================================== -->
-<script>
-const AGENDA = [
-
-  {   // TABLE 1: coming up. It sits on top, in the spotlight
-    title: "",                      // no heading: the black rows already say "coming up". Write "Upcoming" here to bring the heading back
-    rows: [
-      ["CANNIBE, DRENAGEM, WOLFSKIN",  "2026 . 12 . 14", "cannibe"],
-    ]
-  },
-
-  {   // TABLE 2: past events. It owns the search field and the year index (tools: true)
-    title: "",                      // no visible heading: the search line and the year rows already mark this table. Write "Past events" here to bring the heading back
-    tools: true,
-    rows: [
-    ["CREPITÁCULO (FEST)",  "2026 . 10 . 31", "crepitaculo"],
-    ["PRADO, BANDA HUMILDE, FOLGOSA CADAFAZ",          "2026 . 10 . 30","prado"],
-    ["HEROÍNA, CALHAU!, BANDA HUMILDE, DJ CONCRETE ",                 "2026 . 10 . 09"],
-    ["PREHISTORIC WAR CULT",          "2026 . 09 . 24"],
-    ["MÉCANOSPHÉRE: PROJECTO DE MECANIZAÇÃO DOS MORTOS",          "2026 . 09 . 09","mecanosphere"],
-    ["MARKET SATURÉE, MANGUALDE, MONGOLIAN THROAT FUCK (JURASSIC DUB VERSION), DRENAGEM",          "2026 . 07 . 11"],
-    ["VICENTE MATEUS, PAULA SANCHEZ, MARIJA KEROCEVIC, GABRIEL VALTCHEV",          "2026 . 07 . 02","vicente"],
-    ["AXEL LARSEN, HOCHIWAH, JANIK WEU, KIRA KREMPOVA",          "2026 . 06 . 15","axel"],
-    ["TRASGO, PETROZAVODSK, CANÁRIOS MORTOS, RECEPTOR",          "2026 . 06 . 10","trasgo"],
-    ["TRANSFORMER (ES/PE), MEGABASSE (FR), TELOMANTE (ES)",          "2026 . 05 . 14","transformer"],
-    ["FUCK IT (PT), MOTHER EARTH (GT)",          "2026 . 02 . 17","gallaecian"],
-    ["COUNTERCULTURE IN GUATEMALA: MOTHER EARTH (TALK)",          "2026 . 02 . 17"],
-
-    ["TRAMA FEST II",  "2025 . 12 . 07","trama"],
-    ["NEVER STOP + JUST FISH",  "2025 . 10 . 29","neverstop"],
-    ["BEAR BONES LAY LOW",  "2025 . 10 . 23","bearbones"],
-    ["OCCUPIED HEAD, NEITHER-NEITHER",  "2025 . 09 . 15","occupied"],
-    ["LOUP UBERTO, IAN DUCLOS",  "2025 . 07 . 11"],
-    ["TERMITÁRIO #3",  "2025 . 06 . 14","termitario"],
-    ["RAÚL JARDIN, NU-NO, MAURÍCIO MOQUILLAZA, IAN DUCLOS",  "2025 . 03 . 23"],
-    ["TV DINNER, MAURICIO MOQUILLAZA",  "2025 . 03 . 18","tvdinner"],
-    ["KARA KONCHAR, NEURODANCER",  "2025 . 02 . 01"],
-    ["ENTERRADOS NO JARDIM",  "2025 . 02 . 01","enterrados"],
-
-    ["HOLOCAUSTO CANIBAL, DRENAGEM, DISTROFIA",  "2024 . 12 . 07","holocausto"],
-    ["P/O MASSACRE, VOMIT-SELF",  "2024 . 11 . 11","massacre"],
-    ["NÂR",  "2024 . 11 . 03","nar"],
-    ["MECANOSPHERE, INSOMNIA, BUTTERFUCK",  "2024 . 10 . 12"],
-    ["DYLON BASTON, IAN DUCLOS",  "2024 . 10 . 11"],
-    ["KENJI SIRATORI, RUI BAIÃO",  "2024 . 07 . 06","booklaunch"],
-    ["VOMIT-SELF, IAN DUCLOS",  "2024 . 07 . 06","booklaunch"],
-    ["THE END OF LEVIATÃ (FEST)",  "2024 . 06 . 22","leviata"],
-    ["TRASGO, KASTRATA, RAMRIFE X ECLIPSE JUGULAR",  "2024 . 06 . 10"],
-    ["TRAUMÁTICO DESMAME, DISTROFIA, J. AERNUS & B. VARVOHZA, RAMRIFE, DURVENA CABINA",  "2024 . 05 . 25","distrofia"],
-    ["SENSOR, ECLIPSE JUGULAR, FUHRER DUHRER, RONCOS",  "2024 . 03 . 23"],
-    ["CAVERNÂNCIA, INSOLÊNCIA, STINGING NETTLE, TRASGO",  "2024 . 02 . 24"],
-
-    ["KAELEN GHANDI, IAN DUCLOS",  "2023 . 12 . 11"],
-    ["KEVIN MURRAY",  "2023 . 07 . 21"],
-    ["LAURA COCKS, IAN DUCLOS, ANTÓNIO FEITEIRA",  "2023 . 04 . 08"],
-
-    ["SENSOR",  "2022 . 07 . 10","sensor"],
-
-    ]
-  }
-
-];
-</script>
-
-
-<!-- =====================================================================
-     2. EVENT TEXTS
-     =====================================================================
-     One entry per event, named like in the AGENDA. All fields are optional:
-       poster         image file, e.g. "assets/img/posters/2026-11-14.jpg"  (dotted placeholder until the file exists)
-       alt            short description of the poster, for screen readers
-       price          shown as the Price line under the poster, e.g. "10 ouros" (nothing if empty)
-       place          short line shown after the date in the Data line in the agenda row, e.g. "Lisboa, Galeria X" (also searchable)
-       details        list of [ "label", "value" ] shown under the poster (venue, time, entry ...)
-       text           a paragraph, or a list of paragraphs
-       link, linkText address and the words shown for it
-     ===================================================================== -->
-<script>
-const TEXTS = {
-
-  sensor: {
-    poster: "assets/img/agenda/220710-sensor.webp",
-    alt: "Poster: Sensor, ARM.5-A, 10 July"
-  },
-
-  transformer: {
-    poster: "assets/img/agenda/260514-transformer-megabasse-telomante.webp",
-    alt: "Poster: Transformer, Megabasse, Telomante, 14 May"
-  },
-
-  axel: {
-    poster: "assets/img/agenda/260615-axel-larsen.webp",
-    alt: "Poster: Axel Larsen, Hochiwah, Kira Krempova, 15 June"
-  },
-
-  vicente: {
-    poster: "assets/img/agenda/260702-vicente-mateus.webp",
-    alt: "Poster: Vicente Mateus, Paula Sanchez, Gabriel Valtchev, Marija Kerocevic, 2 July"
-  },
-
-  mecanosphere: {
-    poster: "assets/img/agenda/260909-mecanosphere.webp",
-    alt: "Poster: Mécanosphère, projecto de mecanização dos mortos"
-  },
-
-  prado: {
-    price: "8 paus",
-    poster: "assets/img/agenda/261030-prado.webp",
-    alt: "Poster: Prado, Banda Humilde, Folgosa Cadafaz, 30 October"
-  },
-
-  bearbones: {
-    poster: "assets/img/agenda/251023-bear-bones-lay-low.webp",
-    alt: "Poster: Bear Bones Lay Low, 23 October"
-  },
-
-  neverstop: {
-    poster: "assets/img/agenda/251029-never-stop-just-fish.webp",
-    alt: "Poster: Animated poster: Never Stop, Just Fish"
-  },
-
-  trama: {
-    poster: "assets/img/agenda/251207-trama-fest-2.webp",
-    alt: "Animated poster: Trama Fest 2, Feira da Fanzine, Feira do Livro, ARM x Trama All Stars, 7 December"
-  },
-
-  crepitaculo: {
-    price: "10 ouros",
-    poster: "assets/img/agenda/261031-crepitaculo.webp",
-    alt: "Poster: Crepitáculo, 31 October 2026"
-  },
-
-  trasgo: {
-    poster: "assets/img/agenda/260610-arm5-hekatombe.webp",
-    alt: "Poster: ARM5A x Hekatombe, 10 June 2026"
-  },
-
-  gallaecian: {
-    poster: "assets/img/agenda/260217-gallaecian-cult.webp",
-    alt: "Poster: Gallaecian Cult & Enfermo Distro, 17 February"
-  },
-
-  occupied: {
-    price: "5bux",
-    poster: "assets/img/agenda/250915-occupied-head.webp",
-    alt: "Poster: Occupied Head, Neither-Neither"
-  },
-
-  termitario: {
-    poster: "assets/img/agenda/250614-termitario-3.webp",
-    alt: "Poster: Termitário #3, António Baião"
-  },
-
-  tvdinner: {
-    poster: "assets/img/agenda/250318-tv-dinner.webp",
-    alt: "Poster: TV Dinner, Maurizio Moquillaza"
-  },
-
-  enterrados: {
-    poster: "assets/img/agenda/250201-enterrados-no-jardim.webp",
-    alt: "Poster: Enterrados no Jardim, 1 February"
-  },
-
-  holocausto: {
-    price: "$6",
-    poster: "assets/img/agenda/241207-holocausto-canibal.webp",
-    alt: "Poster: Holocausto Canibal, Drenagem, Distrofia"
-  },
-
-  massacre: {
-    poster: "assets/img/agenda/241111-vomit-self.webp",
-    alt: "Poster: Vomit-Self, P/O Massacre, 11 November"
-  },
-
-  nar: {
-    poster: "assets/img/agenda/241103-nar.webp",
-    alt: "Poster: Nâr, 3 November"
-  },
-
-  booklaunch: {
-    price: "Free",
-    poster: "assets/img/agenda/240706-book-launch.webp",
-    alt: "Poster: Book launch: Kenji Siratori, Rui Baião, Ian Duclos, Vomit Self"
-  },
-
-  leviata: {
-    poster: "assets/img/agenda/240622-the-end-of-leviata.webp",
-    alt: "Poster: The End of Leviatã, 22 June"
-  },
-
-  distrofia: {
-    poster: "assets/img/agenda/240525-distrofia-traumatico-desmame.webp",
-    alt: "Poster: Distrofia, Traumático Desmame, Ramrife, 25 May"
-  }
-
-};
-</script>
-
-
-<!-- =====================================================================
-     3. SETTINGS
+     Rules:
+       - Keep the quotation marks "like this" and the commas at line ends.
+       - A quotation mark inside a value needs a backslash: "12\" LP"
      ===================================================================== -->
 <script>
 const PAGE = {
 
-  /* ---- WHERE THIS PAGE LIVES ---------------------------------------- */
-  root: "",                      // path back to the site root: "" here, "../" one folder down, "../../" two down
+  root: "",                      // path back to the site root: "" here (top folder)
+  menuFixed: true,               // the menu is always open on this page, without the arrow
 
-  /* ---- SITE MENU (small sticky title; click it to open the list) ---- */
-  site: {
-    title: "ARM5A",
-    links: [                             // [ "text", "link" ]. "#..." jumps to a section of this page.
-      ["Work",        "work/"],          // anything else opens that page (folder or file, relative to the site root)
-      ["Discography", "discography/"],
-      ["Contact",     "contact/"]
-    ]                                    // an empty list [] shows the title only, without a menu
-  },
+  browserTitle: "Global Overgroove",     // text on the browser tab
+  sideTab: "GOG",                // text in the black box on the right edge. "" hides it
 
-  /* ---- THE FLY (a badly animated easter egg over the past events table) -- */
-  fly: { href: "crypt/", label: "Fly" },   // a small fly buzzes around inside the table, under the first entry. Squash it (click it) and the page href opens (relative to the site root, like the menu links).
-                                 // href: "" = no fly.   label = the hidden name for screen readers
+  /* ---- INFO LINES (left column):  [ "label", "value" ]. [] hides them ---- */
+  info: [],
 
-  infoAlways: true,              // true = the Info button is always under the poster; false = only when the event has text, details or a link
+  /* ---- TEXT (left column): list of paragraphs, [] hides it ---------- */
+  text: [],
 
-  upcomingLabel: "NEXT",         // tiny grey word above the black upcoming rows. "" = none
-
-  /* ---- COLOURS ------------------------------------------------------ */
-  theme: "light",                // "light" = always the light paper;  "dark" = always dark;  "auto" = follow the visitor's device setting
-
-  /* ---- PAGE IDENTITY ------------------------------------------------ */
-  browserTitle: "ARM5A",         // text on the browser tab
-  logo: { src: "", alt: "Home", mark: "registration" },  // small mark left of the menu title, links to the site root.
-                                   // Empty src = a placeholder mark, mark: "registration" (square, circle, crosshair), "lens" (black ellipse, tall ring, side wedges) or "cross" (both combined)
-                                   // Use a small square SVG or PNG with a transparent background (it is shown up to 28 x 28 px), e.g. "assets/img/logo.svg"
-  sideLabel: "AGENDA",            // text on the vertical side tab. "" = show the page number instead
-  showTabs: true,                // true = show the side tab; false = hide it
-  number: 0,                     // page number (used when sideLabel is empty, and for the next-page box)
-  nextPage: "",                  // optional: page the second side box links to, e.g. "work/". It then shows number+1
-
-  /* ---- AGENDA TABLES ------------------------------------------------ */
-  agendaMaxHeight: "55vh",       // height limit of each agenda block; a longer block scrolls. Any CSS length: "400px", "60vh"
-  agendaSearch: true,            // true = small search field above the agenda; false = hide it
-  agendaYearIndex: true,         // true = a row of years above the agenda that jump to each year (only shown when there is more than one year)
-  agendaAuto: true,              // true = every event is sorted by today's date: today or later goes to the first table (soonest first),
-                                 //        earlier goes to the table with tools: true (newest first). You can write all events in either table.
-                                 //        false = each event stays in the table where it is written
-  openNext: true,                // true = the frame opens on the next upcoming event (if it has a poster) instead of the halftone image
-  emptyUpcoming: "No dates announced",   // line shown when the first table has no event
-
-  /* ---- INTRO TEXT (optional): list of paragraphs, [] hides it ------- */
-  text: [""],
-
-  /* ---- LOGO IN THE LEFT COLUMN (shown until an event is opened) ---------- */
-  restLogo: { src: "assets/img/arm5a-logo.png", alt: "ARM5" },
-                                 // black logo on a transparent background (it turns white in dark mode by itself). "" = show the figure below instead
-
-  /* ---- IMAGE (left column, 3:2 landscape, no border, no caption). Used only when restLogo.src is empty; empty src = halftone grayscale placeholder ---- */
-  figure: { src: "", alt: "" }
+  /* ---- IMAGE (right column, 3:2 landscape). "" = no image ----------- */
+  figure: { src: "", alt: "" },
 };
 </script>
-<!-- ===================== END OF CONTENT ===================== -->
+<!-- ===================== END OF CONTENT BLOCK ===================== -->
 
-<title>ARM5A</title>
+<title>Global Overgroove</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/base.css">
+<script src="assets/site.js"></script>
 <style>
-/* STYLE SHEET. Same variables as the other pages. It moves to assets/css/style.css in the next step.
-   --frame is the thickness of the outer lines of the tables: 1px = light, 3px = heavy like the printed sheet. */
-:root{
-  --paper:#ECEBE6; --ink:#141413; --rule:#8d8b84; --tab-text:#ECEBE6; --frame:1px; --accent:#7a3cf0;
-  --label:"IBM Plex Sans Condensed","Zen Kaku Gothic New","Arial Narrow",Arial,sans-serif;
-  --value:"IBM Plex Mono","Zen Kaku Gothic New",ui-monospace,Menlo,Consolas,monospace;
-  box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){--paper:#171716;--ink:#E6E4DD;--rule:#6b6963;--tab-text:#171716;--accent:#a98bff}
-}
-:root[data-theme="dark"]{--paper:#171716;--ink:#E6E4DD;--rule:#6b6963;--tab-text:#171716;--accent:#a98bff}
-*,*::before,*::after{box-sizing:border-box}
-html{height:100%;scroll-behavior:smooth;scroll-padding-top:56px}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--label);font-size:15px;line-height:1.35;min-height:100%}
-.page{position:relative;max-width:none;margin:0;padding:28px 64px 48px 28px;overflow-x:clip}   /* full width. For a centred, limited width instead: max-width:1400px;margin:0 auto */
-.page.no-tabs{padding-right:20px}
-a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
-a:focus-visible,button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-::selection{background:var(--ink);color:var(--paper)}   /* selected text: the site's own ink/paper pair instead of the browser blue */
-mark{background:var(--ink);color:var(--paper);padding:0 1px}   /* search matches */
-.agenda tr:hover mark,.agenda tr.on mark,.agenda tr:has(.ev:focus-visible) mark{background:var(--paper);color:var(--ink)}
-
-/* site menu: small sticky title top-left; clicking it opens a ruled list of links */
-.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:8;width:max-content;max-width:100%;margin:0 0 12px;display:flex;align-items:center;gap:12px;background:var(--paper);padding-right:8px}
-.logo{display:block;flex:none;width:28px;height:28px;color:var(--ink)}
-.logo svg,.logo img,.logo canvas{display:block;width:100%;height:100%}
-.logo img{object-fit:contain;object-position:left center}
-.logo:hover{opacity:.7}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.site-btn{display:block;background:var(--paper);color:var(--ink);border:0;padding:3px 8px 3px 0;font:500 14px/1.3 var(--label);letter-spacing:.14em;cursor:pointer;text-align:left}
-/* the open/close hint: a small thin chevron, pale and set apart from the title. Turns up when open; darkens on hover.
-   To change it: margin-left = distance from the title, width/height = size, border-color = colour. */
-.site-btn::after{content:"";display:inline-block;width:5px;height:5px;margin-left:1.6em;border:solid var(--rule);border-width:0 1px 1px 0;transform:translateY(-3px) rotate(45deg);transition:transform .15s}
-.site-btn:hover::after,.site-btn:focus-visible::after{border-color:var(--ink)}
-.site-btn[aria-expanded=true]::after{transform:translateY(1px) rotate(225deg)}
-.site-btn.static{cursor:default}
-.site-btn.static::after{content:""}
-.site-menu{position:absolute;top:100%;left:0;margin:2px 0 0;padding:0;list-style:none;min-width:200px;background:var(--paper);border:1px solid var(--rule)}
-.site-menu li+li{border-top:1px solid var(--rule)}
-.site-menu a{display:block;padding:6px 12px 6px 8px;font-size:14px;letter-spacing:.08em;text-decoration:none}
-.site-menu a::before{content:"";display:inline-block;width:1.2em}
-.site-menu a[aria-current]::before{content:"\25CF"}
-.site-menu a:hover,.site-menu a:focus-visible{background:var(--ink);color:var(--paper);outline:none}
-
-/* logo placeholder marks. "registration" uses the ink colour only; "lens" is ink plus paper-coloured cut-outs */
-.logo .ink{fill:currentColor}
-.logo .cut{fill:var(--paper);stroke:none}
-.logo .cutl{fill:none;stroke:var(--paper);stroke-linecap:round}
-
-/* side tabs: the label of this page, plus the next page as an outlined link when nextPage is set */
-.tabs-side{position:fixed;right:0;top:46%;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-.tab-side{background:var(--ink);color:var(--tab-text);writing-mode:vertical-rl;font:500 17px/1 var(--value);padding:13px 7px;letter-spacing:.08em}
-a.tab-side{text-decoration:none;cursor:pointer;background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
-a.tab-side:hover,a.tab-side:focus-visible{background:var(--ink);color:var(--tab-text);outline:none}
-
-/* two columns: LEFT (narrower) = the image, or the open event frame; RIGHT (wider) = the agenda tables stacked: upcoming, then past events with search and years. */
-.cols{display:grid;grid-template-columns:minmax(300px,420px) minmax(0,1fr);grid-template-areas:"fig past";gap:0 40px   /* the image / event frame keeps a fixed width; the agenda takes the rest */;align-items:start}
-.col-l{display:contents}
-aside{grid-area:fig;min-width:0}
-main{grid-area:past;min-width:0}      /* upcoming and past events stack in the right column; the frame / image on the left starts at the same height */
+/* landing page only: the same two columns as the list pages */
+/* side banner: quiet, silver like the page, small Geist Mono */
+.tab-side{background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1px var(--rule);font:400 11px/1 var(--nav-mono);letter-spacing:.12em;padding:10px 5px;opacity:.6}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 22px;align-items:start;margin-top:28px}
 .text{margin:0 0 18px}
-.text[hidden]{display:none}
 .text p{margin:0 0 .8em;font:400 15px/1.55 var(--label);hyphens:auto}
 .text p:last-child{margin-bottom:0}
-
-/* agenda: a table without lines, same type as the old info lines. A line is clickable; the open one stays black */
-.ag-scroll{margin:0 0 1.4em -8px;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--rule) transparent}
-.ag-pad{flex:none}
-.ag-scroll{position:relative}
-.fly-zone{position:absolute;z-index:4;pointer-events:none;overflow:hidden}
-.fly-zone[hidden]{display:none}
-.fly{position:absolute;left:0;top:0;width:44px;height:44px;padding:10px;border:0;background:none;color:var(--ink);cursor:crosshair;pointer-events:auto;will-change:transform}
-.fly svg{display:block;width:100%;height:100%;overflow:visible;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.fly .fill{fill:var(--paper)}
-.fly .dot{fill:currentColor;stroke:none}
-.fly .eye{stroke-width:1.1}
-.fly .flap{animation:fly-flap .13s ease-in-out infinite alternate}
-.fly .flap.r{animation-name:fly-flap-r}
-.fly.rest .flap{animation-duration:.5s}
-@keyframes fly-flap{from{transform:rotate(-28deg)}to{transform:rotate(22deg)}}
-@keyframes fly-flap-r{from{transform:rotate(28deg)}to{transform:rotate(-22deg)}}
-@media (prefers-reduced-motion:reduce){.fly .flap{animation:none}}
-.fly.dead{cursor:default}
-.ag-scroll::-webkit-scrollbar{width:6px;height:6px}
-.ag-scroll::-webkit-scrollbar-thumb{background:var(--rule)}
-.agenda{width:100%;border-collapse:separate;border-spacing:0 2px;margin:0}
-.agenda th{font:400 14px/1.35 var(--label);letter-spacing:.14em;text-align:left;padding:2px 28px 2px 8px;vertical-align:top}
-.agenda td{width:1%;font:400 13px/1.4 var(--value);padding:2px 8px 2px 0;vertical-align:top;white-space:nowrap}
-.agenda tr:not(.yr){cursor:pointer}
-.agenda tr:not(.yr):hover>*,.agenda tr.on>*{background:var(--ink);color:var(--paper)}
-.agenda tr:has(.ev:focus-visible)>*{background:var(--ink);color:var(--paper)}
-.agenda .ev{font:inherit;letter-spacing:inherit;color:inherit;background:none;border:0;padding:0;margin:0;text-align:left;cursor:pointer}
-.agenda .ev:focus-visible{outline:2px solid var(--paper);outline-offset:1px}
-.agenda tr[hidden],.ag-scroll[hidden]{display:none}
-
-/* year rows: small, letter-spaced, a thin rule above; the current year stays pinned at the top of the scrolling table */
-.agenda .yr th{color:var(--rule);padding:6px 0 0;font:400 11px/1 var(--value);letter-spacing:.22em;border-bottom:1px solid color-mix(in srgb,var(--rule) 45%,transparent)}   /* year row: no visible text, just a dim hairline between years (45% of the grey: raise it for a stronger line). The year in view is shown in black in the year index */
-
-/* search field and year index, above the agenda */
-.ag-sec{margin:0 0 3.2em}
-.ag-sec:last-child{margin-bottom:0}
-.ag-head{margin:0 0 10px}
-.ag-head .ag-h{margin:0}
-.ag-ctrl[hidden]{display:none}
-.ag-ctrl{margin:0 0 2px}   /* the year index: the head line of the table. The year being read is shown in black */
-.ag-ctrl .ag-years{margin:0;line-height:14px}
-.agenda.up th{font-size:16px;padding:6px 28px 6px 8px}
-.agenda.up tr>*{background:var(--ink);color:var(--paper)}   /* upcoming events: solid black rows */
-.agenda.up tr:hover>*{opacity:.86}
-.agenda.up td{font-size:14px;padding:7px 8px 6px 0}
-.agenda .pl{display:block;margin-top:1px;font:400 12px/1.4 var(--value);letter-spacing:.04em;opacity:.7}
-.ag-tag{margin:0 0 7px;font:400 10px/14px var(--value);letter-spacing:.2em;color:var(--rule);text-transform:uppercase}   /* same quiet type as the year index */
-.agenda tr.ev-inline>*,.agenda.up tr.ev-inline>*{width:auto;white-space:normal;background:var(--paper);color:var(--ink);padding:4px 0 14px 8px;opacity:1}   /* phone: the open event sits in a row right under its line */
-.agenda tr.ev-inline{cursor:default}
-.agenda tr.ev-inline:hover>*{background:var(--paper);color:var(--ink);opacity:1}
-.ag-empty{margin:0 0 1.4em;font:400 13px/1.4 var(--value);letter-spacing:.06em;opacity:.6}
-.ag-h{margin:0 0 10px;font:700 15px/1.2 var(--label);letter-spacing:.14em;text-transform:uppercase}
-.ag-tools{position:absolute;top:30px;right:64px;z-index:9;width:260px;display:flex;align-items:center;gap:12px;min-width:0}   /* search: top-right corner */
-.page.no-tabs .ag-tools{right:20px}
-.ag-tools[hidden],.ag-years[hidden]{display:none}
-.ag-box{position:relative;flex:1 1 180px;min-width:0}
-.ag-box input{display:block;width:100%;font:400 11px/1.3 var(--value);color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--rule);border-radius:0;padding:5px 28px 4px 0;-webkit-appearance:none;appearance:none}
-.ag-box input::placeholder{color:var(--rule);letter-spacing:.14em}
-.ag-box input::-webkit-search-cancel-button{-webkit-appearance:none}
-.ag-box input:focus,.ag-box input:focus-visible{outline:none;border-bottom-color:var(--ink);box-shadow:0 1px 0 var(--ink)}   /* just a line; it turns black (and thickens) when typing */
-.ag-x{position:absolute;right:2px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--ink);font:400 16px/1 var(--value);padding:3px 7px;cursor:pointer}
-.ag-x[hidden]{display:none}
-.ag-count:empty{display:none}
-.ag-count{font:400 10px/1 var(--value);letter-spacing:.14em;color:var(--rule);white-space:nowrap}
-.ag-years{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0 0 10px;font:400 10px/1.4 var(--value);color:var(--rule)}   /* small, grey, tech: size = font, colour = color */
-.ag-years button{background:none;border:0;padding:1px 0;margin:0;font:inherit;letter-spacing:.2em;color:inherit;cursor:pointer}
-.ag-years button:hover,.ag-years button:focus-visible{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
-.ag-years button.on{color:var(--ink);font-weight:700}   /* the year in view */
-
-/* info lines (used inside the event frame) */
-.meta{display:grid;grid-template-columns:auto 1fr;gap:4px 28px;margin:2px 0 18px;font-size:14px}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:4px 28px;margin:0 0 18px;font-size:14px}
 .meta dt{letter-spacing:.14em}
 .meta dd{margin:0;font-family:var(--value);font-size:13px}
-
-/* event frame (left column): poster, title, details, text, link. Stays in view while the past events scroll */
-aside{align-self:stretch}
-.detail{--panel:var(--ink);--panel-text:var(--paper);--panel-rule:#3b3c3b;position:sticky;top:56px;background:var(--panel);color:var(--panel-text);width:min(100%,calc((100vh - 200px) * var(--ar-n,.75)))}   /* dark panel, like the discography preview. The frame takes the poster's proportions; on a short screen it narrows instead of leaving margins */
-.detail[hidden]{display:none}
-.detail .close{position:absolute;top:6px;right:6px;z-index:2;background:var(--paper);color:var(--ink);border:0;font:500 10px/1 var(--label);letter-spacing:.14em;padding:4px 7px;cursor:pointer}
-.detail .close:hover,.detail .close:focus-visible{background:var(--ink);color:var(--paper);outline:1px solid var(--paper)}
-.detail .stage{position:relative}
-.detail .info{position:absolute;inset:0;z-index:1;overflow:auto;background:var(--panel);color:var(--panel-text);padding:34px 10px 10px;scrollbar-width:thin;scrollbar-color:var(--panel-rule) transparent}
-.detail .info[hidden]{display:none}
-.detail.has-info .poster{cursor:pointer}
-.detail .poster{position:relative;aspect-ratio:var(--ar,3/4);width:100%;background:radial-gradient(circle at 50% 50%,var(--panel-rule) 0 1px,transparent 1.4px) 0 0/5px 5px}
-.detail .poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;background:var(--panel)}
-.detail .poster img[hidden]{display:none}
-.detail .body{padding:8px 10px 10px}
-.specs{display:grid;grid-template-columns:auto 1fr;gap:3px 18px;margin:0}      /* same spec list as the discography preview */
-.specs dt{font:400 11px/1.5 var(--label);letter-spacing:.06em;opacity:.75}
-.specs dd{margin:0;font:400 11px/1.5 var(--value)}
-.specs dd.q{opacity:.55}                                                       /* the date is the quietest line */
-.info-btn{display:inline-block;margin:8px 0 0;padding:0;background:none;border:0;color:inherit;font:400 10px/1.4 var(--value);letter-spacing:.04em;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;opacity:.6;cursor:pointer}
-.info-btn:hover,.info-btn:focus-visible{opacity:1}
-.info-btn[hidden]{display:none}
-.detail a{color:inherit}
-.detail .info-none{margin:0;font:400 11px/1.5 var(--value);opacity:.55}
-.detail .meta{margin:0 0 10px;gap:3px 18px}
-.detail .meta dt{font:400 11px/1.5 var(--label);letter-spacing:.06em;opacity:.75}
-.detail .meta dd{font:400 11px/1.5 var(--value)}
-.detail .meta[hidden]{display:none}
-.detail p{margin:0 0 .7em;font:400 12px/1.5 var(--label)}
-.detail .more{margin:0}
-
-/* image */
 .fig-wrap{margin:0}
-.rest-logo[hidden]{display:none}
-.rest-logo{display:block;width:100%;max-width:420px;height:auto}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rest-logo{filter:invert(1)}}
-:root[data-theme="dark"] .rest-logo{filter:invert(1)}
-.halftone{aspect-ratio:1.6/1;background:radial-gradient(circle at 50% 50%,var(--ink) 0 1.1px,transparent 1.5px) 0 0/5px 5px;-webkit-mask-image:radial-gradient(ellipse 48% 44% at 52% 54%,#000 30%,transparent 100%);mask-image:radial-gradient(ellipse 48% 44% at 52% 54%,#000 30%,transparent 100%)}
-.frame{position:relative;aspect-ratio:1.6/1;background:radial-gradient(circle at 50% 50%,var(--rule) 0 1px,transparent 1.4px) 0 0/5px 5px}
+.frame{position:relative;aspect-ratio:1.6/1}
 .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:var(--paper)}
-.frame img[hidden]{display:none}
-
-@media (max-width:760px){
-  .page{padding:20px 44px 40px 12px}
-  .ag-tools,.page.no-tabs .ag-tools{position:static;width:auto;margin:0 0 14px}   /* phone: the search sits under the menu */
-  .page.no-tabs{padding-right:12px}
-  .cols{grid-template-columns:minmax(0,1fr)}
-  .cols{grid-template-areas:none}       /* phone: the logo, then the tables. The open event sits inside the table, right under its line */
-  main,aside{grid-area:auto}
-  aside{order:0;align-self:start;margin:6px 0 22px} main{order:1}
-  .rest-logo{max-width:230px}
-  .detail{position:relative;top:auto;width:100%}   /* relative, so that Info and Close stay inside the frame */
-  .ag-scroll{max-height:none!important;overflow:visible}   /* phone: no scrolling box, the page itself scrolls */
-  .site{width:auto}
-  .ag-ctrl{position:sticky;top:40px;z-index:6;background:var(--paper);padding:8px 0 6px}   /* the year index stays in view under the menu */
-  .ag-box input{font-size:16px}         /* 16px: stops the browser from zooming in when the search is tapped */
-  .tab-side{font-size:18px;padding:12px 6px}
-}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}tbody tr{transition:none}}
+[hidden]{display:none!important}
+@media (max-width:760px){.cols{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
-<!-- PAGE SKELETON. Empty containers: the builder script fills them from the PAGE block above. -->
 <div class="page" id="top">
 
-  <!-- site menu: the title button opens the list (filled from PAGE.site) and stays visible while scrolling -->
-  <h1 class="sr" id="h1"></h1>
+  <h1 class="sr" id="h1">Global Overgroove</h1>
+  <nav class="site" id="site"></nav>
 
-  <!-- site bar: logo (links home) + menu title. Stays visible while scrolling -->
-  <nav class="site" id="site" aria-label="Site">
-    <a class="logo" id="logo"></a>
-    <button type="button" class="site-btn" id="site-btn" aria-expanded="false" aria-controls="site-menu"><span id="site-title"></span></button>
-    <ul class="site-menu" id="site-menu" hidden></ul>
-  </nav>
-
-  <!-- search: top-right corner of the page (shown when PAGE.agendaSearch is true) -->
-  <div class="ag-tools" id="ag-tools" hidden>
-    <div class="ag-box">
-      <input type="search" id="ag-q" placeholder="SEARCH" aria-label="Search the agenda" autocomplete="off" spellcheck="false">
-      <button type="button" class="ag-x" id="ag-x" aria-label="Clear search" hidden>&times;</button>
-    </div>
-    <span class="ag-count" id="ag-count" aria-live="polite"></span>
-  </div>
-
-  <!-- side tab: this page's label (+ a link box to the next page when nextPage is set) -->
   <div class="tabs-side" id="tabs-side"><div class="tab-side" id="tab-side" aria-hidden="true"></div></div>
 
-  <div class="cols">
-
-    <!-- left column: the image (no border, no caption) until a line is clicked; then the event frame -->
-    <div class="col-l">
-      <aside>
-        <figure class="fig-wrap" id="fig"></figure>
-        <section class="detail" id="detail" hidden aria-label="Event details">
-          <button type="button" class="close" id="d-close">Close</button>
-          <div class="stage" id="d-stage">
-            <div class="poster" id="d-poster"></div>
-            <!-- the details sit behind the poster: click the poster (or the Info button) to read them, click again to go back -->
-            <div class="info" id="d-info" hidden>
-              <dl class="meta" id="d-meta"></dl>
-              <div id="d-text"></div>
-              <p class="info-none" id="d-none" hidden>No further info.</p>
-              <p class="more"><a id="d-link" target="_blank" rel="noopener" hidden></a></p>
-            </div>
-          </div>
-          <div class="body">
-            <dl class="specs" id="d-specs"></dl>
-            <button type="button" class="info-btn" id="d-flip" aria-pressed="false" hidden>Info</button>
-          </div>
-        </section>
-      </aside>
-    </div>
-
-    <!-- right column: the agenda tables built from AGENDA (upcoming first, then past events) and the optional intro text -->
+  <div class="cols" id="cols">
     <main>
-      <p class="ag-years" id="ag-years" hidden></p>   <!-- the builder places this under the heading row -->
-      <div id="agenda-up"></div>
-      <div id="agenda"></div>
+      <dl class="meta" id="info"></dl>
       <div class="text" id="text"></div>
     </main>
-
+    <aside>
+      <figure class="fig-wrap" id="fig"></figure>
+    </aside>
   </div>
-
 </div>
 
-<!-- BUILDER SCRIPT. Reads the PAGE block and fills the skeleton above. No need to edit. -->
+<script src="assets/base.js"></script>
+<!-- LANDING BUILDER. Reads the PAGE block above. No need to edit. -->
 <script>
 (function(){
   try {
-    var C = PAGE, root = C.root || '';
-    if (C.theme === 'light' || C.theme === 'dark') document.documentElement.setAttribute('data-theme', C.theme);   // otherwise the device setting decides
+    var C = PAGE, root = C.root || '', S = (typeof SITE !== 'undefined') ? SITE : {};
     function $(id){ return document.getElementById(id); }
     function el(tag, cls, text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
-    function pad(n){ return String(n).padStart(3,'0'); }
 
-    // page identity
     document.title = C.browserTitle;
-    $('h1').textContent = C.site ? C.site.title : C.browserTitle;   // hidden page heading for screen readers
+    if (S.title) $('h1').textContent = S.title;
+    if (C.sideTab) $('tab-side').textContent = C.sideTab;
+    else { $('tabs-side').remove(); document.querySelector('.page').classList.add('no-tabs'); }
 
-    // placeholder logo, two options (config: logo.mark):
-    //   "registration": a thin square with a circle and crosshair ticks, like a printer's registration mark (ink colour only)
-    //   "lens": a black ellipse with a tall hollow ring, a small crossbar and two wedges cutting in from the sides
-    function logoMark(host, which){
-      var marks = {
-        registration:
-          '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x=".5" y=".5" width="23" height="23" fill="none" stroke="currentColor" vector-effect="non-scaling-stroke"/>' +
-          '<circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" vector-effect="non-scaling-stroke"/>' +
-          '<path d="M12 0v7M12 17v7M0 12h7M17 12h7" stroke="currentColor" vector-effect="non-scaling-stroke"/></svg>',
-        lens:
-          '<svg viewBox="0 0 28 28" aria-hidden="true" focusable="false"><ellipse class="ink" cx="14" cy="14" rx="10.5" ry="13.2"/>' +
-          '<ellipse class="cutl" cx="14" cy="14" rx="3.2" ry="12.2" stroke-width="1.5"/>' +
-          '<path class="cutl" stroke-width="1.4" d="M10.9 16.4H17.1M17.1 12.4H15.4"/>' +
-          '<path class="cut" d="M0 12.2 7 15.2 0 18.4Z"/><path class="cut" d="M28 12 21 15 28 18.2Z"/></svg>'
-      };
-      host.innerHTML = marks[which] || marks.registration;
-    }
+    (C.info || []).forEach(function(r){ $('info').appendChild(el('dt', null, r[0])); $('info').appendChild(el('dd', null, r[1])); });
+    $('info').hidden = !(C.info || []).length;
+    (C.text || []).forEach(function(t){ var p = el('p'); p.innerHTML = t; $('text').appendChild(p); });
+    $('text').hidden = !(C.text || []).length;
 
-    // logo: small mark left of the menu title, links to the site root. Empty src (or a missing file) = the placeholder mark
-    var logo = $('logo'), lg = C.logo || {};
-    logo.href = root || './';
-    logo.setAttribute('aria-label', lg.alt || 'Home');
-    if (lg.src) {
-      var lim = new Image(); lim.src = root + lg.src; lim.alt = '';
-      lim.onerror = function(){ logoMark(logo, lg.mark); };
-      logo.appendChild(lim);
-    } else logoMark(logo, lg.mark);
-
-    // side tab: text from sideLabel (or the page number); with nextPage set, a second outlined box (number+1) links to the next page
-    if (C.showTabs) {
-      $('tab-side').textContent = C.sideLabel || pad(C.number);
-      if (C.nextPage) {
-        var next = el('a', 'tab-side', pad(C.number + 1));
-        next.href = root + C.nextPage;
-        next.setAttribute('aria-label', 'Next page, ' + pad(C.number + 1));
-        $('tabs-side').appendChild(next);
-      }
-    } else {
-      $('tabs-side').remove();
-      document.querySelector('.page').classList.add('no-tabs');
-    }
-
-    // site menu: links to sections of this page; the section being read gets a bullet; closes after a click, outside click or Esc
-    var btn = $('site-btn'), menu = $('site-menu'), links = (C.site && C.site.links) || [], spy = [];
-    $('site-title').textContent = C.site ? C.site.title : '';
-    links.forEach(function(l){
-      var li = el('li'), a = el('a', null, l[0]), hash = l[1].charAt(0) === '#';
-      a.href = hash ? l[1] : root + l[1];
-      if (hash) spy.push({ a: a, id: l[1].slice(1) });
-      li.appendChild(a); menu.appendChild(li);
-    });
-    if (!links.length) { btn.classList.add('static'); btn.removeAttribute('aria-expanded'); btn.removeAttribute('aria-controls'); }
-    else {
-      var setOpen = function(o){ menu.hidden = !o; btn.setAttribute('aria-expanded', o); };
-      btn.addEventListener('click', function(){ setOpen(menu.hidden); });
-      menu.addEventListener('click', function(e){ if (e.target.closest('a')) setOpen(false); });
-      document.addEventListener('click', function(e){ if (!$('site').contains(e.target)) setOpen(false); });
-      document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !menu.hidden) { setOpen(false); btn.focus(); } });
-    }
-    function onScroll(){                      // mark the last section whose heading has reached the top
-      var cur = null;
-      spy.forEach(function(s){ var t = $(s.id); if (t && t.getBoundingClientRect().top <= 120) cur = s.a; });
-      spy.forEach(function(s){ if (s.a === cur) s.a.setAttribute('aria-current', 'location'); else s.a.removeAttribute('aria-current'); });
-    }
-    if (spy.length) { window.addEventListener('scroll', onScroll, { passive: true }); onScroll(); }
-
-    // agenda: one table per block of AGENDA (a blank line between blocks). Click a line: its entry in TEXTS opens in the frame on the right.
-    // Click the open line again, press Close or Esc to go back to the image.
-    var detail = $('detail'), figBox = $('fig'), current = null, asideEl = document.querySelector('aside');
-    var inl = el('tr', 'ev-inline'), inlTd = el('td'); inlTd.colSpan = 2; inl.appendChild(inlTd);   // phone: the row that holds the open event
-    function narrow(){ return window.matchMedia && matchMedia('(max-width:760px)').matches; }
-    function paragraphs(box, v){ box.innerHTML = ''; (Array.isArray(v) ? v : [v]).filter(Boolean).forEach(function(t){ var p = el('p'); p.innerHTML = t; box.appendChild(p); }); }
-    function showInfo(on){                               // poster <-> details, in the same frame (the frame never grows)
-      $('d-info').hidden = !on; $('d-info').scrollTop = 0;
-      var f = $('d-flip'); f.textContent = on ? 'Poster' : 'Info'; f.setAttribute('aria-pressed', on ? 'true' : 'false');
-    }
-    function toggleInfo(){ if (detail.classList.contains('has-info')) showInfo($('d-info').hidden); }
-    function dock(){                                     // desktop: the frame lives in the left column. Phone: it sits in a row under the clicked line
-      if (!current) return;
-      if (narrow()) { current.parentNode.insertBefore(inl, current.nextSibling); inlTd.appendChild(detail); figBox.hidden = false; }
-      else { if (inl.parentNode) inl.parentNode.removeChild(inl); asideEl.appendChild(detail); figBox.hidden = true; }
-    }
-    function openEvent(tr, ev, quiet){
-      if (current) { current.classList.remove('on'); current.querySelector('.ev').setAttribute('aria-expanded', 'false'); }
-      current = tr; tr.classList.add('on'); tr.querySelector('.ev').setAttribute('aria-expanded', 'true');
-      var sp = $('d-specs'); sp.innerHTML = '';
-      [['Line-Up', ev.title, ''], ['Data', (ev.date || '') + (ev.place ? '  \u00b7  ' + ev.place : ''), 'q'], ['Price', ev.price, '']].forEach(function(r){
-        if (!r[1]) return; sp.appendChild(el('dt', null, r[0])); sp.appendChild(el('dd', r[2], r[1]));
-      });
-      var pbox = $('d-poster'); pbox.innerHTML = ''; detail.style.removeProperty('--ar-n'); pbox.style.removeProperty('--ar');
-      if (ev.poster) {                                   // the frame takes the poster's own proportions once it has loaded
-        var im = new Image(); im.alt = ev.alt || '';
-        im.onload = function(){ pbox.style.setProperty('--ar', im.naturalWidth + '/' + im.naturalHeight); detail.style.setProperty('--ar-n', im.naturalWidth / im.naturalHeight); };
-        im.onerror = function(){ im.hidden = true; };
-        im.src = root + ev.poster; pbox.appendChild(im);
-      }
-      var meta = $('d-meta'); meta.innerHTML = '';
-      (ev.details || []).forEach(function(r){ meta.appendChild(el('dt', null, r[0])); meta.appendChild(el('dd', null, r[1])); });
-      meta.hidden = !(ev.details && ev.details.length);
-      paragraphs($('d-text'), ev.text);
-      var lk = $('d-link'); lk.hidden = !ev.link;
-      if (ev.link) { lk.href = ev.link; lk.textContent = ev.linkText || 'More info'; }
-      var hasInfo = !!((ev.details && ev.details.length) || [].concat(ev.text || []).filter(Boolean).length || ev.link);
-      var none = $('d-none'); if (none) none.hidden = hasInfo;
-      var showBtn = hasInfo || C.infoAlways !== false;                    // PAGE.infoAlways: the Info button shows even when there is nothing more to read
-      detail.classList.toggle('has-info', showBtn); $('d-flip').hidden = !showBtn;
-      showInfo(false);                                   // every event opens on its poster
-      detail.hidden = false; dock();
-      if (!quiet && narrow()) window.scrollTo({ top: tr.getBoundingClientRect().top + window.scrollY - 88, behavior: 'smooth' });   // phone: the line goes to the top, the poster is right under it
-    }
-    function closeEvent(quiet){
-      if (!current) return;
-      var b = current.querySelector('.ev'); current.classList.remove('on'); b.setAttribute('aria-expanded', 'false'); current = null;
-      detail.hidden = true; figBox.hidden = false;
-      if (inl.parentNode) inl.parentNode.removeChild(inl); asideEl.appendChild(detail);
-      if (quiet === true) return;
-      if (narrow()) b.scrollIntoView({ block: 'center' });
-      b.focus();
-    }
-    // blocks, search and years: each block remembers its rows so the search can hide them; each year remembers its first row
-    var blocks = [], yearFirst = {}, yearOrder = [];
-    function norm(s){ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }   // accents and capitals ignored
-    var toolsBlock = null;
-    // PAGE.agendaAuto: put each event in the right table by today's date (rows without a readable date stay where they are written)
-    function agendaBlocks(){
-      var AG = AGENDA.map(function(b){ return Array.isArray(b) ? { rows: b } : b; });
-      if (C.agendaAuto === false) return AG;
-      var upB = AG.filter(function(b){ return !b.tools; })[0], pastB = AG.filter(function(b){ return b.tools; })[0];
-      if (!upB || !pastB) return AG;
-      var now = new Date(); now = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-      var up = [], past = [], n = 0;
-      AG.forEach(function(b){
-        if (b !== upB && b !== pastB) return;
-        b.rows.forEach(function(r){
-          var m = /((?:19|20)\d{2})\D+(\d{1,2})\D+(\d{1,2})/.exec(r[1] || '');
-          if (!m) { (b === upB ? up : past).push({ r: r, t: null, i: n++ }); return; }
-          var t = new Date(+m[1], +m[2] - 1, +m[3]).getTime();
-          (t >= now ? up : past).push({ r: r, t: t, i: n++ });
-        });
-      });
-      up.sort(function(a, b){ return (a.t === null || b.t === null) ? a.i - b.i : a.t - b.t || a.i - b.i; });          // soonest first
-      past.sort(function(a, b){ return (a.t === null || b.t === null) ? a.i - b.i : b.t - a.t || a.i - b.i; });         // newest first
-      return AG.map(function(b){
-        if (b === upB) return Object.assign({}, b, { rows: up.map(function(x){ return x.r; }) });
-        if (b === pastB) return Object.assign({}, b, { rows: past.map(function(x){ return x.r; }) });
-        return b;
-      });
-    }
-    var nextUp = null;                                              // first upcoming event that has a poster
-    agendaBlocks().forEach(function(block){
-      if (Array.isArray(block)) block = { rows: block };            // a plain list of lines also works
-      var table = el('table', block.tools ? 'agenda' : 'agenda up'), body = el('tbody'), items = [], lastYear = null, markerAt = -1, blk = { wrap: null, items: items, tools: !!block.tools };
-      var sec = el('section', 'ag-sec'); sec.setAttribute('aria-label', block.title || (block.tools ? 'Past events' : 'Upcoming events'));
-      if (block.title) { var head = el('div', 'ag-head'); head.appendChild(el('h2', 'ag-h', block.title)); sec.appendChild(head); }
-      if (block.tools && !toolsBlock) {                  // control row: the year index (the search field lives in the top-right corner of the page)
-        toolsBlock = blk; var ctrl = el('div', 'ag-ctrl'); ctrl.appendChild($('ag-years')); ctrl.hidden = true; sec.appendChild(ctrl);
-      }
-      if (!block.tools && !block.title && block.rows.length && C.upcomingLabel) sec.appendChild(el('p', 'ag-tag', C.upcomingLabel));
-      if (!block.rows.length && !block.tools) {          // nothing planned: a quiet line instead of an empty table
-        sec.appendChild(el('p', 'ag-empty', C.emptyUpcoming || 'No dates announced')); $('agenda-up').appendChild(sec); return;
-      }
-      block.rows.forEach(function(row){                       // row = [ title, date, name of its entry in TEXTS ]
-        var ym = /\b(?:19|20)\d{2}\b/.exec(row[1] || ''), yr = ym ? ym[0] : null;
-        if (blk.tools && yr && yr !== lastYear) {         // the year changed: add a small year row
-          lastYear = yr;
-          var ytr = el('tr', 'yr'), yth = el('th'); yth.appendChild(el('span', 'sr', yr)); yth.colSpan = 2;   // the year is only read aloud: on screen the year index shows it in black
-           yth.scope = 'rowgroup';
-          ytr.appendChild(yth);
-          if (markerAt > -1) { body.insertBefore(ytr, items[markerAt].tr); items.splice(markerAt, 0, { yr: true, tr: ytr }); }   // month markers like "OUT" go under the year row
-          else { body.appendChild(ytr); items.push({ yr: true, tr: ytr }); }
-          if (!yearFirst[yr]) { yearFirst[yr] = { tr: ytr, blk: blk }; yearOrder.push(yr); }
-        }
-        var ev = Object.assign({ title: row[0], date: row[1] }, row[2] ? (TEXTS[row[2]] || {}) : {});
-        var tr = el('tr'), th = el('th'), b = el('button', 'ev', ev.title);
-        th.scope = 'row'; b.type = 'button'; b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-controls', 'detail');
-        var shown = ev.date || '';
-        if (blk.tools && yr) shown = shown.replace(yr, '').replace(/^[\s.\-\/]+|[\s.\-\/]+$/g, '');   // under a year row the year is not repeated: 2026 . 11 . 14 shows as 11 . 14 (the full date stays in the data, the search and the event frame)
-        th.appendChild(b); if (ev.place) th.appendChild(el('span', 'pl', ev.place)); tr.appendChild(th); tr.appendChild(el('td', null, shown));
-        if (!block.tools && !nextUp && ev.poster) nextUp = { tr: tr, ev: ev };
-        tr.addEventListener('click', function(){ if (current === tr) closeEvent(); else openEvent(tr, ev); });
-        b.addEventListener('click', function(e){ e.stopPropagation(); if (current === tr) closeEvent(); else openEvent(tr, ev); });
-        body.appendChild(tr);
-        if (yr) markerAt = -1; else if (markerAt < 0) markerAt = items.length;      // remember where a run of lines without a year starts
-        items.push({ tr: tr, btn: b, text: ev.title, hay: norm([ev.title, ev.date, ev.place || '', (ev.details || []).map(function(d){ return d.join(' '); }).join(' '), [].concat(ev.text || []).join(' ').replace(/<[^>]*>/g, ' ')].join(' ')) });
-      });
-      var wrap = el('div', 'ag-scroll');                // height limit: a block taller than agendaMaxHeight scrolls
-      wrap.style.maxHeight = C.agendaMaxHeight || '55vh';
-      table.appendChild(body); wrap.appendChild(table); blk.table = table; if (block.tools) { blk.spacer = el('div', 'ag-pad'); wrap.appendChild(blk.spacer); } sec.appendChild(wrap); (block.tools ? $('agenda') : $('agenda-up')).appendChild(sec);   // both end up stacked in the right column, in the order written
-      blk.wrap = wrap; blocks.push(blk);
-    });
-
-    // search: every word typed must appear in the title, date, details or text of a line. Empty year rows and empty blocks hide.
-    var q = $('ag-q'), xBtn = $('ag-x'), countEl = $('ag-count');
-    // highlight: the matched letters of a title are wrapped in <mark> (accents and capitals ignored, like the search itself)
-    function highlight(it, terms){
-      var txt = it.text, fold = '', map = [];
-      for (var i = 0; i < txt.length; i++) {
-        var f = txt[i].normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-        for (var k = 0; k < f.length; k++) { fold += f[k]; map.push(i); }
-      }
-      var hit = new Array(txt.length);
-      terms.forEach(function(t){ for (var p = fold.indexOf(t); p > -1; p = fold.indexOf(t, p + 1)) for (var j = p; j < p + t.length; j++) hit[map[j]] = true; });
-      it.btn.textContent = '';
-      var run = '', on = false;
-      function flush(){ if (!run) return; if (on) it.btn.appendChild(el('mark', null, run)); else it.btn.appendChild(document.createTextNode(run)); run = ''; }
-      for (var c = 0; c < txt.length; c++) { if (!!hit[c] !== on) { flush(); on = !!hit[c]; } run += txt[c]; }
-      flush();
-    }
-    function filter(){
-      var terms = norm(q.value).split(/\s+/).filter(Boolean), shown = 0;
-      xBtn.hidden = !terms.length;
-      blocks.forEach(function(b){
-        if (!b.tools) return;                            // only the table that owns the search is filtered
-        b.wrap.scrollTop = 0;                            // every new search starts at the top of the results
-        var any = 0, pending = null, n = 0;
-        b.items.forEach(function(it){
-          if (it.yr) { if (pending) pending.tr.hidden = !n; pending = it; n = 0; return; }
-          var ok = terms.every(function(t){ return it.hay.indexOf(t) > -1; });
-          it.tr.hidden = !ok; if (ok) { n++; any++; }
-          if (terms.length && ok) highlight(it, terms); else if (it.btn.textContent !== it.text || it.btn.firstElementChild) it.btn.textContent = it.text;
-        });
-        if (pending) pending.tr.hidden = !n;
-        b.wrap.hidden = !any; shown += any;
-      });
-      countEl.textContent = terms.length ? (shown ? shown + (shown === 1 ? ' result' : ' results') : 'No results') : '';
-    }
-    if (!toolsBlock || C.agendaSearch === false) { $('ag-tools').hidden = true; }
-    else {
-      $('ag-tools').hidden = false;
-      q.addEventListener('input', filter);
-      q.addEventListener('keydown', function(e){ if (e.key === 'Escape' && q.value) { q.value = ''; filter(); e.stopPropagation(); } });
-      xBtn.addEventListener('click', function(){ q.value = ''; filter(); q.focus(); });
-    }
-
-    // year index: 2026 · 2025 · 2024. Each year scrolls its table to that year (only when there is more than one year)
-    var yBox = $('ag-years'), ybtn = {};
-    if (toolsBlock && C.agendaYearIndex !== false && yearOrder.length > 1) {
-      yearOrder.forEach(function(y, i){
-        if (i) { var dot = el('span', null, '\u00b7'); dot.setAttribute('aria-hidden', 'true'); yBox.appendChild(dot); }
-        var yb = el('button', null, y); yb.type = 'button';
-        yb.addEventListener('click', function(){
-          var t = yearFirst[y], w = t.blk.wrap;
-          if (q.value) { q.value = ''; filter(); refit(); }
-          if (w.scrollHeight > w.clientHeight + 1) { w.scrollTop += t.tr.getBoundingClientRect().top - w.getBoundingClientRect().top; w.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-          else window.scrollTo({ top: t.tr.getBoundingClientRect().top + window.scrollY - 88, behavior: 'smooth' });   // phone: the page scrolls, not the table
-        });
-        yBox.appendChild(yb); ybtn[y] = yb;
-      });
-      yBox.hidden = false; yBox.parentNode.hidden = false;
-    }
-
-    // the year in view (the last year row that has reached the top of the table) turns black in the index
-    // blank space under the last rows, so that even the last (short) years can be scrolled up to the top of the table
-    function fitSpace(){
-      if (!toolsBlock || !toolsBlock.spacer) return;
-      var w = toolsBlock.wrap, sp = toolsBlock.spacer, last = null;
-      sp.style.height = '0px';
-      if (q.value.trim() || w.hidden) return;                       // while searching the list is short: no extra space
-      yearOrder.forEach(function(y){ if (!yearFirst[y].tr.hidden) last = yearFirst[y].tr; });
-      if (!last) return;
-      if (narrow()) { sp.style.height = Math.max(240, window.innerHeight - 90 - (toolsBlock.table.getBoundingClientRect().bottom - last.getBoundingClientRect().top)) + 'px'; return; }   // phone: room for the last years (and the fly)
-      if (toolsBlock.table.offsetHeight <= w.clientHeight) return;   // everything fits: nothing to scroll
-      var h = toolsBlock.table.getBoundingClientRect().bottom - last.getBoundingClientRect().top;
-      sp.style.height = Math.max(0, w.clientHeight - h) + 'px';
-    }
-    function markYear(){
-      if (!toolsBlock) return;
-      var w = toolsBlock.wrap, top = (w.scrollHeight > w.clientHeight + 1) ? w.getBoundingClientRect().top + 4 : 90, cur = null;   // phone: the line 90px from the top of the screen
-      yearOrder.forEach(function(y){ var tr = yearFirst[y].tr; if (tr.hidden) return; if (!cur || tr.getBoundingClientRect().top <= top) cur = y; });
-      Object.keys(ybtn).forEach(function(y){ ybtn[y].classList.toggle('on', y === cur); if (y === cur) ybtn[y].setAttribute('aria-current', 'true'); else ybtn[y].removeAttribute('aria-current'); });
-    }
-    function refit(){ if (current && current.hidden) closeEvent(true); fitSpace(); markYear(); }
-    if (toolsBlock) { toolsBlock.wrap.addEventListener('scroll', markYear, { passive: true }); q.addEventListener('input', refit); xBtn.addEventListener('click', refit); window.addEventListener('resize', refit); window.addEventListener('scroll', markYear, { passive: true }); refit(); }
-
-    // ---- the fly: a minimal fly (a dot and two sticks) that wanders smoothly in the blank space under the oldest entry of the past events table. Squash it to open the hidden page ----
-    var fy = C.fly || {};
-    if (toolsBlock && fy.href) {
-      var wrapF = toolsBlock.wrap, spF = toolsBlock.spacer, zone = el('div', 'fly-zone'), fb = el('button', 'fly');
-      fb.type = 'button'; fb.tabIndex = -1; fb.setAttribute('aria-label', fy.label || 'Fly');
-      // as minimal as it gets: a dot and two sticks
-      fb.innerHTML = '<svg viewBox="-12 -12 24 24" aria-hidden="true"><g class="flap"><path d="M0 0 L-8 -6"/></g><g class="flap r"><path d="M0 0 L8 -6"/></g><circle class="dot" r="2.3"/></svg>';
-      zone.appendChild(fb); wrapF.appendChild(zone);        // inside the scrolling table, under the oldest entry
-      var S = 44, px = 120, py = 90, ang = Math.random() * 6.28, sp = 40, rest = 0, dead = false, last = 0, t0 = Math.random() * 100,
-          calm = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
-      function place(extra){ fb.style.transform = 'translate(' + px.toFixed(1) + 'px,' + py.toFixed(1) + 'px) rotate(' + (ang * 57.2958 + 90).toFixed(1) + 'deg)' + (extra || ''); }
-      function sync(){
-        zone.hidden = wrapF.hidden || spF.offsetHeight < 80;       // no blank space (short list, or searching): no fly
-        zone.style.left = '0px'; zone.style.top = spF.offsetTop + 'px';
-        zone.style.width = wrapF.clientWidth + 'px'; zone.style.height = spF.offsetHeight + 'px';
-      }
-      function frame(now){
-        if (dead) return;
-        requestAnimationFrame(frame);
-        var dt = Math.min(.05, (now - (last || now)) / 1000); last = now;
-        sync();
-        var W = zone.clientWidth - S, H = zone.clientHeight - S;
-        if (zone.hidden || W < 20 || H < 20) return;
-        var t = now / 1000 + t0;
-        if (rest > 0) { rest -= dt; sp += (0 - sp) * Math.min(1, dt * 5); if (rest <= 0) { fb.classList.remove('rest'); sp = 12; } }
-        else {
-          sp += (55 + 38 * Math.sin(t * .7) - sp) * Math.min(1, dt * 1.5);
-          ang += (Math.sin(t * 1.3) + .7 * Math.sin(t * 2.9 + 1)) * 1.1 * dt;                       // lazy, looping wander
-          // stay away from the edges: turn gently towards the middle
-          var cx = W / 2 - px, cy = H / 2 - py, m = 50;
-          if (px < m || px > W - m || py < m || py > H - m) {
-            var want = Math.atan2(cy, cx), d = Math.atan2(Math.sin(want - ang), Math.cos(want - ang)); ang += d * Math.min(1, dt * 2.2);
-          }
-          if (Math.random() < dt * .12) { rest = 1.2 + Math.random() * 2.5; fb.classList.add('rest'); }  // now and then it lands for a moment
-        }
-        px += Math.cos(ang) * sp * dt; py += Math.sin(ang) * sp * dt;
-        px = Math.max(0, Math.min(W, px)); py = Math.max(0, Math.min(H, py));
-        place();
-      }
-      sync(); place();
-      if (calm) fb.classList.add('rest'); else requestAnimationFrame(frame);        // reduced motion: it just sits there
-      fb.addEventListener('click', function(){
-        if (dead) return; dead = true;
-        fb.classList.remove('rest'); fb.classList.add('dead');
-        fb.innerHTML = '<svg viewBox="-9 -9 18 18" aria-hidden="true"><path class="dot" d="M-3 -1 L-5.5 -3 L-3.2 -4.5 L-1 -6 L1.5 -4.2 L4.5 -5 L4 -2 L6.5 0 L4 1.8 L5 4.5 L2 4 L0 6.2 L-1.8 3.8 L-4.6 4.4 L-3.6 1.6 L-6 0 Z"/><circle class="dot" cx="7" cy="-3" r=".9"/><circle class="dot" cx="-7" cy="3.5" r=".7"/><path d="M5.5 5.5 L8 7 M-5.5 -5 L-8 -7" stroke-width=".8"/></svg>';
-        place(' scale(1.5)');
-        wrapF.style.transform = 'translateY(2px)'; setTimeout(function(){ wrapF.style.transform = ''; }, 90);       // a small thud
-        setTimeout(function(){ location.href = root + fy.href; }, 1100);
-      });
-      window.addEventListener('pageshow', function(e){ if (e.persisted) location.reload(); });
-    }
-
-    // the frame opens on the next upcoming event (if it has a poster); PAGE.openNext: false keeps the halftone image instead
-    if (C.openNext !== false && nextUp && !narrow()) openEvent(nextUp.tr, nextUp.ev, true);   // (not on a phone: it would push the lists down)
-    $('d-close').addEventListener('click', function(){ closeEvent(); });
-    window.addEventListener('resize', dock);
-    $('d-flip').addEventListener('click', toggleInfo);
-    $('d-poster').addEventListener('click', toggleInfo);
-    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !detail.hidden && menu.hidden) closeEvent(); });
-
-    // intro text (paragraphs may contain simple HTML); an empty list hides it
-    var box = $('text');
-    if (!C.text || !C.text.length) { box.hidden = true; }
-    else C.text.forEach(function(t){ var p = el('p'); p.innerHTML = t; box.appendChild(p); });
-
-    // image: halftone placeholder when there is no file, otherwise the picture in a 3:2 frame
-    var fig = $('fig'), f = C.figure, rl = C.restLogo || {};
-    if (rl.src) {
-      var lg2 = new Image(); lg2.className = 'rest-logo'; lg2.alt = rl.alt || ''; lg2.onerror = function(){ lg2.hidden = true; };   // if the file is not found nothing is shown (no broken-image text)
-      lg2.src = root + rl.src; fig.appendChild(lg2);
-    } else if (!f.src) {
-      var h = el('div', 'halftone'); h.setAttribute('role', 'img'); h.setAttribute('aria-label', f.alt || 'Image placeholder'); fig.appendChild(h);
-    } else {
-      var fr = el('div', 'frame'), im = new Image();
-      im.src = root + f.src; im.alt = f.alt || ''; im.loading = 'lazy'; im.onerror = function(){ im.hidden = true; };
-      fr.appendChild(im); fig.appendChild(fr);
-    }
+    var f = C.figure || {};
+    if (f.src){ var fr = el('div', 'frame'), im = new Image(); im.src = root + f.src; im.alt = f.alt || ''; im.onerror = function(){ im.hidden = true; }; fr.appendChild(im); $('fig').appendChild(fr); }
+    $('cols').hidden = !(C.info || []).length && !(C.text || []).length && !f.src;
   } catch (e) {
     console.error(e);
     document.body.insertAdjacentHTML('afterbegin', '<p style="padding:12px;font:14px monospace">Content error: check the quotation marks and commas in the content block at the top of the file.</p>');
